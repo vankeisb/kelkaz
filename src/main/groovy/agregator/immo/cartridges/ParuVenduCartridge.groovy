@@ -3,11 +3,13 @@ package agregator.immo.cartridges
 import agregator.core.Cartridge
 import agregator.core.Agregator
 import com.gargoylesoftware.htmlunit.WebClient
-import agregator.immo.ImmoCriteria.Demand
+
 import agregator.immo.ImmoCriteria.Type
 import agregator.immo.ImmoCriteria
 import agregator.immo.ImmoResult
 import agregator.util.Logger
+import com.gargoylesoftware.htmlunit.html.DomNode
+import com.gargoylesoftware.htmlunit.html.HtmlElement
 
 public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
@@ -93,16 +95,17 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     def p = webClient.getPage(url.toString())
 
     List<ImmoResult> results = new ArrayList<ImmoResult>()
-    def listItems = p.getByXPath("//div[@class='au_cdr_photo']")
+    def listItems = p.getByXPath("//div[@class='au_boxListe_C']")
     listItems.each { item ->
-      def title = item.getByXPath("//div[@class='au_cdr_listdet']//div[@class='flol b']/a")[0].textContent.trim()
-      def description = item.getByXPath("//div[@class='au_listdet_cntL']/a")[0].textContent
-      def u = ROOT_SITE + item.getByXPath("//div[@class='au_listdet_cntL']/a")[0].getAttribute('href')
-      def r = new ImmoResult(this, title, u, description)
-      logger.debug("Added result title $title, url $u")
-      results << r
+      println "***************"
+      def lnk = item.getByXPath("div/div[3]/div[1]/div[2]/div[1]/div[1]/a")[0]
+      def title = lnk.textContent.trim()
+      def u = ROOT_SITE + lnk.getAttribute('href')
+      lnk = item.getByXPath('div/div[3]/div[1]/div[2]/div[4]/div[1]/a')[0]
+      def description = lnk.textContent.trim()
+      results << new ImmoResult(this, title, u, description)
+      logger.debug("Added result title $title, url $u" + ", desc $description")
     }
-
     resultsIterator = results.iterator()
   }
 

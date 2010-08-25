@@ -12,10 +12,10 @@ public class ImmoAgregator extends Agregator {
 
   protected void createCartridges(List cartridges) {
     cartridges << new ParuVenduCartridge(this)
-    cartridges << new LeboncoinCartridge(this)
-    cartridges << new SeLogerCartridge(this)
-    cartridges << new OrpiCartridge(this)
-    cartridges << new PAPCartridge(this)
+//    cartridges << new LeboncoinCartridge(this)
+//    cartridges << new SeLogerCartridge(this)
+//    cartridges << new OrpiCartridge(this)
+//    cartridges << new PAPCartridge(this)
 
   }
 

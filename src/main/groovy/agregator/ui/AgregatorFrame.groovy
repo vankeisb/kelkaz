@@ -86,7 +86,11 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
     if (event instanceof AgregatorEvent.AgregatorCartridgeEvent &&
         event.cartridgeEvent instanceof CartridgeEvent.ResultEvent) {
       SwingUtilities.invokeLater {
-        resultsPanel.addResult(event.cartridgeEvent.getResult());
+        resultsPanel.addResult(event.cartridgeEvent.getResult())
+      }
+    } else if (event instanceof AgregatorEvent.StartedEvent) {
+      SwingUtilities.invokeLater {
+        resultsPanel.clear()
       }
     }
   }
