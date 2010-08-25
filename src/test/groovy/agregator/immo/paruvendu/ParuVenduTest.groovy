@@ -6,6 +6,7 @@ import agregator.immo.ImmoCriteria.Type
 import com.gargoylesoftware.htmlunit.WebClient
 import com.gargoylesoftware.htmlunit.html.HtmlPage
 import com.gargoylesoftware.htmlunit.BrowserVersion
+import agregator.immo.ImmoResult
 
 public class ParuVenduTest extends GroovyTestCase {
 
@@ -21,36 +22,56 @@ public class ParuVenduTest extends GroovyTestCase {
     return res.toString()
   }
 
-  public void testParuVendu() {
-    println "Sending criteria"
-    ImmoCriteria crit = new ImmoCriteria()
-    crit.demand = Demand.RENT
-    crit.type = Type.APPT
-    crit.nbRoomsMin = 3
-    crit.nbRoomsMax = 3
-    crit.surfaceMin = 50
-    crit.surfaceMax = 150
-    crit.priceMin = 1400
-    crit.priceMax = 1500
-    crit.postCode = '06000'
-//    crit.city = 'Nice'
+  private void doTest(ImmoCriteria crit, int expectedResultCount) {
     ParuVenduAgregator a = new ParuVenduAgregator()
     def listener = new ParuVenduTestListener()
     a.addListener(listener)
     a.agregate(crit)
 
     def results = listener.results
-    assert results.size() == 2
-    def result = results[0]
+    assert results.size() == expectedResultCount
 
+    assertFirstResultInPage results[0]    
+  }
+
+  private void assertFirstResultInPage(ImmoResult result) {
     // on rechope la page et on check si le titre est le bon
     println "Sending comparison request to $result.url"
     WebClient c = new WebClient()
+    c.setJavaScriptEnabled(false)
     HtmlPage page = c.getPage(result.url)
     def titleInPage = page.getByXPath("//div[@class='im_de_ann_L b']")[0].textContent.trim()
     println "title (page) : $titleInPage"
     println "title (resu) : $result.title"
     assert removeSpaces(result.title) == removeSpaces(titleInPage)
+  }
+
+  public void testParuVenduLocAppt() {
+    doTest(new ImmoCriteria([
+      demand: Demand.RENT,
+      type: Type.APPT,
+      nbRoomsMin: 3,
+      nbRoomsMax: 3,
+      surfaceMin: 50,
+      surfaceMax: 150,
+      priceMin: 1400,
+      priceMax: 1500,
+      postCode: '06000'
+    ]), 2)
+  }
+
+  public void testParuVenduLocMaison() {
+    doTest(new ImmoCriteria([
+      demand: Demand.RENT,
+      type: Type.MAISON,
+      nbRoomsMin: 3,
+      nbRoomsMax: 5,
+      surfaceMin: 50,
+      surfaceMax: 150,
+      priceMin: 1300,
+      priceMax: 1500,
+      postCode: '06000'
+    ]), 3)
   }
 
 }

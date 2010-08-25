@@ -43,8 +43,7 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     if (criteria.type==Type.APPT) {
       url << "&tb1=1&tbApp=1&tbDup=1&tbChb=1&tbLof=1&tbAtl=1"
     } else {
-      // TODO maison
-      url << "&tb2=1"
+      url << "&tb2=1&tbMai=1&tbVil=1&tbCha=1&tbPro=1&tbHot=1"
     }
     if (criteria.nbRoomsMin) {
       def value = criteria.nbRoomsMin * 10
@@ -76,24 +75,16 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     // TODO pays
     url << "&pa=FR"
 
-    def locationValue = null
     if (criteria.postCode!=null) {
-      locationValue = criteria.postCode
+      url << "&lo=$criteria.postCode"
     } else {
-      locationValue = criteria.city
-    }
-    if (locationValue) {
-      url << "&lo=$locationValue"
+      url << "&lo=$criteria.city"
     }
 
     // appt
     // http://www.paruvendu.fr/immobilier/annoncefo/liste/listeAnnonces?dt=0&tt=5&tb1=1&tbApp=1&tbDup=1&tbChb=1&tbLof=1&tbAtl=1&nbp0=30&nbp1=30&sur0=50&sur1=150&px0=1400&px1=1500&pa=FR&lo=06000
     // maison
     // http://www.paruvendu.fr/immobilier/annoncefo/liste/listeAnnonces?dt=0&tt=5&tb2=1&tbMai=1&tbVil=1&tbCha=1&tbPro=1&tbHot=1&nbp0=30&nbp1=30&sur0=50&sur1=150&px0=1400&px1=1500&pa=FR&lo=06000
-
-    // http://www.paruvendu.fr/immobilier/annoncefo/liste/listeAnnonces?dt=0&tb1=1&tbApp=1&tbDup=1&tbChb=1&tbLof=1&tbAtl=1&nbp0=30&nbp1=30&sur0=50&sur1=150&px0=1400&px1=1500&pa=FR&lo=06000
-
-
 
     logger.debug("Sending request : " + url);
 
