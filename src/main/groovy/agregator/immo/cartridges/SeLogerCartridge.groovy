@@ -14,6 +14,12 @@ public class SeLogerCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
   // TODO: BUG COMPLET ...
 
+  protected void doAgregate() {
+    //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+
+
   private Iterator<ImmoResult> resultsIterator = null
 
   private static String URL_CARTRIDGE = "http://www.leboncoin.com"

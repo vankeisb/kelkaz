@@ -13,6 +13,12 @@ public class OrpiCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
   private static String URL_CARTRIDGE = "http://www.orpi.com"
 
+  protected void doAgregate() {
+    //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+
+
   def OrpiCartridge(Agregator agregator){
     super("orpi", agregator)
   }

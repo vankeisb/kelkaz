@@ -13,6 +13,7 @@ public class ImmoResult extends Result {
     private final String description;
     private final Integer price;
     private final Date date;
+    private final String photoUrl;
 
     public ImmoResult(
       Cartridge cartridge,
@@ -20,13 +21,15 @@ public class ImmoResult extends Result {
       String url,
       String description,
       Integer price,
-      Date date) {
+      Date date,
+      String photoUrl) {
         super(cartridge);
         this.title = title;
         this.url = url;
         this.description = description;
         this.price = price;
         this.date = date;
+        this.photoUrl = photoUrl;
     }
 
     public String getTitle() {

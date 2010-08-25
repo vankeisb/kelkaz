@@ -23,6 +23,12 @@ public class PAPCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
   private static String URL_CARTRIDGE = "http://www.pap.fr"
 
+  protected void doAgregate() {
+    //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+
+
   def PAPCartridge(Agregator agregator){
     super("pap", agregator)
   }

@@ -22,6 +22,10 @@ public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     super("leboncoin", agregator)
   }
 
+  protected void doAgregate() {
+    //To change body of implemented methods use File | Settings | File Templates.
+  }
+
   /**
    * Return the ares'a code (as used in 'leboncoin.fr' in function of the post code
    * Use here to get the rigth research page

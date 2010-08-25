@@ -119,8 +119,12 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
           def price = Util.extractInteger(div.getAttribute('title').trim())
           div = item.getByXPath('div/div[3]/div[1]/div[2]/div[2]/div[2]/a')[0]
           def date = Util.extractDate(div.textContent)
-
-          fireResultEvent(new ImmoResult(this, title, u, description, price, date))
+          def img = item.getByXPath("//div[@class='au_cdr_photo']/a/img")[0]
+          def imgUrl = null
+          if (img!=null) {
+            imgUrl = img.getAttribute('src')
+          }
+          fireResultEvent(new ImmoResult(this, title, u, description, price, date, imgUrl))
           nbAdded++
           totalAdded++
           logger.debug("Added result title $title, url $u" + ", desc $description, date $date")
