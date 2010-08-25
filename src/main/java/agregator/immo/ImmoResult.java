@@ -3,6 +3,8 @@ package agregator.immo;
 import agregator.core.Result;
 import agregator.core.Cartridge;
 
+import java.util.Date;
+
 
 public class ImmoResult extends Result {
 
@@ -10,18 +12,21 @@ public class ImmoResult extends Result {
     private final String title;
     private final String description;
     private final Integer price;
+    private final Date date;
 
     public ImmoResult(
       Cartridge cartridge,
       String title,
       String url,
       String description,
-      Integer price) {
+      Integer price,
+      Date date) {
         super(cartridge);
         this.title = title;
         this.url = url;
         this.description = description;
         this.price = price;
+        this.date = date;
     }
 
     public String getTitle() {
@@ -50,14 +55,12 @@ public class ImmoResult extends Result {
     return price;
   }
 
+  public Date getDate() {
+    return date;
+  }
+
   /*
   List<String> getPhotosUrls();
-
-  String getDescription();
-
-  Date getDate();
-
-  Integer getPrice();
 
   ImmoCriteria.Country getCountry();
 

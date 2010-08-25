@@ -5,11 +5,10 @@ import agregator.core.Agregator
 import com.gargoylesoftware.htmlunit.WebClient
 
 import agregator.immo.ImmoCriteria.Type
+import agregator.immo.ImmoCriteria.Demand
 import agregator.immo.ImmoCriteria
 import agregator.immo.ImmoResult
 import agregator.util.Logger
-import com.gargoylesoftware.htmlunit.html.DomNode
-import com.gargoylesoftware.htmlunit.html.HtmlElement
 
 public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
@@ -41,11 +40,18 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     logger.debug("Building URL")
     def url = new StringBuilder()
     url << ROOT_SITE
-    url << "/immobilier/annoncefo/liste/listeAnnonces?dt=0&tt=5"
+    if (criteria.demand==Demand.RENT) {
+      url << "/immobilier/annoncefo/liste/listeAnnonces?dt=0&tt=5"
+    } else {
+      url << "/immobilier/annoncefo/liste/listeAnnonces?dt=0&tt=1"
+    }
     if (criteria.type==Type.APPT) {
       url << "&tb1=1&tbApp=1&tbDup=1&tbChb=1&tbLof=1&tbAtl=1"
     } else {
       url << "&tb2=1&tbMai=1&tbVil=1&tbCha=1&tbPro=1&tbHot=1"
+      if (criteria.demand==Demand.SELL) {
+        url << "&tbMou=1&tbFer=1&at=1"
+      }
     }
     if (criteria.nbRoomsMin) {
       def value = criteria.nbRoomsMin * 10
@@ -99,15 +105,19 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     listItems.each { item ->
       println "***************"
       def lnk = item.getByXPath("div/div[3]/div[1]/div[2]/div[1]/div[1]/a")[0]
-      def title = lnk.textContent.trim()
-      def u = ROOT_SITE + lnk.getAttribute('href')
-      lnk = item.getByXPath('div/div[3]/div[1]/div[2]/div[4]/div[1]/a')[0]
-      def description = lnk.textContent.trim()
-      def div = item.getByXPath('div/div[1]/div[1]')[0]
-      def price = Util.extractPrice(div.getAttribute('title').trim())
+      if (lnk) {
+        def title = lnk.textContent.trim()
+        def u = ROOT_SITE + lnk.getAttribute('href')
+        lnk = item.getByXPath('div/div[3]/div[1]/div[2]/div[4]/div[1]/a')[0]
+        def description = lnk.textContent.trim()
+        def div = item.getByXPath('div/div[1]/div[1]')[0]
+        def price = Util.extractPrice(div.getAttribute('title').trim())
+        div = item.getByXPath('div/div[3]/div[1]/div[2]/div[2]/div[2]/a')[0]
+        def date = Util.extractDate(div.textContent)
 
-      results << new ImmoResult(this, title, u, description, price)
-      logger.debug("Added result title $title, url $u" + ", desc $description")
+        results << new ImmoResult(this, title, u, description, price, date)
+        logger.debug("Added result title $title, url $u" + ", desc $description, date $date")        
+      }
     }
     resultsIterator = results.iterator()
   }

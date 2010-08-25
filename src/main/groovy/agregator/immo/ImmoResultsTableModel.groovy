@@ -20,6 +20,7 @@ public class ImmoResultsTableModel extends AbstractTableModel {
         columnsName << messages.getString("column.title")
         columnsName << messages.getString("column.description")
         columnsName << messages.getString("column.price")
+        columnsName << messages.getString("column.date")
 		columnsName << messages.getString("column.url")
 	}
 	
@@ -38,7 +39,7 @@ public class ImmoResultsTableModel extends AbstractTableModel {
 	}
 	
 	public int getColumnCount() {
-		return columnsName.size
+		return columnsName.size()
 	}
 	
 	public String getColumnName(int columnIndex) {
@@ -56,11 +57,13 @@ public class ImmoResultsTableModel extends AbstractTableModel {
 			case 1:
                 return results.get(rowIndex).title
 			case 2:
-				return results.get(rowIndex).description;
+				return results.get(rowIndex).description
             case 3:
-                return results.get(rowIndex).price;
+                return results.get(rowIndex).price
             case 4:
-                  return results.get(rowIndex).url;
+                  return results.get(rowIndex).date
+            case 5:
+                  return results.get(rowIndex).url
 			default:
 				return "Error"
 		}

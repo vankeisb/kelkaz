@@ -8,7 +8,7 @@ import javax.swing.JTable
 import java.awt.event.MouseListener
 import java.awt.event.MouseEvent
 
-public class ImmoResultsPanel extends ResultsPanel implements MouseListener {
+public class ImmoResultsPanel extends ResultsPanel<ImmoResult> implements MouseListener {
 	
 	JTable table
 	ImmoResultsTableModel tableModel = new ImmoResultsTableModel()
@@ -17,7 +17,7 @@ public class ImmoResultsPanel extends ResultsPanel implements MouseListener {
 	 * Use a JTable
 	 */
 
-	public void addResult(Result r) {
+	public void addResult(ImmoResult r) {
 		tableModel.addResult(r)
 	}
 
