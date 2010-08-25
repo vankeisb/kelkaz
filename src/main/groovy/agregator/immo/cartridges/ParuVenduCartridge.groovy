@@ -100,25 +100,54 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     webClient.setJavaScriptEnabled(false)
     def p = webClient.getPage(url.toString())
 
-    List<ImmoResult> results = new ArrayList<ImmoResult>()
-    def listItems = p.getByXPath("//div[@class='au_boxListe_C']")
-    listItems.each { item ->
-      println "***************"
-      def lnk = item.getByXPath("div/div[3]/div[1]/div[2]/div[1]/div[1]/a")[0]
-      if (lnk) {
-        def title = lnk.textContent.trim()
-        def u = ROOT_SITE + lnk.getAttribute('href')
-        lnk = item.getByXPath('div/div[3]/div[1]/div[2]/div[4]/div[1]/a')[0]
-        def description = lnk.textContent.trim()
-        def div = item.getByXPath('div/div[1]/div[1]')[0]
-        def price = Util.extractPrice(div.getAttribute('title').trim())
-        div = item.getByXPath('div/div[3]/div[1]/div[2]/div[2]/div[2]/a')[0]
-        def date = Util.extractDate(div.textContent)
+    Util.sleepRandomTime()
 
-        results << new ImmoResult(this, title, u, description, price, date)
-        logger.debug("Added result title $title, url $u" + ", desc $description, date $date")        
-      }
+    def spanNbAnnonces = p.getByXPath('/html/body/div[4]/div/div[3]/div/div[2]/div/div/h1/div/span')[0]
+    Integer nbAnnonces = Util.extractInteger(spanNbAnnonces.textContent)
+    Integer nbPages = 1
+    if (nbAnnonces>0) {
+      nbPages = nbAnnonces / 10 + 1
     }
+    logger.debug("Nb pages : $nbPages")
+
+    List<ImmoResult> results = new ArrayList<ImmoResult>()
+
+    int totalAdded = 0
+
+    for (int pageNum=1 ; pageNum<=nbPages ; pageNum++) {
+      logger.debug("Handling page $pageNum")
+      if (pageNum>1) {
+        String u = url.toString() + "&p=$pageNum"
+        logger.debug("Getting page $pageNum, url=$u")
+        p = webClient.getPage(u)
+        Util.sleepRandomTime()        
+      }
+      int nbAdded = 0
+      def listItems = p.getByXPath("//div[@class='au_boxListe_C']")
+      listItems.each { item ->
+        def lnk = item.getByXPath("div/div[3]/div[1]/div[2]/div[1]/div[1]/a")[0]
+        if (lnk) {
+          def title = lnk.textContent.trim()
+          def u = ROOT_SITE + lnk.getAttribute('href')
+          lnk = item.getByXPath('div/div[3]/div[1]/div[2]/div[4]/div[1]/a')[0]
+          def description = lnk.textContent.trim()
+          def div = item.getByXPath('div/div[1]/div[1]')[0]
+          def price = Util.extractInteger(div.getAttribute('title').trim())
+          div = item.getByXPath('div/div[3]/div[1]/div[2]/div[2]/div[2]/a')[0]
+          def date = Util.extractDate(div.textContent)
+
+          results << new ImmoResult(this, title, u, description, price, date)
+          nbAdded++
+          totalAdded++
+          logger.debug("Added result title $title, url $u" + ", desc $description, date $date")
+        }
+      }
+
+      logger.debug("added $nbAdded results for page $pageNum, total added $totalAdded")      
+    }
+
+    logger.debug("total added : $totalAdded")
+
     resultsIterator = results.iterator()
   }
 

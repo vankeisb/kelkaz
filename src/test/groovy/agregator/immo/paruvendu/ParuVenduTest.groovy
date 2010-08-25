@@ -29,7 +29,8 @@ public class ParuVenduTest extends GroovyTestCase {
     a.agregate(crit)
 
     def results = listener.results
-    assert results.size() == expectedResultCount
+    def nbResults = results.size()
+    assert nbResults == expectedResultCount
 
     assertFirstResultInPage results[0]    
   }
@@ -46,7 +47,16 @@ public class ParuVenduTest extends GroovyTestCase {
     assert removeSpaces(result.title) == removeSpaces(titleInPage)
   }
 
-  public void testParuVenduLocAppt() {
+  public void testPagination() {
+    doTest(new ImmoCriteria([
+      demand: Demand.RENT,
+      type: Type.APPT,
+      nbRoomsMin: 2,
+      postCode: '06000'
+    ]), 63)
+  }
+
+  public void testLocAppt() {
     doTest(new ImmoCriteria([
       demand: Demand.RENT,
       type: Type.APPT,
@@ -60,7 +70,7 @@ public class ParuVenduTest extends GroovyTestCase {
     ]), 2)
   }
 
-  public void testParuVenduLocMaison() {
+  public void testLocMaison() {
     doTest(new ImmoCriteria([
       demand: Demand.RENT,
       type: Type.MAISON,

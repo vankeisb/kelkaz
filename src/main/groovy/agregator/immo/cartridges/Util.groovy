@@ -2,8 +2,11 @@ package agregator.immo.cartridges
 
 import java.text.SimpleDateFormat
 import java.text.DateFormat
+import agregator.util.Logger
 
 class Util {
+
+  private static final Logger logger = Logger.getLogger(Util.class)
 
   static Date extractDate(String dateStr) {
     if (dateStr==null) {
@@ -25,7 +28,7 @@ class Util {
     } 
   }
 
-  static Integer extractPrice(String priceStr) {
+  static Integer extractInteger(String priceStr) {
     if (priceStr==null) {
       return 0
     }
@@ -47,6 +50,20 @@ class Util {
       }
     } else {
       return 0
+    }
+  }
+
+  static void sleepRandomTime() {
+    Random r = Random.newInstance()
+    int delay = r.nextInt(10000)
+    if (delay<5000) {
+      delay = 10000 - delay
+    }
+    try {
+      logger.debug("Sleeping for $delay ms")
+      Thread.sleep(delay)
+    } catch(Exception e) {
+      // do nothing
     }
   }
 
