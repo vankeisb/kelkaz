@@ -64,7 +64,7 @@ public abstract class Cartridge<C extends Criteria, R extends Result> {
      * and the target of this cartridge, and notofies registered observers on start/results/end.
      * @param criteria the criteria
      */
-    public void agregate(C criteria) {
+    public final void agregate(C criteria) {
         logger.debug(name +  " start aggregating");
         checkAgregation();
         agregating = true;
@@ -76,11 +76,8 @@ public abstract class Cartridge<C extends Criteria, R extends Result> {
 
             // loop on agregation results while we found
             // some and invoke listeners
-            while (hasMoreResults()) {
-                R result = nextResult();
-                logger.debug(name + " result obtained : " + result + ", invoking listeners");
-                invokeListeners(new CartridgeEvent.ResultEvent(result));
-            }
+            logger.debug("calling agregation routine");
+            doAgregate();
 
             // invoke listeners stop
             logger.debug(name + " invoking listeners end");
@@ -92,6 +89,12 @@ public abstract class Cartridge<C extends Criteria, R extends Result> {
             agregating = false;
         }
     }
+
+    /**
+     * To be implemented by concrete subclasses : performs agregation and fires
+     * result events
+     */
+    protected abstract void doAgregate();
 
     /**
      * @return the criteria as passed to the agregate() method
@@ -107,14 +110,7 @@ public abstract class Cartridge<C extends Criteria, R extends Result> {
         return agregator;
     }
 
-    /**
-     * @return the next result, or null if no more results
-     */
-    protected abstract R nextResult();
-
-    /**
-     * @return true if there is more results, false otherwise
-     */
-    protected abstract boolean hasMoreResults();
-
+    protected void fireResultEvent(R result) {
+      invokeListeners(new CartridgeEvent.ResultEvent(result));
+    }
 }

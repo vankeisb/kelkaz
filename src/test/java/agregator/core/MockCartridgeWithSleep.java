@@ -6,13 +6,16 @@ public class MockCartridgeWithSleep extends MockCartridge {
         super(a);
     }
 
-    @Override
-    protected MockResult nextResult() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        return super.nextResult();
-    }
+  @Override
+  protected void doAgregate() {
+      for (MockResult r : results) {
+          try {
+              Thread.sleep(1000);
+          } catch (InterruptedException e) {
+              e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+          }
+          fireResultEvent(r);
+      }
+  }
+
 }

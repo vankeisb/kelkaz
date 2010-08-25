@@ -53,7 +53,7 @@ public class ParuVenduTest extends GroovyTestCase {
       type: Type.APPT,
       nbRoomsMin: 2,
       postCode: '06000'
-    ]), 63)
+    ]), 130)
   }
 
   public void testLocAppt() {

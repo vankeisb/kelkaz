@@ -14,29 +14,13 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
   private static final Logger logger = Logger.getLogger(ParuVenduCartridge.class)
 
-  private Iterator<ImmoResult> resultsIterator = null
-
   private static final String ROOT_SITE = 'http://www.paruvendu.fr'
 
   def ParuVenduCartridge(Agregator agregator) {
     super("ParuVendu", agregator);
   }
 
-
-  def checkTheBox(String name, def form) {
-    def cb = form.getInputByName(name)
-    cb.click()
-  }
-
-  def setInput(String name, def value, def form) {
-    if (value!=null) {
-      def tf = form.getInputByName(name)
-      tf.setValueAttribute(value.toString())
-    }
-  }
-
-  private void init() {
-
+  protected void doAgregate() {
     logger.debug("Building URL")
     def url = new StringBuilder()
     url << ROOT_SITE
@@ -136,7 +120,7 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
           div = item.getByXPath('div/div[3]/div[1]/div[2]/div[2]/div[2]/a')[0]
           def date = Util.extractDate(div.textContent)
 
-          results << new ImmoResult(this, title, u, description, price, date)
+          fireResultEvent(new ImmoResult(this, title, u, description, price, date))
           nbAdded++
           totalAdded++
           logger.debug("Added result title $title, url $u" + ", desc $description, date $date")
@@ -148,21 +132,5 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
     logger.debug("total added : $totalAdded")
 
-    resultsIterator = results.iterator()
-  }
-
-  protected synchronized boolean hasMoreResults() {
-    if (resultsIterator==null) {
-      init()
-    }
-    return resultsIterator.hasNext()
-  }
-
-  protected synchronized ImmoResult nextResult() {
-    if (resultsIterator==null) {
-      init()
-    }
-    return resultsIterator.next()
-  }
-  
+  }  
 }

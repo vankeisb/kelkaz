@@ -58,7 +58,7 @@ public class MockTest extends TestCase {
         MyAgregatorListener l = new MyAgregatorListener();
         a.addListener(l).agregate(new MockCriteria());
         // expected evts : agr start/stop (2) + mock evts (4) + start/stop failing cartridge (2) + result evts (5) + error event (1)
-        assertEquals(15, l.getEvents().size());
+        assertEquals(14, l.getEvents().size());
     }
 
     class EmptyAgregator extends Agregator<MockCriteria,MockResult> {

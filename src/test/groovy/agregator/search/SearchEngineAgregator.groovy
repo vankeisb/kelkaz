@@ -8,7 +8,6 @@ public class SearchEngineAgregator extends Agregator {
 
   protected void createCartridges(List cartridges) {
     cartridges << new GoogleCartridge(this)
-    cartridges << new OrangeCartridge(this)
   }
 
 
