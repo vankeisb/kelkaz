@@ -6,15 +6,22 @@ import agregator.core.Cartridge;
 
 public class ImmoResult extends Result {
 
-    private String url;
-    private String title;
-    private String description;
+    private final String url;
+    private final String title;
+    private final String description;
+    private final Integer price;
 
-    public ImmoResult(Cartridge cartridge, String title, String url, String description) {
+    public ImmoResult(
+      Cartridge cartridge,
+      String title,
+      String url,
+      String description,
+      Integer price) {
         super(cartridge);
         this.title = title;
         this.url = url;
         this.description = description;
+        this.price = price;
     }
 
     public String getTitle() {
@@ -38,22 +45,26 @@ public class ImmoResult extends Result {
         sb.append('}');
         return sb.toString();
     }
-    
-    /*
-    List<String> getPhotosUrls();
 
-    String getDescription();
+  public Integer getPrice() {
+    return price;
+  }
 
-    Date getDate();
+  /*
+  List<String> getPhotosUrls();
 
-    Integer getPrice();
+  String getDescription();
 
-    ImmoCriteria.Country getCountry();
+  Date getDate();
 
-    String getCity();
+  Integer getPrice();
 
-    String getPostCode();
-    */
+  ImmoCriteria.Country getCountry();
+
+  String getCity();
+
+  String getPostCode();
+  */
     
 
 }

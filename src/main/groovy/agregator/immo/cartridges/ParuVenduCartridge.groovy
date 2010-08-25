@@ -103,7 +103,10 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
       def u = ROOT_SITE + lnk.getAttribute('href')
       lnk = item.getByXPath('div/div[3]/div[1]/div[2]/div[4]/div[1]/a')[0]
       def description = lnk.textContent.trim()
-      results << new ImmoResult(this, title, u, description)
+      def div = item.getByXPath('div/div[1]/div[1]')[0]
+      def price = Util.extractPrice(div.getAttribute('title').trim())
+
+      results << new ImmoResult(this, title, u, description, price)
       logger.debug("Added result title $title, url $u" + ", desc $description")
     }
     resultsIterator = results.iterator()
