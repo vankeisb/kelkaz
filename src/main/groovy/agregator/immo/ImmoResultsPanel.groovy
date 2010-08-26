@@ -37,6 +37,8 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
 
   private static final DateFormat DATE_FORMAT = new SimpleDateFormat('dd/MM/yyyy')
 
+  private static final ImageIcon NO_PHOTO = new ImageIcon(ImmoResultsPanel.class.getResource("/no-photo.gif"))
+
   def ImmoResultsPanel() {
     panel = new JPanel()
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS))
@@ -124,10 +126,12 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
             Image img = icon.getImage()
             Image newImg = img.getScaledInstance(120, 80,  Image.SCALE_SMOOTH)
             icon = new ImageIcon(newImg)
+          } else {
+            icon = NO_PHOTO         
           }
           photoLabel.setIcon(icon)
         } catch(Exception e) {
-          photoLabel.setIcon(null) // TODO use default image with appropriate size
+          photoLabel.setIcon(NO_PHOTO)
         }
         panel(constraints: BorderLayout.CENTER, layout: new BL(), background: bgColor) {
           def titleLabel = label(text: r.title, constraints: BorderLayout.NORTH)
