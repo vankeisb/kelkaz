@@ -62,6 +62,10 @@ public class ImmoResult extends Result {
     return date;
   }
 
+  public String getPhotoUrl() {
+    return photoUrl;
+  }
+
   /*
   List<String> getPhotosUrls();
 

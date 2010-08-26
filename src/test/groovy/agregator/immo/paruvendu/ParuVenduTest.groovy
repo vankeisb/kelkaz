@@ -32,7 +32,17 @@ public class ParuVenduTest extends GroovyTestCase {
     def nbResults = results.size()
     assert nbResults == expectedResultCount
 
-    assertFirstResultInPage results[0]    
+    assertFirstResultInPage results[0]
+
+    // check that all photos are different
+    def urls = []
+    results.each { r->
+      if (r.photoUrl) {
+        assert !urls.contains(r.photoUrl)
+        urls << r.photoUrl        
+      }
+    }
+
   }
 
   private void assertFirstResultInPage(ImmoResult result) {

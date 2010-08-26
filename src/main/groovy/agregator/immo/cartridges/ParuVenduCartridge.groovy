@@ -84,8 +84,6 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     webClient.setJavaScriptEnabled(false)
     def p = webClient.getPage(url.toString())
 
-    Util.sleepRandomTime()
-
     def spanNbAnnonces = p.getByXPath('/html/body/div[4]/div/div[3]/div/div[2]/div/div/h1/div/span')[0]
     Integer nbAnnonces = Util.extractInteger(spanNbAnnonces.textContent)
     Integer nbPages = 1
@@ -101,10 +99,10 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     for (int pageNum=1 ; pageNum<=nbPages ; pageNum++) {
       logger.debug("Handling page $pageNum")
       if (pageNum>1) {
+        Util.sleepRandomTime()
         String u = url.toString() + "&p=$pageNum"
         logger.debug("Getting page $pageNum, url=$u")
         p = webClient.getPage(u)
-        Util.sleepRandomTime()        
       }
       int nbAdded = 0
       def listItems = p.getByXPath("//div[@class='au_boxListe_C']")
@@ -114,12 +112,18 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
           def title = lnk.textContent.trim()
           def u = ROOT_SITE + lnk.getAttribute('href')
           lnk = item.getByXPath('div/div[3]/div[1]/div[2]/div[4]/div[1]/a')[0]
-          def description = lnk.textContent.trim()
+          String description = lnk.textContent.trim()
+          if (description) {
+            int indexOfSuffix = description.indexOf("<<")
+            if (indexOfSuffix>0) {
+              description = description.substring(0, indexOfSuffix)
+            }
+          }
           def div = item.getByXPath('div/div[1]/div[1]')[0]
           def price = Util.extractInteger(div.getAttribute('title').trim())
           div = item.getByXPath('div/div[3]/div[1]/div[2]/div[2]/div[2]/a')[0]
           def date = Util.extractDate(div.textContent)
-          def img = item.getByXPath("//div[@class='au_cdr_photo']/a/img")[0]
+          def img = item.getByXPath('div/div[3]/div[1]/div[1]/a/img')[0]
           def imgUrl = null
           if (img!=null) {
             imgUrl = img.getAttribute('src')
@@ -130,7 +134,7 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
           logger.debug("Added result title $title, url $u" + ", desc $description, date $date")
         }
       }
-
+    
       logger.debug("added $nbAdded results for page $pageNum, total added $totalAdded")      
     }
 
