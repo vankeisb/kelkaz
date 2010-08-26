@@ -1,7 +1,7 @@
 package agregator.immo
 
 import agregator.ui.AgregatorFrame
-import agregator.immo.ImmoSearchPanel
+
 import javax.swing.SwingUtilities
 import javax.swing.JFrame
 import javax.swing.UIManager
@@ -36,7 +36,7 @@ public class LaunchImmo {
           System.out.println("Substance failed to initialize");
         }
       }
-      def f = new AgregatorFrame(new ImmoAgregatorFactory(), new ImmoSearchPanel(), new ImmoResultsPanel4())
+      def f = new AgregatorFrame(new ImmoAgregatorFactory(), new ImmoSearchPanel(), new ImmoResultsPanel())
       f.setSize(1000, 800);
       f.setVisible(true);
     }
