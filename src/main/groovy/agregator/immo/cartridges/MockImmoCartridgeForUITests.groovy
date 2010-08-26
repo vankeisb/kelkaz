@@ -20,7 +20,7 @@ class MockImmoCartridgeForUITests extends Cartridge<ImmoCriteria, ImmoResult> {
       String photoUrl = "http://media.xircles.codehaus.org/_projects/groovy/_logos/medium.png"
       ImmoResult r = new ImmoResult(this, title, url, description, price, date, photoUrl)
       fireResultEvent(r)
-      if (i%5==0) {
+      if (i%2==0) {
         System.out.println("Sleeping...")
         Thread.sleep(1000)
       }

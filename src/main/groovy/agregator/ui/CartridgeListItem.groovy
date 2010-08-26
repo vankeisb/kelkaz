@@ -27,15 +27,15 @@ public class CartridgeListItem extends JPanel {
   }
 
   public void loading() {
-    setIconFromStr '/bigrotation2.gif'
+    setIconFromStr '/ajax-loader.gif'
   }
 
   public void stopped() {
-    setIconFromStr '/Ok-32x32.png'
+    setIconFromStr '/Ok-16x16.png'
   }
 
   public void error() {
-    setIconFromStr '/Error-32x32.png' 
+    setIconFromStr '/Error-16x16.png' 
   }
 
   public void incrementResultCount() {
