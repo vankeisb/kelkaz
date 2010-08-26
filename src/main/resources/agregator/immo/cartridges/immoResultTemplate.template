@@ -1,0 +1,20 @@
+<html><body>
+<% results.each { result ->
+%>
+<table>
+    <tr>
+        <td>
+            <img src="${result.photoUrl}" alt="photo"/>
+        </td>
+        <td>
+            <h2>${result.title}</h2>
+            <p>${result.description}</p>
+            <p>${result.date} - ${result.price}</p>
+        </td>
+    </tr>    
+</table>
+
+<% } %>
+
+
+</body></html>
