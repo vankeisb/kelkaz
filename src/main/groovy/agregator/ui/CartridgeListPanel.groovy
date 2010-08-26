@@ -23,12 +23,12 @@ public class CartridgeListPanel extends JPanel implements AgregatorListener {
       def cartridge = ce.source
       if (ce instanceof CartridgeEvent.StartedEvent) {
         // cartridge started, add cartridge to list
+        def cmp = new CartridgeListItem(cartridge)
+        items.put(cartridge, cmp)
+        cmp.loading()
         SwingUtilities.invokeLater {
-          def cmp = new CartridgeListItem(cartridge)
-          items.put(cartridge, cmp)
           this.add(cmp)
-          cmp.loading()
-          validate()
+          revalidate()
         }
       } else if (ce instanceof CartridgeEvent.ResultEvent) {
         // cartridge result, increment count for the cartridge
@@ -56,7 +56,7 @@ public class CartridgeListPanel extends JPanel implements AgregatorListener {
     items = new ConcurrentHashMap()
     SwingUtilities.invokeLater {
       removeAll()
-      validate()
+      revalidate()
     }
   }
 

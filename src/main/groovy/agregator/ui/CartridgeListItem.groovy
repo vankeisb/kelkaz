@@ -3,19 +3,27 @@ package agregator.ui
 import javax.swing.JLabel
 import javax.swing.ImageIcon
 import agregator.core.Cartridge
+import java.awt.BorderLayout
+import javax.swing.JPanel
 
-public class CartridgeListItem extends JLabel {
+public class CartridgeListItem extends JPanel {
 
   private Cartridge cartridge
   int resultCount = 0
+  private JLabel iconLabel = new JLabel(' ')
+  private JLabel label = new JLabel()
 
   public CartridgeListItem(Cartridge c) {
     this.cartridge = c
-    setText("$c.name (0)")
+    setLayout(new BorderLayout())
+    add(iconLabel, BorderLayout.WEST)
+    add(label, BorderLayout.CENTER)
+    label.text = "$c.name (0)"
+    label.icon = c.icon
   }
 
   private void setIconFromStr(String s) {
-    setIcon(new ImageIcon(getClass().getResource(s)))
+    iconLabel.icon = new ImageIcon(getClass().getResource(s))
   }
 
   public void loading() {
@@ -32,7 +40,7 @@ public class CartridgeListItem extends JLabel {
 
   public void incrementResultCount() {
     resultCount++
-    setText("$cartridge.name ($resultCount)") 
+    label.text = "$cartridge.name ($resultCount)" 
   }
 
 }

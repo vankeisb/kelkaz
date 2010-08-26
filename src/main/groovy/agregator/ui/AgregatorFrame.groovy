@@ -48,7 +48,7 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
           panel(constraints:BL.CENTER) {
             boxLayout(axis:BoxLayout.Y_AXIS)
             spacer()
-            button(text: 'Agregate',
+            button(id:'btnAgregate', text: 'Agregate',
                     actionPerformed : { event ->  agregate() },
                     alignmentX : Component.RIGHT_ALIGNMENT
             )
@@ -72,6 +72,7 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
 
   private void agregate() {
     // start agregator in new thread
+    swing.btnAgregate.enabled = false
     cartridgeListPanel.clear()
     Thread.start {
       agregatorFactory.create().
@@ -80,6 +81,7 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
         agregate(searchPanel.criteria);
 //        removeAllListeners()
     }
+
   }
 
   public void onEvent(AgregatorEvent event) {
@@ -88,6 +90,8 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
       resultsPanel.addResult(event.cartridgeEvent.getResult())
     } else if (event instanceof AgregatorEvent.StartedEvent) {
       resultsPanel.clear()
+    } else if (event instanceof AgregatorEvent.EndedEvent) {
+      swing.btnAgregate.enabled = true      
     }
   }
 

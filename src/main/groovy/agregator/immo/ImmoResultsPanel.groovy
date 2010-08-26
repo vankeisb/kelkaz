@@ -29,7 +29,9 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
   private JComponent component
   private JPanel panel
   private JLabel statusLabel
+  private JPanel headerPanel
   private int nbResults = 0
+  private def resultsAndPanels = [:] // result/component map used to remove from list
 
   private ResourceBundle messages = ResourceBundle.getBundle('MessagesBundle');  
 
@@ -45,12 +47,70 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
     component.add(scrollPane, BL.CENTER)
     statusLabel = new JLabel()
     statusLabel.horizontalAlignment = JLabel.RIGHT
-    component.add(statusLabel, BL.SOUTH)    
+    component.add(statusLabel, BL.SOUTH)
+
+    // header panel
+    headerPanel = new SwingBuilder().panel(
+            visible: false,
+            border: BorderFactory.createEmptyBorder(5,5,5,5)) {
+      boxLayout(axis: BoxLayout.X_AXIS)
+      label('Trier par ')
+      widget(new HyperLink("prix", {
+        sortPrice()
+      }))
+      label(' | ')
+      widget(new HyperLink("date", {
+        sortDate()
+      }))
+      label(' | ')
+      widget(new HyperLink("fournisseur", {
+        sortCartridge()
+      }))
+    }
+    component.add(headerPanel, BL.NORTH)
+  }
+
+  private def doSort(Closure comparator) {
+    SwingUtilities.invokeLater {
+      panel.removeAll()
+      def results = resultsAndPanels.keySet().sort({})
+      results.sort(comparator).each { r ->
+        def cmp = resultsAndPanels.get(r)
+        if (cmp) {
+          panel.add(cmp)
+          panel.revalidate()
+        }
+      }
+    }
+  }
+
+  private def sortPrice() {
+    doSort  { a,b ->
+      def pA = a.price == null ? 0 : a.price
+      def pB = b.price == null ? 0 : b.price
+      return pA.compareTo(pB)
+    }
+  }
+
+  private def sortDate() {
+    doSort  { a,b ->
+      def dA = a.date == null ? new Date(0L) : a.date
+      def dB = b.date == null ? new Date(0L) : b.date
+      return dA.compareTo(dB)
+    }
+  }
+
+  private def sortCartridge() {
+    doSort  { a,b ->
+      def cA = a.cartridge.name
+      def cB = b.cartridge.name
+      return cA.compareTo(cB)
+    }
   }
 
   private def createResultComponent(ImmoResult r) {
     def bgColor = Color.WHITE
-    return new SwingBuilder().panel(
+    def cmp = new SwingBuilder().panel(
             layout: new BL(),
             border: BorderFactory.createEmptyBorder(2,2,2,2),
             maximumSize: new Dimension(2000, 120),
@@ -100,28 +160,49 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
       }
       panel(constraints: BL.SOUTH, background: bgColor, border: BorderFactory.createEmptyBorder(2,5,2,2)) {
         boxLayout(axis:BoxLayout.X_AXIS)
-        widget(new HyperLink("ouvrir", {
+        widget(new HyperLink("ouvrir", r.cartridge.icon, JLabel.LEFT, {
           fireResultSelected r
+        }))
+        label(' | ')
+        widget(new HyperLink("exclure", {
+          // for now just remove from the view, later on
+          // we might need persistent storage for this
+            def cmp = resultsAndPanels[r]
+            if (cmp) {
+              resultsAndPanels.remove(r)
+              SwingUtilities.invokeLater {
+                panel.remove cmp
+                panel.revalidate()
+              }
+            }
         }))
       }
     }
+    resultsAndPanels[r] = cmp
+    return cmp
   }
 
   void addResult(ImmoResult r) {
+    if (!headerPanel.visible) {
+      headerPanel.visible = true
+    }
     nbResults++
+    def newPanel = createResultComponent(r)
+    def s = messages.getString('status.results.count')
     SwingUtilities.invokeLater {
-      def newPanel = createResultComponent(r)
       panel.add(newPanel)
-      def s = messages.getString('status.results.count')
       statusLabel.text = "$nbResults $s"
+      panel.revalidate()
     }
   }
 
   void clear() {
     nbResults = 0
+    resultsAndPanels.clear()
     SwingUtilities.invokeLater {
       panel.removeAll()
       statusLabel.text = null
+      headerPanel.visible = false
     }
   }
 

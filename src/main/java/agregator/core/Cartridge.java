@@ -2,6 +2,9 @@ package agregator.core;
 
 import agregator.util.Logger;
 
+import javax.swing.*;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +17,8 @@ import java.util.Collections;
  */
 public abstract class Cartridge<C extends Criteria, R extends Result> {
 
+    private static final String DEFAULT_ICON_NAME = "/defaultCatridgeIcon.gif";
+
     private static final Logger logger = Logger.getLogger(Cartridge.class);
 
     private final List<CartridgeListener> listeners = Collections.synchronizedList(new ArrayList<CartridgeListener>());
@@ -21,6 +26,8 @@ public abstract class Cartridge<C extends Criteria, R extends Result> {
     private final Agregator<C,R> agregator;
     private final String name;
     private volatile boolean agregating = false;
+
+    private ImageIcon imageIcon = null;
 
     protected Cartridge(String name, Agregator<C,R> agregator) {
         this.name = name;
@@ -112,5 +119,20 @@ public abstract class Cartridge<C extends Criteria, R extends Result> {
 
     protected void fireResultEvent(R result) {
       invokeListeners(new CartridgeEvent.ResultEvent(result));
+    }
+
+    public ImageIcon getIcon() {
+        if (imageIcon==null) {
+            String iconName = "/" + getClass().getName() + ".gif";
+            URL u = getClass().getResource(iconName);
+            if (u==null) {
+                u = getClass().getResource(DEFAULT_ICON_NAME);
+                if (u==null) {
+                    throw new IllegalStateException("Could not find icon for cartridge " + this);
+                }
+            }
+            imageIcon = new ImageIcon(u);
+        }
+        return imageIcon;
     }
 }
