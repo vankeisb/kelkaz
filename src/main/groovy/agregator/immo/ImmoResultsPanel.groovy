@@ -18,6 +18,8 @@ import java.text.DateFormat
 import javax.swing.JScrollPane
 import javax.swing.SwingUtilities
 import java.awt.BorderLayout
+import javax.swing.JFrame
+import javax.swing.ScrollPaneConstants
 
 
 class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
@@ -31,6 +33,8 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
     panel = new JPanel()
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS))
     component = new JScrollPane(panel)
+    component.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
   }
 
   private def createResultComponent(ImmoResult r) {
@@ -38,7 +42,8 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
     return new SwingBuilder().panel(
             layout: new BL(),
             border: BorderFactory.createEmptyBorder(2,2,2,2),
-            maximumSize: new Dimension(1500, 88)) {
+            maximumSize: new Dimension(2000, 88),
+            minimumSize: new Dimension(100, 88)) {
       panel(constraints: BorderLayout.CENTER, layout: new BL(), background: bgColor) {
         def photoLabel = label(constraints: BorderLayout.WEST, border: BorderFactory.createEmptyBorder(2,2,2,2))
         ImageIcon icon = null
@@ -55,9 +60,14 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
         }
         panel(constraints: BorderLayout.CENTER, layout: new BL(), background: bgColor) {
           label(text: r.title, constraints: BorderLayout.NORTH)
-          scrollPane(constraints: BorderLayout.CENTER,border: BorderFactory.createEmptyBorder()) {
-            editorPane(text: r.description, editable: false)
-          }
+          editorPane(
+                    constraints: BorderLayout.CENTER,
+                    text: r.description,
+                    editable: false,
+                    border: BorderFactory.createEmptyBorder(),
+                    minimumSize: new Dimension(100, 30),
+                    maximumSize: new Dimension(200, 30),
+          )
           def bottomPane = new JPanel(background: bgColor)
           bottomPane.setLayout(new BoxLayout(bottomPane, BoxLayout.LINE_AXIS))
           bottomPane.add(new JLabel("Prix"))
@@ -76,8 +86,8 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
   }
 
   void addResult(ImmoResult r) {
-    def newPanel = createResultComponent(r)
     SwingUtilities.invokeLater {
+      def newPanel = createResultComponent(r)
       panel.add(newPanel)
     }
   }
@@ -90,6 +100,23 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
 
   JComponent getComponent() {
     return component
+  }
+
+  public static void main(String[] args) {
+    JFrame f = new JFrame()
+    f.setLayout new BL()
+    ImmoResultsPanel i = new ImmoResultsPanel()
+    i.addResult(new ImmoResult(
+                    null,
+                    "Location blah blah blah blah blah",
+                    "http://abc.com/SQDQDQSDDQSDSQDSQSDSQDSQ",
+                    "PROCHE PROMENADE/ NEGRESCO loue pr 2 étudiants bel appart 3P 75m2 tt conf insonorisé clim 2 balcons vue mer colline 1.080€CC Réf exigées T. 06.59.23.73.72",
+                    1080,
+                    new Date(),
+                    'http://www.coderanch.com/templates/default/images/moosefly.gif'))
+    f.contentPane.add(i.getComponent())
+    f.pack()
+    f.setVisible true
   }
 
 

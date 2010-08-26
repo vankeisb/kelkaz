@@ -16,7 +16,8 @@ import javax.swing.UIManager
 
 public class LaunchImmo {
 
-  private static final String LAF = "org.jvnet.substance.skin.SubstanceBusinessLookAndFeel";
+//  private static final String LAF = "org.jvnet.substance.skin.SubstanceBusinessLookAndFeel";
+  private static final String LAF = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel"
 
   public static void main(String[] args) {
     SwingUtilities.invokeLater {
