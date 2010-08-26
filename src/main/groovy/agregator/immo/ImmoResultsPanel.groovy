@@ -20,21 +20,31 @@ import javax.swing.SwingUtilities
 import java.awt.BorderLayout
 import javax.swing.JFrame
 import javax.swing.ScrollPaneConstants
+import java.awt.Font
 
 
 class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
 
   private JComponent component
   private JPanel panel
+  private JLabel statusLabel
+  private int nbResults = 0
+
+  private ResourceBundle messages = ResourceBundle.getBundle('MessagesBundle');  
 
   private static final DateFormat DATE_FORMAT = new SimpleDateFormat('dd/MM/yyyy')
 
   def ImmoResultsPanel() {
     panel = new JPanel()
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS))
-    component = new JScrollPane(panel)
-    component.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
+    component = new JPanel(layout: new BL())
+    def scrollPane = new JScrollPane(panel)
+    scrollPane.horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+    scrollPane.border = BorderFactory.createEmptyBorder()
+    component.add(scrollPane, BL.CENTER)
+    statusLabel = new JLabel()
+    statusLabel.horizontalAlignment = JLabel.RIGHT
+    component.add(statusLabel, BL.SOUTH)    
   }
 
   private def createResultComponent(ImmoResult r) {
@@ -42,10 +52,10 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
     return new SwingBuilder().panel(
             layout: new BL(),
             border: BorderFactory.createEmptyBorder(2,2,2,2),
-            maximumSize: new Dimension(2000, 88),
-            minimumSize: new Dimension(100, 88)) {
+            maximumSize: new Dimension(2000, 100),
+            minimumSize: new Dimension(100, 100)) {
       panel(constraints: BorderLayout.CENTER, layout: new BL(), background: bgColor) {
-        def photoLabel = label(constraints: BorderLayout.WEST, border: BorderFactory.createEmptyBorder(2,2,2,2))
+        def photoLabel = label(constraints: BorderLayout.WEST, border: BorderFactory.createEmptyBorder(10,10,10,10))
         ImageIcon icon = null
         try {
           if (r.photoUrl!=null) {
@@ -59,7 +69,9 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
           photoLabel.setIcon(null) // TODO use image with appropriate size
         }
         panel(constraints: BorderLayout.CENTER, layout: new BL(), background: bgColor) {
-          label(text: r.title, constraints: BorderLayout.NORTH)
+          def titleLabel = label(text: r.title, constraints: BorderLayout.NORTH)
+          def font = titleLabel.font
+          titleLabel.font = new Font(font.name, font.style | Font.BOLD, font.size)
           editorPane(
                     constraints: BorderLayout.CENTER,
                     text: r.description,
@@ -70,15 +82,18 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
           )
           def bottomPane = new JPanel(background: bgColor)
           bottomPane.setLayout(new BoxLayout(bottomPane, BoxLayout.LINE_AXIS))
-          bottomPane.add(new JLabel("Prix"))
+          def dateLabel = new JLabel(r.date==null ? "" : DATE_FORMAT.format(r.date))
+          bottomPane.add(dateLabel)
+          bottomPane.add(Box.createRigidArea(new Dimension(5,0)));
+          bottomPane.add(new JLabel("-"))
           bottomPane.add(Box.createRigidArea(new Dimension(5,0)));
           def priceLabel = new JLabel(r.price==null ? "" : Integer.toString(r.price))
           bottomPane.add(priceLabel)
-          bottomPane.add(Box.createRigidArea(new Dimension(20,0)));
-          bottomPane.add(new JLabel("Date"))
-          bottomPane.add(Box.createRigidArea(new Dimension(5,0)));
-          def dateLabel = new JLabel(r.date==null ? "" : DATE_FORMAT.format(r.date))
-          bottomPane.add(dateLabel)
+          bottomPane.add(Box.createRigidArea(new Dimension(3, 0)));
+          def euroSign = new JLabel(
+                  text: messages.getString("currency.euro"),
+                  horizontalAlignment: JLabel.LEFT)          
+          bottomPane.add(euroSign)
           widget(widget: bottomPane, constraints: BorderLayout.SOUTH)
         }
       }
@@ -86,15 +101,20 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
   }
 
   void addResult(ImmoResult r) {
+    nbResults++
     SwingUtilities.invokeLater {
       def newPanel = createResultComponent(r)
       panel.add(newPanel)
+      def s = messages.getString('status.results.count')
+      statusLabel.text = "$nbResults $s"
     }
   }
 
   void clear() {
+    nbResults = 0
     SwingUtilities.invokeLater {
       panel.removeAll()
+      statusLabel.text = null
     }
   }
 
