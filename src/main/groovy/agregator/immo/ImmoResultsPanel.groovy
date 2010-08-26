@@ -21,6 +21,7 @@ import java.awt.BorderLayout
 import javax.swing.JFrame
 import javax.swing.ScrollPaneConstants
 import java.awt.Font
+import agregator.ui.HyperLink
 
 
 class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
@@ -52,8 +53,8 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
     return new SwingBuilder().panel(
             layout: new BL(),
             border: BorderFactory.createEmptyBorder(2,2,2,2),
-            maximumSize: new Dimension(2000, 100),
-            minimumSize: new Dimension(100, 100)) {
+            maximumSize: new Dimension(2000, 120),
+            minimumSize: new Dimension(100, 120)) {
       panel(constraints: BorderLayout.CENTER, layout: new BL(), background: bgColor) {
         def photoLabel = label(constraints: BorderLayout.WEST, border: BorderFactory.createEmptyBorder(10,10,10,10))
         ImageIcon icon = null
@@ -66,7 +67,7 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
           }
           photoLabel.setIcon(icon)
         } catch(Exception e) {
-          photoLabel.setIcon(null) // TODO use image with appropriate size
+          photoLabel.setIcon(null) // TODO use default image with appropriate size
         }
         panel(constraints: BorderLayout.CENTER, layout: new BL(), background: bgColor) {
           def titleLabel = label(text: r.title, constraints: BorderLayout.NORTH)
@@ -96,6 +97,12 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
           bottomPane.add(euroSign)
           widget(widget: bottomPane, constraints: BorderLayout.SOUTH)
         }
+      }
+      panel(constraints: BL.SOUTH, background: bgColor, border: BorderFactory.createEmptyBorder(2,5,2,2)) {
+        boxLayout(axis:BoxLayout.X_AXIS)
+        widget(new HyperLink("ouvrir", {
+          fireResultSelected r
+        }))
       }
     }
   }

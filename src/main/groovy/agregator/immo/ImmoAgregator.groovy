@@ -12,8 +12,8 @@ import agregator.immo.cartridges.MockImmoCartridgeForUITests
 public class ImmoAgregator extends Agregator {
 
   protected void createCartridges(List cartridges) {
-    cartridges << new ParuVenduCartridge(this)
-//    cartridges << new MockImmoCartridgeForUITests(this)
+//    cartridges << new ParuVenduCartridge(this)
+    cartridges << new MockImmoCartridgeForUITests(this)
 //    cartridges << new LeboncoinCartridge(this)
 //    cartridges << new SeLogerCartridge(this)
 //    cartridges << new OrpiCartridge(this)
