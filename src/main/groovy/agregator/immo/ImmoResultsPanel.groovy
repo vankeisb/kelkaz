@@ -25,14 +25,14 @@ import javax.swing.ScrollPaneConstants
 class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
 
   private JComponent component
-  private JPanel panel
+  private JPanel resultsPanel
 
   private static final DateFormat DATE_FORMAT = new SimpleDateFormat('dd/MM/yyyy')
 
   def ImmoResultsPanel() {
-    panel = new JPanel()
-    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS))
-    component = new JScrollPane(panel)
+    resultsPanel = new JPanel()
+    resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS))
+    component = new JScrollPane(resultsPanel)
     component.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
   }
@@ -88,13 +88,13 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
   void addResult(ImmoResult r) {
     SwingUtilities.invokeLater {
       def newPanel = createResultComponent(r)
-      panel.add(newPanel)
+      resultsPanel.add(newPanel)
     }
   }
 
   void clear() {
     SwingUtilities.invokeLater {
-      panel.removeAll()
+      resultsPanel.removeAll()
     }
   }
 
