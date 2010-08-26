@@ -17,7 +17,7 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
   private static final String ROOT_SITE = 'http://www.paruvendu.fr'
 
   def ParuVenduCartridge(Agregator agregator) {
-    super("ParuVendu", agregator);
+    super("www.paru-vendu.fr", agregator);
   }
 
   protected void doAgregate() {

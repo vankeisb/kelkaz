@@ -5,20 +5,30 @@ import javax.swing.ImageIcon
 import agregator.core.Cartridge
 import java.awt.BorderLayout
 import javax.swing.JPanel
+import javax.swing.BoxLayout
+import javax.swing.BorderFactory
 
 public class CartridgeListItem extends JPanel {
 
   private Cartridge cartridge
   int resultCount = 0
   private JLabel iconLabel = new JLabel(' ')
-  private JLabel label = new JLabel()
+  private HyperLink label
+  private JLabel countLabel = new JLabel('')
 
   public CartridgeListItem(Cartridge c) {
     this.cartridge = c
-    setLayout(new BorderLayout())
-    add(iconLabel, BorderLayout.WEST)
-    add(label, BorderLayout.CENTER)
-    label.text = "$c.name (0)"
+    this.border = BorderFactory.createEmptyBorder(5,5,5,5)
+    this.alignmentX = LEFT_ALIGNMENT
+    label = new HyperLink('', {
+      def s = "http://$c.name"
+      java.awt.Desktop.getDesktop().browse( new URL( s ).toURI() )      
+    })
+    setLayout(new BoxLayout(this, BoxLayout.X_AXIS))
+    add(iconLabel)
+    add(label)
+    add(countLabel)
+    label.text = "$c.name"
     label.icon = c.icon
   }
 
@@ -40,7 +50,7 @@ public class CartridgeListItem extends JPanel {
 
   public void incrementResultCount() {
     resultCount++
-    label.text = "$cartridge.name ($resultCount)" 
+    countLabel.text = " ($resultCount)" 
   }
 
 }
