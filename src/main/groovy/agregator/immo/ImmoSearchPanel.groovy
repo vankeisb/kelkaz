@@ -15,16 +15,13 @@ import javax.swing.border.TitledBorder
 
 import javax.swing.JLabel
 
-import java.awt.Dimension
-
 import javax.swing.BorderFactory
 import javax.swing.border.Border
 import java.awt.Font
 
 import javax.swing.JRadioButton
 import javax.swing.JTextField
-import agregator.ui.PanelStacker
-import javax.swing.ButtonGroup
+import static agregator.ui.PanelStacker.*
 
 public class ImmoSearchPanel implements SearchPanel {
 
@@ -37,40 +34,6 @@ public class ImmoSearchPanel implements SearchPanel {
     Font f = b.getTitleFont()
     b.titleFont = new Font(f.name, f.style | Font.BOLD, f.size + fontSizeIncrement)
     return b
-  }
-
-  static int tfHeight = new JTextField().height
-
-  private JTextField createTextField(int prefWidth) {
-    def min = new Dimension(50, tfHeight)
-    def max = new Dimension(150, tfHeight)
-    def pref = new Dimension(prefWidth, tfHeight)
-    new JTextField(minimumSize:min, maximumSize:max, preferredSize: pref)
-  }
-
-  private JTextField createTextField() {
-    return createTextField(100)
-  }
-
-  private def createFormLabel(String text) {
-    new JLabel(text:text, border: BorderFactory.createEmptyBorder(2,2,2,4))
-  }
-
-  private def createSeparatorLabel(String text) {
-    def l = new JLabel(text:text, border: BorderFactory.createEmptyBorder(8,0,4,0))
-    l.font = new Font(l.font.name, l.font.style | Font.BOLD, l.font.size + 4)
-    return l
-  }
-
-  private def createSeparator() {
-    Dimension d = new Dimension(8,8)
-    new JLabel(text:'', preferredSize: d, maximumSize: d, minimumSize: d)
-  }
-
-  private def groupButtons(buttons) {
-    ButtonGroup g = new ButtonGroup()
-    buttons.each { g.add it }
-    return g
   }
 
   JRadioButton radioLoc = new JRadioButton(text: 'Location', selected: true)
@@ -91,55 +54,55 @@ public class ImmoSearchPanel implements SearchPanel {
     groupButtons([radioLoc, radioVente])
     groupButtons([radioAppt, radioMaison])
 
-    def p = PanelStacker.stackPanels([
+    def p = stackPanels([
             createSeparatorLabel('Type'),
-            PanelStacker.stackPanels([radioLoc, radioVente], BorderLayout.WEST, BorderFactory.createEmptyBorder(0, 10, 0, 0)),
-            PanelStacker.stackPanels([radioAppt, radioMaison], BorderLayout.WEST, BorderFactory.createEmptyBorder(0, 10, 0, 0)),
+            addBorder(stackPanels([radioLoc, radioVente], BorderLayout.WEST), BorderFactory.createEmptyBorder(0, 10, 0, 0)),
+            addBorder(stackPanels([radioAppt, radioMaison], BorderLayout.WEST), BorderFactory.createEmptyBorder(0, 10, 0, 0)),
 
             createSeparator(),
 
             createSeparatorLabel('Nombre de pieces'),
-            PanelStacker.stackPanels([
+            addBorder(stackPanels([
                     createFormLabel('Min'),
                     tfNbPiecesMin,
                     createSeparator(),
                     createFormLabel('Max'),
                     tfNbPiecesMax,
                     new JLabel(' ') // stretches
-            ], BorderLayout.WEST, BorderFactory.createEmptyBorder(0, 10, 0, 0)),
+            ], BorderLayout.WEST), BorderFactory.createEmptyBorder(0, 10, 0, 0)),
 
             createSeparator(),
 
             createSeparatorLabel('Surface'),
-            PanelStacker.stackPanels([
+            addBorder(stackPanels([
                     createFormLabel('Min'),
                     tfSurfaceMin,
                     createSeparator(),
                     createFormLabel('Max'),
                     tfSurfaceMax,
                     new JLabel(' ') // stretches
-            ], BorderLayout.WEST, BorderFactory.createEmptyBorder(0, 10, 0, 0)),
+            ], BorderLayout.WEST), BorderFactory.createEmptyBorder(0, 10, 0, 0)),
 
             createSeparator(),
 
             createSeparatorLabel('Prix'),
-            PanelStacker.stackPanels([
+            addBorder(stackPanels([
                     createFormLabel('Min'),
                     tfPriceMin,
                     createSeparator(),                    
                     createFormLabel('Max'),
                     tfPriceMax,
                     new JLabel(' ') // stretches
-            ], BorderLayout.WEST, BorderFactory.createEmptyBorder(0, 10, 0, 0)),
+            ], BorderLayout.WEST), BorderFactory.createEmptyBorder(0, 10, 0, 0)),
 
             createSeparator(),
 
             createSeparatorLabel('Localisation'),
-            PanelStacker.stackPanels([
+            addBorder(stackPanels([
                     createFormLabel('Code Postal'),
                     tfCodePostal,
                     new JLabel(' ') // stretches
-            ], BorderLayout.WEST, BorderFactory.createEmptyBorder(0, 10, 0, 0)),
+            ], BorderLayout.WEST), BorderFactory.createEmptyBorder(0, 10, 0, 0)),
 
             createSeparator()
     ], BorderLayout.NORTH)

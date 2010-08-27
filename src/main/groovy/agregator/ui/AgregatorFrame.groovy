@@ -9,11 +9,14 @@ import java.awt.Color
 import javax.swing.ImageIcon
 import javax.swing.JButton
 import java.awt.event.ActionListener
-import java.awt.FlowLayout
+
 import javax.swing.JPanel
 import javax.swing.JLabel
 import javax.swing.BorderFactory
 import javax.swing.JSeparator
+import javax.swing.SwingUtilities
+import agregator.immo.ImmoRightPanel
+import static agregator.ui.PanelStacker.*
 
 public class AgregatorFrame extends JFrame implements AgregatorListener, ResultSelectionListener {
 
@@ -37,6 +40,7 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
   }
 
   private JButton btnAgregate
+  private JPanel rightPanel = new JPanel(layout: new BL())
 
   private void createUI() {
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
@@ -46,8 +50,6 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
     btnAgregate = new JButton(text:'Rechercher')
     btnAgregate.addActionListener({ e ->
       agregate() } as ActionListener)
-
-    JPanel btnWrapperPanel = new JPanel(layout: new FlowLayout())
 
     setContentPane(swing.panel(layout: new BL()) {
       // banner
@@ -60,21 +62,33 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
       // content
       splitPane(
               constraints: BL.CENTER,
-              leftComponent: PanelStacker.stackPanels([
+              leftComponent: stackPanels([
                       searchPanel.getComponent(),
-                      PanelStacker.stackPanels([btnAgregate, new JLabel()], BL.EAST, BorderFactory.createEmptyBorder(4,4,10,4)),
+                      addBorder(stackPanels([btnAgregate, new JLabel()], BL.EAST), BorderFactory.createEmptyBorder(4,4,10,4)),
                       new JSeparator(),
                       cartridgeListPanel
                     ], BL.NORTH),
-              rightComponent: resultsPanel.getComponent()
+              rightComponent: rightPanel
       )
+
+      // feed right panel with welcome text
+      rightPanel.removeAll()
+
+      // home page
+      // need to create an agregator in order to
+      // have access to crtridges... pretty ugly
+      rightPanel.add(ImmoRightPanel.createImmoRightPanel(agregatorFactory.create()), BL.CENTER)
     })
   }
 
   private void agregate() {
     // start agregator in new thread
-    btnAgregate.enabled = false
     cartridgeListPanel.clear()
+    SwingUtilities.invokeLater {
+      btnAgregate.enabled = false
+      rightPanel.removeAll()
+      rightPanel.add(resultsPanel.component, BL.CENTER)
+    }
     Thread.start {
       try {
         agregatorFactory.create().

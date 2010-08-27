@@ -10,8 +10,12 @@ class MockImmoCartridgeForUITests extends Cartridge<ImmoCriteria, ImmoResult> {
     super("MockImmoCartridgeForUITests", agregator);
   }
 
+  def MockImmoCartridgeForUITests(name, agregator) {
+    super(name, agregator);
+  }
+
   protected void doAgregate() {
-    for (i in 1..5) {
+    for (i in 1..50) {
       String title = "The title of result $i"
       String url = "http://dummy.org/$i"
       String description = "this is the description for $i it can be a quite long bunch of text blah blah blah blah and foo bar and baz again if you want !\nsome other line"

@@ -37,6 +37,10 @@ public abstract class Agregator<C extends Criteria, R extends Result> {
         doneSignal = new CountDownLatch(this.cartridges.size());
     }
 
+    public List<Cartridge<C,R>> getCartridges() {
+        return Collections.unmodifiableList(cartridges);
+    }
+
     protected abstract void createCartridges(List<Cartridge<C,R>> cartridges);
 
     private void checkAgregating() {
