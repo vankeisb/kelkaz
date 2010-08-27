@@ -18,26 +18,27 @@ public class LaunchImmo {
 
 //  private static final String LAF = "org.jvnet.substance.skin.SubstanceBusinessLookAndFeel";
   private static final String LAF = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel"
+//  private static final String LAF = "com.seaglasslookandfeel.SeaGlassLookAndFeel"
 
   public static void main(String[] args) {
     SwingUtilities.invokeLater {
       JFrame.setDefaultLookAndFeelDecorated(true);
       // detect substance look and feel
-      boolean substanceAvailable = false;
+      boolean lafAvailable = false;
       try {
         Class.forName(LAF);
-        substanceAvailable = true;
+        lafAvailable = true;
       } catch(ClassNotFoundException e) {
         // y'est pas la
       }
-      if (substanceAvailable) {
+      if (lafAvailable) {
         try {
           UIManager.setLookAndFeel(LAF);
         } catch (Exception e) {
-          System.out.println("Substance failed to initialize");
+          System.out.println("Look and Feel failed to initialize");
         }
       }
-      def f = new AgregatorFrame(new ImmoAgregatorFactory(), new ImmoSearchPanel2(), new ImmoResultsPanel())
+      def f = new AgregatorFrame(new ImmoAgregatorFactory(), new ImmoSearchPanel(), new ImmoResultsPanel())
       f.setSize(1000, 800);
       f.setVisible(true);
     }

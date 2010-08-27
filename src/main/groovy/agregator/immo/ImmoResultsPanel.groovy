@@ -138,6 +138,7 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
           def font = titleLabel.font
           titleLabel.font = new Font(font.name, font.style | Font.BOLD, font.size)
           editorPane(
+                    background: bgColor,
                     constraints: BorderLayout.CENTER,
                     text: r.description,
                     editable: false,

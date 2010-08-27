@@ -5,14 +5,8 @@ import javax.swing.JFrame
 import java.awt.HeadlessException
 import groovy.swing.SwingBuilder
 import java.awt.BorderLayout as BL
-import javax.swing.SwingUtilities
-import javax.swing.BoxLayout
-import javax.swing.Box.Filler
-import java.awt.Dimension
-import java.awt.Component
 import java.awt.Color
 import javax.swing.ImageIcon
-import java.awt.BorderLayout
 import javax.swing.JButton
 import java.awt.event.ActionListener
 import java.awt.FlowLayout
@@ -29,8 +23,11 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
   private CartridgeListPanel cartridgeListPanel = new CartridgeListPanel()
   private def swing
 
+  private static final java.awt.Image ICON = new ImageIcon(AgregatorFrame.class.getResource("/icon.png")).getImage()
+
   public AgregatorFrame(AgregatorFactory agregatorFactory, SearchPanel searchPanel, ResultsPanel resultsPanel) throws HeadlessException {
-    super("Agregator")
+    super("TrouvToo immobilier - recherche multi-sites")
+    setIconImage ICON
     this.agregatorFactory = agregatorFactory
     this.searchPanel = searchPanel
     this.resultsPanel = resultsPanel
