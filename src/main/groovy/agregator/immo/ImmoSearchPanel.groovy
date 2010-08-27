@@ -22,6 +22,7 @@ import com.jgoodies.forms.layout.CellConstraints
 import javax.swing.JComboBox
 import javax.swing.JTextField
 import javax.swing.JComponent
+import java.awt.BorderLayout
 
 
 public class ImmoSearchPanel implements SearchPanel{
@@ -84,7 +85,7 @@ public class ImmoSearchPanel implements SearchPanel{
   def buildDescriptionPanel(){
     def layout = new FormLayout('fill:pref:grow, 5dlu, p, 2dlu, p, 2dlu, p, 2dlu, p', 'p, 2dlu, p, 2dlu, p')
     def swing = new SwingBuilder()
-    swing.panel (layout: layout, border: Borders.DIALOG_BORDER){
+    swing.panel (layout: layout, border: Borders.DIALOG_BORDER) {
       // Nb rooms
       label(messages.getString('description.nbrooms'), 	constraints: cc.xy(1, 1))
       label(messages.getString('description.mini'),	 	constraints: cc.xy(3, 1))
@@ -185,5 +186,14 @@ public class ImmoSearchPanel implements SearchPanel{
     criteria.setWithPhotosOnly(withPhotosOnlyCheck.selected)
 
     return criteria;
+  }
+
+  static void main(String[] args) {
+    def p = new ImmoSearchPanel()
+    JFrame f = new JFrame()
+    f.layout = new BorderLayout()
+    f.contentPane.add(p.getComponent())
+    f.pack()
+    f.visible = true
   }
 }

@@ -145,4 +145,24 @@ public class ImmoCriteria implements Criteria {
     public void setWithPhotosOnly(Boolean withPhotosOnly) {
         this.withPhotosOnly = withPhotosOnly;
     }
+
+  @Override
+  public String toString() {
+    return "ImmoCriteria{" +
+      "demand=" + demand +
+      ", nbRoomsMax=" + nbRoomsMax +
+      ", nbRoomsMin=" + nbRoomsMin +
+      ", postCode='" + postCode + '\'' +
+      ", priceMax=" + priceMax +
+      ", priceMin=" + priceMin +
+      ", searchRadius=" + searchRadius +
+      ", newsOnly=" + newsOnly +
+      ", country=" + country +
+      ", city='" + city + '\'' +
+      ", surfaceMax=" + surfaceMax +
+      ", surfaceMin=" + surfaceMin +
+      ", type=" + type +
+      ", withPhotosOnly=" + withPhotosOnly +
+      '}';
+  }
 }

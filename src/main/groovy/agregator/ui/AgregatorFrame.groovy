@@ -10,6 +10,16 @@ import javax.swing.BoxLayout
 import javax.swing.Box.Filler
 import java.awt.Dimension
 import java.awt.Component
+import java.awt.Color
+import javax.swing.ImageIcon
+import java.awt.BorderLayout
+import javax.swing.JButton
+import java.awt.event.ActionListener
+import java.awt.FlowLayout
+import javax.swing.JPanel
+import javax.swing.JLabel
+import javax.swing.BorderFactory
+import javax.swing.JSeparator
 
 public class AgregatorFrame extends JFrame implements AgregatorListener, ResultSelectionListener {
 
@@ -29,57 +39,56 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
     createUI()
   }
 
+  private JButton btnAgregate
+
   private void createUI() {
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
 
     swing = new SwingBuilder()
 
-    def spacerDim = new Dimension(10, 8)
-    def spacer = {
-      return swing.widget(new Filler(spacerDim, spacerDim, spacerDim))
-    }
+    btnAgregate = new JButton(text:'Rechercher')
+    btnAgregate.addActionListener({ e ->
+      agregate() } as ActionListener)
+
+    JPanel btnWrapperPanel = new JPanel(layout: new FlowLayout())
 
     setContentPane(swing.panel(layout: new BL()) {
-
-      // left panel
-      panel(constraints: BL.WEST) {
-        panel(layout:new BL()) {
-          widget(widget:searchPanel.getComponent(), constraints:BL.NORTH)
-          panel(constraints:BL.CENTER) {
-            boxLayout(axis:BoxLayout.Y_AXIS)
-            spacer()
-            button(id:'btnAgregate', text: 'Agregate',
-                    actionPerformed : { event ->  agregate() },
-                    alignmentX : Component.RIGHT_ALIGNMENT
-            )
-            spacer()
-            separator()
-            spacer()
-          }
-          panel(constraints:BL.SOUTH, layout:new BL()) {
-            widget(
-                    widget: cartridgeListPanel,
-                    constraints : BL.CENTER
-            )
-          }
-        }
+      // banner
+      panel(constraints: BL.NORTH, layout: new BL(),background: Color.white) {
+        label(constraints: BL.CENTER,
+                icon: new ImageIcon(getClass().getResource('/banner.jpg')),
+                background: Color.white)
       }
-      
-      // right panel
-      widget(widget:resultsPanel.getComponent(), constraints: BL.CENTER)
+
+      // content
+      splitPane(
+              constraints: BL.CENTER,
+              leftComponent: PanelStacker.stackPanels([
+                      searchPanel.getComponent(),
+                      PanelStacker.stackPanels([btnAgregate, new JLabel()], BL.EAST, BorderFactory.createEmptyBorder(4,4,10,4)),
+                      new JSeparator(),
+                      cartridgeListPanel
+                    ], BL.NORTH),
+              rightComponent: resultsPanel.getComponent()
+      )
     })
   }
 
   private void agregate() {
     // start agregator in new thread
-    swing.btnAgregate.enabled = false
+    btnAgregate.enabled = false
     cartridgeListPanel.clear()
     Thread.start {
-      agregatorFactory.create().
-        addListener(this).
-        addListener(cartridgeListPanel).
-        agregate(searchPanel.criteria);
-//        removeAllListeners()
+      try {
+        agregatorFactory.create().
+          addListener(this).
+          addListener(cartridgeListPanel).
+          agregate(searchPanel.criteria);
+//        removeAllListeners()        
+      } catch(Exception e) {
+        btnAgregate.enabled = true
+        throw e
+      }
     }
 
   }
@@ -91,7 +100,7 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
     } else if (event instanceof AgregatorEvent.StartedEvent) {
       resultsPanel.clear()
     } else if (event instanceof AgregatorEvent.EndedEvent) {
-      swing.btnAgregate.enabled = true      
+      btnAgregate.enabled = true      
     }
   }
 

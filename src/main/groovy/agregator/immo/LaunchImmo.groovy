@@ -37,7 +37,7 @@ public class LaunchImmo {
           System.out.println("Substance failed to initialize");
         }
       }
-      def f = new AgregatorFrame(new ImmoAgregatorFactory(), new ImmoSearchPanel(), new ImmoResultsPanel())
+      def f = new AgregatorFrame(new ImmoAgregatorFactory(), new ImmoSearchPanel2(), new ImmoResultsPanel())
       f.setSize(1000, 800);
       f.setVisible(true);
     }
