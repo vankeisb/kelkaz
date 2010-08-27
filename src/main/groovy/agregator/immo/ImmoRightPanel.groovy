@@ -15,9 +15,9 @@ class ImmoRightPanel extends JPanel {
 
   static def createImmoRightPanel(Agregator agregator) {
 
-    def ep1 = new JEditorPane("text/plain", """TrouvToo Immobilier est un agrégateur : il cherche pour vous dans plusieurs sites d'annonces immobilières. Au lieu de répéter vos recherches dans chaque site, saisissez vos critères et laisser TrouvToo chercher pour vous !
+    def ep1 = new JEditorPane("text/plain", """TrouvToo Immobilier est un agr\u00E9gateur : il cherche pour vous dans plusieurs sites d'annonces immobilières. Au lieu de r\u00E9p\u00E9ter vos recherches dans chaque site, saisissez vos critères et laisser TrouvToo chercher pour vous !
 
-Remplissez le formulaire de recherche ci-contre, et cliquez sur le bouton "Rechercher" afin d'accéder aux résultats.""")
+Remplissez le formulaire de recherche ci-contre, et cliquez sur le bouton "Rechercher" afin d'acc\u00E9der aux r\u00E9sultats.""")
 
     ep1.editable = false
 
@@ -32,7 +32,7 @@ Remplissez le formulaire de recherche ci-contre, et cliquez sur le bouton "Reche
 
     def title = createSeparatorLabel('Bienvenue Dans TrouvToo Immobilier')
 
-    def label2 = createSeparatorLabel("Sites supportés :")
+    def label2 = createSeparatorLabel("Sites support\u00E9s :")
     label2.background = Color.white
     label2.opaque = true
 
