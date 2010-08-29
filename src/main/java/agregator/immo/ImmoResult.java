@@ -66,15 +66,4 @@ public class ImmoResult extends Result {
     return photoUrl;
   }
 
-  /*
-  List<String> getPhotosUrls();
-
-  ImmoCriteria.Country getCountry();
-
-  String getCity();
-
-  String getPostCode();
-  */
-    
-
 }

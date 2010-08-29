@@ -12,11 +12,11 @@ import agregator.immo.cartridges.MockImmoCartridgeForUITests
 public class ImmoAgregator extends Agregator {
 
   protected void createCartridges(List cartridges) {
-//    cartridges << new ParuVenduCartridge(this)
-//    cartridges << new SeLogerCartridge(this)
-    cartridges << new MockImmoCartridgeForUITests("www.foobar.com", this)
-    cartridges << new MockImmoCartridgeForUITests("www.yeah.fr", this)
-    cartridges << new MockImmoCartridgeForUITests("www.shootme.com", this)
+    cartridges << new ParuVenduCartridge(this)
+    cartridges << new SeLogerCartridge(this)
+//    cartridges << new MockImmoCartridgeForUITests("www.foobar.com", this)
+//    cartridges << new MockImmoCartridgeForUITests("www.yeah.fr", this)
+//    cartridges << new MockImmoCartridgeForUITests("www.shootme.com", this)
 //    cartridges << new LeboncoinCartridge(this)
 //    cartridges << new OrpiCartridge(this)
 //    cartridges << new PAPCartridge(this)

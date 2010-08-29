@@ -22,6 +22,10 @@ import javax.swing.JFrame
 import javax.swing.ScrollPaneConstants
 import java.awt.Font
 import agregator.ui.HyperLink
+import javax.swing.JTextField
+import javax.swing.JButton
+import java.awt.event.ActionListener
+import java.util.concurrent.ConcurrentHashMap
 
 
 class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
@@ -30,8 +34,9 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
   private JPanel panel
   private JLabel statusLabel
   private JPanel headerPanel
+  private JTextField searchField
   private int nbResults = 0
-  private def resultsAndPanels = [:] // result/component map used to remove from list
+  private ConcurrentHashMap resultsAndPanels = new ConcurrentHashMap() // result/component map used to remove from list
 
   private ResourceBundle messages = ResourceBundle.getBundle('MessagesBundle');  
 
@@ -51,6 +56,11 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
     statusLabel.horizontalAlignment = JLabel.RIGHT
     component.add(statusLabel, BL.SOUTH)
 
+    searchField = new JTextField(text:'')
+    searchField.addActionListener({ filter() } as ActionListener)
+    JButton btnFilter = new JButton(text:'Filtrer')
+    btnFilter.addActionListener({ filter() } as ActionListener)
+
     // header panel
     headerPanel = new SwingBuilder().panel(
             visible: false,
@@ -68,8 +78,38 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
       widget(new HyperLink("fournisseur", {
         sortCartridge()
       }))
+      label('         ')
+      widget(Box.createHorizontalGlue())
+      widget(searchField)
+      label(' ')
+      widget(btnFilter)       
     }
     component.add(headerPanel, BL.NORTH)
+  }
+
+  private boolean matches(ImmoResult r, String crit) {
+    if (!crit) {
+      return true
+    }
+    def crits = crit.split(" ")
+    int nbMatches = 0
+    for (String c : crits) {
+      if (r.title && r.title.indexOf(c)>0) {
+        nbMatches++
+        continue
+      }
+      if (r.description && r.description.indexOf(c)>0) {
+        nbMatches++
+      }
+    }
+    return nbMatches == crits.size()
+  }
+
+  private def filter() {
+    String filterText = searchField.text
+    resultsAndPanels.each { ImmoResult k, JComponent v ->
+       v.visible = matches(k, filterText)
+    }
   }
 
   private def doSort(Closure comparator) {
