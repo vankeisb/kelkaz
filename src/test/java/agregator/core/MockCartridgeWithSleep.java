@@ -15,6 +15,10 @@ public class MockCartridgeWithSleep extends MockCartridge {
               e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
           }
           fireResultEvent(r);
+
+          if (isKilled()) {
+              break;
+          }
       }
   }
 

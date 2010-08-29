@@ -96,7 +96,7 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
     int totalAdded = 0
 
-    for (int pageNum=1 ; pageNum<=nbPages ; pageNum++) {
+    for (int pageNum=1 ; pageNum<=nbPages && !isKilled(); pageNum++) {
       logger.debug("Handling page $pageNum")
       if (pageNum>1) {
         Util.sleepRandomTime()

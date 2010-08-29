@@ -26,6 +26,7 @@ public abstract class Cartridge<C extends Criteria, R extends Result> {
     private final Agregator<C,R> agregator;
     private final String name;
     private volatile boolean agregating = false;
+    private volatile boolean killed = false;
 
     private ImageIcon imageIcon = null;
 
@@ -74,6 +75,7 @@ public abstract class Cartridge<C extends Criteria, R extends Result> {
     public final void agregate(C criteria) {
         logger.debug(name +  " start aggregating");
         checkAgregation();
+        killed = false;
         agregating = true;
         this.criteria = criteria;
         try {
@@ -134,5 +136,13 @@ public abstract class Cartridge<C extends Criteria, R extends Result> {
             imageIcon = new ImageIcon(u);
         }
         return imageIcon;
+    }
+
+    public void kill() {
+        killed = true;
+    }
+
+    protected final boolean isKilled() {
+        return killed;
     }
 }

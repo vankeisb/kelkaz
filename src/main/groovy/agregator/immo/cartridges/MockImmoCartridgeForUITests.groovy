@@ -28,6 +28,9 @@ class MockImmoCartridgeForUITests extends Cartridge<ImmoCriteria, ImmoResult> {
         System.out.println("Sleeping...")
         Thread.sleep(1000)
       }
+      if (isKilled()) {
+        break
+      }
     }
   }
 

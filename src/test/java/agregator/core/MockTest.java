@@ -175,7 +175,45 @@ public class MockTest extends TestCase {
         }
     }
 
+    public void testKill() {
+        final MockAgregatorWithSleep c = new MockAgregatorWithSleep();
+        final MockCriteria crit = new MockCriteria();
+        MyAgregatorListener l = new MyAgregatorListener();
+        c.addListener(l);
+        new Thread(new Runnable() {
+            public void run() {
+                c.agregate(crit);
+            }
+        }).start();
+        // wait for our thread to start...
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        // kill agregator
+        c.kill();
 
+        // store result count
+
+        // wait a bit to make sure all threads have died
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        int nbEvents = l.getEvents().size();
+
+        // wait a bit to make sure all threads have died
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        assertEquals(nbEvents, l.getEvents().size());
+    }
 
 
 }

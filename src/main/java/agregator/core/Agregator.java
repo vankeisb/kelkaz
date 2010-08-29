@@ -15,7 +15,7 @@ public abstract class Agregator<C extends Criteria, R extends Result> {
     private List<AgregatorListener> listeners = Collections.synchronizedList(new ArrayList<AgregatorListener>());
     private CountDownLatch doneSignal;
     private volatile boolean agregating = false;
-    
+
     public Agregator() {
         // create the cartridges for this agregator
         createCartridges(cartridges);
@@ -33,8 +33,10 @@ public abstract class Agregator<C extends Criteria, R extends Result> {
                 }
             });
         }
+    }
 
-        doneSignal = new CountDownLatch(this.cartridges.size());
+    public boolean isAgregating() {
+        return agregating;
     }
 
     public List<Cartridge<C,R>> getCartridges() {
@@ -72,6 +74,7 @@ public abstract class Agregator<C extends Criteria, R extends Result> {
 
     public Agregator<C,R> agregate(C criteria) {
         checkAgregating();
+        doneSignal = new CountDownLatch(this.cartridges.size());        
         agregating = true;
         try {
 
@@ -81,8 +84,9 @@ public abstract class Agregator<C extends Criteria, R extends Result> {
             // launch all cartridges in separate thread,
             // and wait for the result
             for (Cartridge<C,R> c : this.cartridges) {
-                logger.debug("Starting sartridge " + c.getName() + " in new thread");
-                new Thread(new Worker<C,R>(c, criteria)).start();
+                logger.debug("Starting cartridge " + c.getName() + " in new thread");
+                Worker<C,R> w = new Worker<C,R>(c, criteria);
+                new Thread(w).start();
             }
 
             // wait for everyone to complete
@@ -96,9 +100,16 @@ public abstract class Agregator<C extends Criteria, R extends Result> {
         } finally {
             logger.debug("All cartridges done, notifying listeners end");
             notifyListeners(new AgregatorEvent.EndedEvent(this));
-            agregating = false;            
+            agregating = false;
         }
         return this;
+    }
+
+    public void kill() {
+        for (Cartridge<C,R> c : cartridges) {
+            logger.debug("Killing " + c.getName());
+            c.kill();
+        }
     }
 
     class Worker<C extends Criteria,R extends Result> implements Runnable {

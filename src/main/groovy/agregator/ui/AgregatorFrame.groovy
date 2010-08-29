@@ -20,22 +20,27 @@ import static agregator.ui.PanelStacker.*
 
 public class AgregatorFrame extends JFrame implements AgregatorListener, ResultSelectionListener {
 
-  private AgregatorFactory agregatorFactory
-  private SearchPanel searchPanel
-  private ResultsPanel resultsPanel
-  private CartridgeListPanel cartridgeListPanel = new CartridgeListPanel()
+  private final Agregator agregatorFactory
+  private final SearchPanel searchPanel
+  private final ResultsPanel resultsPanel
+  private final CartridgeListPanel cartridgeListPanel = new CartridgeListPanel()
   private def swing
+
+  private Agregator agregator = null
 
   private static final java.awt.Image ICON = new ImageIcon(AgregatorFrame.class.getResource("/icon.png")).getImage()
 
-  public AgregatorFrame(AgregatorFactory agregatorFactory, SearchPanel searchPanel, ResultsPanel resultsPanel) throws HeadlessException {
+  public AgregatorFrame(Agregator agregator, SearchPanel searchPanel, ResultsPanel resultsPanel) throws HeadlessException {
     super("TrouvToo immobilier - recherche multi-sites")
     setIconImage ICON
-    this.agregatorFactory = agregatorFactory
+    this.agregator = agregator
     this.searchPanel = searchPanel
     this.resultsPanel = resultsPanel
     // register this as the listener for selected results
     resultsPanel.addListener(this)
+    agregator.
+      addListener(this).
+      addListener(cartridgeListPanel)    
     createUI()
   }
 
@@ -49,6 +54,7 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
 
     btnAgregate = new JButton(text:'Rechercher')
     btnAgregate.addActionListener({ e ->
+      btnAgregate.enabled = false
       agregate() } as ActionListener)
 
     setContentPane(swing.panel(layout: new BL()) {
@@ -75,33 +81,28 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
       rightPanel.removeAll()
 
       // home page
-      // need to create an agregator in order to
-      // have access to crtridges... pretty ugly
-      rightPanel.add(ImmoRightPanel.createImmoRightPanel(agregatorFactory.create()), BL.CENTER)
+      rightPanel.add(ImmoRightPanel.createImmoRightPanel(agregator), BL.CENTER)
     })
   }
 
   private void agregate() {
-    // start agregator in new thread
-    cartridgeListPanel.clear()
-    SwingUtilities.invokeLater {
-      btnAgregate.enabled = false
-      rightPanel.removeAll()
-      rightPanel.add(resultsPanel.component, BL.CENTER)
-    }
-    Thread.start {
-      try {
-        agregatorFactory.create().
-          addListener(this).
-          addListener(cartridgeListPanel).
-          agregate(searchPanel.criteria);
-//        removeAllListeners()        
-      } catch(Exception e) {
-        btnAgregate.enabled = true
-        throw e
+    if (agregator.agregating) {
+      agregator.kill()
+    } else {
+      // start agregator in new thread
+      SwingUtilities.invokeLater {
+        cartridgeListPanel.clear()
+        rightPanel.removeAll()
+        rightPanel.add(resultsPanel.component, BL.CENTER)
+      }
+      Thread.start {
+        try {
+            agregator.agregate(searchPanel.criteria);
+        } catch(Exception e) {
+          throw e
+        }
       }
     }
-
   }
 
   public void onEvent(AgregatorEvent event) {
@@ -109,9 +110,16 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
         event.cartridgeEvent instanceof CartridgeEvent.ResultEvent) {
       resultsPanel.addResult(event.cartridgeEvent.getResult())
     } else if (event instanceof AgregatorEvent.StartedEvent) {
+      SwingUtilities.invokeLater {
+        btnAgregate.text = "Arreter"
+        btnAgregate.enabled = true
+      }
       resultsPanel.clear()
     } else if (event instanceof AgregatorEvent.EndedEvent) {
-      btnAgregate.enabled = true      
+      SwingUtilities.invokeLater {
+        btnAgregate.text = "Rechercher"
+        btnAgregate.enabled = true
+      }
     }
   }
 
