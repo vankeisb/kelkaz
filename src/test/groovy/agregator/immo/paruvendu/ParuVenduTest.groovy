@@ -7,6 +7,7 @@ import com.gargoylesoftware.htmlunit.WebClient
 import com.gargoylesoftware.htmlunit.html.HtmlPage
 import com.gargoylesoftware.htmlunit.BrowserVersion
 import agregator.immo.ImmoResult
+import agregator.MyTestListener
 
 public class ParuVenduTest extends GroovyTestCase {
 
@@ -24,7 +25,7 @@ public class ParuVenduTest extends GroovyTestCase {
 
   private void doTest(ImmoCriteria crit, int expectedResultCount) {
     ParuVenduAgregator a = new ParuVenduAgregator()
-    def listener = new ParuVenduTestListener()
+    def listener = new MyTestListener()
     a.addListener(listener)
     a.agregate(crit)
 

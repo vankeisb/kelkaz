@@ -8,6 +8,36 @@ class Util {
 
   private static final Logger logger = Logger.getLogger(Util.class)
 
+  static String trim(String s) {
+    int sLen = s.length()
+    def chars = []
+    boolean started = false
+    for (int i=0 ; i<sLen; i++) {
+      Character c = s.charAt(i)
+      if (c.isWhitespace()) {
+        if (started) {
+          chars << c
+        }
+      } else {
+        chars << c
+        started = true
+      }
+    }
+    // starting chars are trimmed
+    // reverse list and do it again
+    chars = chars.reverse()
+    while (chars && chars[0].isWhitespace()) {
+      chars.remove(0)
+    }
+
+    chars = chars.reverse()
+    StringBuilder res = new StringBuilder()
+    chars.each {
+      res << it
+    }
+    return res.toString()
+  }
+
   static Date extractDate(String dateStr) {
     if (dateStr==null) {
       return null
