@@ -87,6 +87,17 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
     component.add(headerPanel, BL.NORTH)
   }
 
+  private boolean matchesStr(String s, String keyword) {
+    if (!s) {
+      return false
+    }
+    s = s.replaceAll(/\./, '').replaceAll(/,/, '')
+    def parts = Arrays.asList(s.split(" "))
+    def partsLc = []
+    parts.each { partsLc << it.toLowerCase() }
+    return parts.contains(keyword.toLowerCase())
+  }
+
   private boolean matches(ImmoResult r, String crit) {
     if (!crit) {
       return true
@@ -94,11 +105,11 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
     def crits = crit.split(" ")
     int nbMatches = 0
     for (String c : crits) {
-      if (r.title && r.title.indexOf(c)>0) {
+      if (matchesStr(r.title, c)) {
         nbMatches++
         continue
       }
-      if (r.description && r.description.indexOf(c)>0) {
+      if (matchesStr(r.description, c)) {
         nbMatches++
       }
     }

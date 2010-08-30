@@ -13,8 +13,8 @@ import agregator.immo.cartridges.FnaimCartridge
 public class ImmoAgregator extends Agregator {
 
   protected void createCartridges(List cartridges) {
-//    cartridges << new ParuVenduCartridge(this)
-//    cartridges << new SeLogerCartridge(this)
+    cartridges << new ParuVenduCartridge(this)
+    cartridges << new SeLogerCartridge(this)
     cartridges << new FnaimCartridge(this)
 //    cartridges << new MockImmoCartridgeForUITests("www.foobar.com", this)
 //    cartridges << new MockImmoCartridgeForUITests("www.yeah.fr", this)
