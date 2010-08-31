@@ -51,6 +51,7 @@ public class CartridgeListItem extends JPanel {
 
   void reset() {
     countLabel.text = ''
+    resultCount = 0
   }
 
   void incrementResultCount() {
