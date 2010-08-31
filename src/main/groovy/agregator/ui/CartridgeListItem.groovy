@@ -16,7 +16,7 @@ public class CartridgeListItem extends JPanel {
   private HyperLink label
   private JLabel countLabel = new JLabel('')
 
-  public CartridgeListItem(Cartridge c) {
+  def CartridgeListItem(Cartridge c) {
     this.cartridge = c
     this.border = BorderFactory.createEmptyBorder(5,5,5,5)
     this.alignmentX = LEFT_ALIGNMENT
@@ -33,23 +33,27 @@ public class CartridgeListItem extends JPanel {
     stopped()
   }
 
-  private void setIconFromStr(String s) {
+  void setIconFromStr(String s) {
     iconLabel.icon = new ImageIcon(getClass().getResource(s))
   }
 
-  public void loading() {
+  void loading() {
     setIconFromStr '/ajax-loader.gif'
   }
 
-  public void stopped() {
+  void stopped() {
     setIconFromStr '/Ok-16x16.png'
   }
 
-  public void error() {
+  void error() {
     setIconFromStr '/Error-16x16.png' 
   }
 
-  public void incrementResultCount() {
+  void reset() {
+    countLabel.text = ''
+  }
+
+  void incrementResultCount() {
     resultCount++
     countLabel.text = " ($resultCount)" 
   }

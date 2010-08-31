@@ -64,10 +64,8 @@ public class CartridgeListPanel extends JPanel implements AgregatorListener {
   }
 
   public void clear() {
-    items = new ConcurrentHashMap()
-    SwingUtilities.invokeLater {
-      removeAll()
-      revalidate()
+    items.each { k,v ->
+      v.reset()
     }
   }
 

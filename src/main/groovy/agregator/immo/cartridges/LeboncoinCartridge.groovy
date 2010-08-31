@@ -53,8 +53,8 @@ public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     def res = new HashMap()
     res[0] = 0
     for (int i=2;i<9;i++) {
-      Integer amount = i * 10
-      res.put(amount, i)
+      Integer amount = i* 10
+      res.put(amount, i-1)
     }
     res[100] = 8
     res[120] = 9
@@ -171,6 +171,9 @@ public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     def p = webClient.getPage(url.toString())
 
     def spanNbAnnonces = p.getByXPath("//li[@class='tab_all']/strong")[1]
+    if (spanNbAnnonces==null) {
+      throw new IllegalStateException("Could not find //li[@class='tab_all']/strong in page $p")
+    }
     Integer nbAnnonces = extractInteger(spanNbAnnonces.textContent)
     Integer nbPages = 1
     if (nbAnnonces>0) {
@@ -209,12 +212,13 @@ public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
           if (aEl==null) {
             // no image, different markup
             aEl = item.getByXPath("td[3]/a")[0]
+            title = trim(aEl.textContent)
           } else {
             def imgEl = item.getByXPath("td[2]/table/tbody/tr[2]/td[2]/a/img")[0]
             imgUrl = imgEl.getAttribute('src')            
+            title = trim(aEl.getByXPath("img")[0].getAttribute('alt'))
           }
           u = aEl.getAttribute('href')
-          title = trim(aEl.textContent)
           def priceEl = item.getByXPath("td[3]/text()[2]")[0]
           price = extractInteger(priceEl.textContent)
           fireResultEvent(new ImmoResult(this, title, u, description, price, date, imgUrl))

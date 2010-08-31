@@ -199,10 +199,12 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
           )
           def bottomPane = new JPanel(background: bgColor)
           bottomPane.setLayout(new BoxLayout(bottomPane, BoxLayout.LINE_AXIS))
-          def dateLabel = new JLabel(r.date==null ? "" : DATE_FORMAT.format(r.date))
-          bottomPane.add(dateLabel)
-          bottomPane.add(Box.createRigidArea(new Dimension(5,0)));
-          bottomPane.add(new JLabel("-"))
+          if (r.date!=null) {
+            def dateLabel = new JLabel(r.date==null ? "" : DATE_FORMAT.format(r.date))
+            bottomPane.add(dateLabel)
+            bottomPane.add(Box.createRigidArea(new Dimension(5,0)));
+            bottomPane.add(new JLabel("-"))
+          }
           bottomPane.add(Box.createRigidArea(new Dimension(5,0)));
           def priceLabel = new JLabel(r.price==null ? "" : Integer.toString(r.price))
           bottomPane.add(priceLabel)

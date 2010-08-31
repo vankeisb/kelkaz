@@ -95,7 +95,7 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
         cartridgeListPanel.clear()
         rightPanel.removeAll()
         rightPanel.add(resultsPanel.component, BL.CENTER)
-        this.revalidate()
+        rightPanel.revalidate()
       }
       Thread.start {
         try {
