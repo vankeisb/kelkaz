@@ -94,7 +94,63 @@
                     </arguments>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo.webstart</groupId>
+                <artifactId>webstart-maven-plugin</artifactId>
+                <version>1.0-beta-1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jnlp-inline</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
 
+                    <dependencies>
+                        <excludes>
+                            <!--exclude>commons-lang:commons-lang</exclude-->
+                        </excludes>
+
+                    </dependencies>
+
+                    <resourcesDirectory>${project.basedir}/src/jnlp/resources</resourcesDirectory>
+
+                    <jnlp>
+                        <!-- we play with the resource path and template relative path to test MOJO-391 -->
+                        <inputTemplateResourcePath>${project.basedir}/src/</inputTemplateResourcePath>
+                        <inputTemplate>jnlp/template.vm</inputTemplate>
+                        <outputFile>trouvtoo-immo.jnlp</outputFile>
+                        <mainClass>agregator.immo.LaunchImmo</mainClass>
+                    </jnlp>
+
+                    <!-- SIGNING -->
+                    <!-- defining this will automatically sign the jar and its dependencies -->
+                    <sign>
+                        <keystore>/tmp/keystore</keystore>
+
+                        <keypass>m2m2m2</keypass>
+                        <storepass>m2m2m2</storepass>
+                        <!--sigfile>m2m2m2</sigfile-->
+                        <alias>alias</alias>
+                        <validity>180</validity>
+
+                        <dnameCn>www.trouvtoo.fr</dnameCn>
+
+                        <dnameOu>None</dnameOu>
+                        <dnameO>FooBar Inc.</dnameO>
+                        <dnameL>Paris</dnameL>
+                        <dnameC>France</dnameC>
+                        <verify>true</verify>
+                        <keystoreConfig>
+                            <delete>true</delete>
+                            <gen>true</gen>
+                        </keystoreConfig>
+                    </sign>
+                    <verbose>true</verbose>
+                </configuration>
+            </plugin>            
         </plugins>
     </build>
 </project>
