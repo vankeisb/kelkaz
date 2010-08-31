@@ -13,11 +13,18 @@ public class Logger {
     }
 
     public void debug(Object message) {
-        System.out.println(System.currentTimeMillis() + " [" + clazz.getName() + "] " + message);
+        System.out.println(System.currentTimeMillis() + " [DEBUG] [" + clazz.getName() + "] " + message);
     }
 
     public void error(Object message, Throwable t) {
-        debug(message);
+        System.out.println(System.currentTimeMillis() + " [ERROR] [" + clazz.getName() + "] " + message);
         t.printStackTrace();
     }
+
+    public void warn(Object message, Throwable t) {
+        System.out.println(System.currentTimeMillis() + " [WARNING] [" + clazz.getName() + "] " + message);
+        t.printStackTrace();
+    }
+
+
 }

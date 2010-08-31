@@ -85,7 +85,7 @@ public class FnaimCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     def p = webClient.getPage(url.toString())
 
     def spanNbAnnonces = p.getByXPath("/html/body/div/div[@id='content']/div[@id='content-left']/div[@id='FNAIM_Header']/div[@id='FNAIM_Header_Content_Right']/strong")[0]
-    Integer nbAnnonces = Util.extractInteger(spanNbAnnonces.textContent)
+    Integer nbAnnonces = agregator.ui.Util.extractInteger(spanNbAnnonces.textContent)
     Integer nbPages = 1
     if (nbAnnonces>0) {
       nbPages = nbAnnonces / 10 + 1
@@ -97,7 +97,7 @@ public class FnaimCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     for (int pageNum=1 ; pageNum<=nbPages && !isKilled(); pageNum++) {
       logger.debug("Handling page $pageNum")
       if (pageNum>1) {
-        Util.sleepRandomTime()
+        agregator.ui.Util.sleepRandomTime()
         String u = url.toString() + "&page=$pageNum"
         logger.debug("Getting page $pageNum, url=$u")
         p = webClient.getPage(u)
@@ -107,12 +107,12 @@ public class FnaimCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
       listItems.each { item ->
 
         try {
-          def title = Util.trim(item.getByXPath("div[1]/div[1]/strong/a")[0].textContent)
-          def price = Util.extractInteger(item.getByXPath("div[1]/div[2]/strong")[0].textContent)
+          def title = agregator.ui.Util.trim(item.getByXPath("div[1]/div[1]/strong/a")[0].textContent)
+          def price = agregator.ui.Util.extractInteger(item.getByXPath("div[1]/div[2]/strong")[0].textContent)
           def descHolderElem = item.getByXPath("div[@class='FNAIM_Detaille_Content']/div[2]/div[2]")[0]
           def description = null
           if (descHolderElem) {
-            description = Util.trim(descHolderElem.textContent).replaceAll(/\[-\]/, '')
+            description = agregator.ui.Util.trim(descHolderElem.textContent).replaceAll(/\[-\]/, '')
           }
 
           def u = ROOT_SITE + item.getByXPath("div[1]/div[1]/strong/a")[0].getAttribute('href')

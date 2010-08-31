@@ -23,7 +23,7 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
   private final Agregator agregatorFactory
   private final SearchPanel searchPanel
   private final ResultsPanel resultsPanel
-  private final CartridgeListPanel cartridgeListPanel = new CartridgeListPanel()
+  private final CartridgeListPanel cartridgeListPanel
   private def swing
 
   private Agregator agregator = null
@@ -33,6 +33,7 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
   public AgregatorFrame(Agregator agregator, SearchPanel searchPanel, ResultsPanel resultsPanel) throws HeadlessException {
     super("TrouvToo immobilier - recherche multi-sites")
     setIconImage ICON
+    this.cartridgeListPanel = new CartridgeListPanel(agregator)
     this.agregator = agregator
     this.searchPanel = searchPanel
     this.resultsPanel = resultsPanel

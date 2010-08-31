@@ -13,26 +13,30 @@ import javax.swing.BorderFactory
 
 class ImmoRightPanel extends JPanel {
 
+  static ResourceBundle messages = ResourceBundle.getBundle('MessagesBundle');  
+
   static def createImmoRightPanel(Agregator agregator) {
 
-    def ep1 = new JEditorPane("text/plain", """TrouvToo Immobilier est un agr\u00E9gateur : il cherche pour vous dans plusieurs sites d'annonces immobilières. Au lieu de r\u00E9p\u00E9ter vos recherches dans chaque site, saisissez vos critères et laisser TrouvToo chercher pour vous !
 
-Remplissez le formulaire de recherche ci-contre, et cliquez sur le bouton "Rechercher" afin d'acc\u00E9der aux r\u00E9sultats.""")
+
+    def ep1 = new JEditorPane("text/plain", messages.getString("welcome.message"))
 
     ep1.editable = false
 
     def cartridgeLinks = []
     for (Cartridge c : agregator.cartridges) {
-      cartridgeLinks <<  new HyperLink(c.name, c.icon, JLabel.LEFT, {
+      def cmp = new HyperLink(c.name, c.icon, JLabel.LEFT, {
         def s = "http://$c.name"
         java.awt.Desktop.getDesktop().browse( new URL( s ).toURI() )
       })
+      cmp.border = BorderFactory.createEmptyBorder(4,4,4,4)
+      cartridgeLinks <<  cmp
     }
     cartridgeLinks << new JLabel('') // used by panel stacking
 
-    def title = createSeparatorLabel('Bienvenue Dans TrouvToo Immobilier')
+    def title = createSeparatorLabel(messages.getString("welcome.title"))
 
-    def label2 = createSeparatorLabel("Sites support\u00E9s :")
+    def label2 = createSeparatorLabel(messages.getString("supported.sites"))
     label2.background = Color.white
     label2.opaque = true
 

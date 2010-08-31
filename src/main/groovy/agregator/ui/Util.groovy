@@ -1,4 +1,4 @@
-package agregator.immo.cartridges
+package agregator.ui
 
 import java.text.SimpleDateFormat
 import java.text.DateFormat

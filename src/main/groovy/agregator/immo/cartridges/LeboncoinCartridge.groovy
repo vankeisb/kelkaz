@@ -1,229 +1,237 @@
 package agregator.immo.cartridges
 
-import java.io.FileReader
 
 import agregator.core.Cartridge
-import agregator.core.Agregator
 import agregator.immo.ImmoCriteria
-import com.gargoylesoftware.htmlunit.WebClient
 import agregator.immo.ImmoResult
 import agregator.immo.ImmoCriteria.Demand
+import agregator.immo.ImmoCriteria.Type
 
-import au.com.bytecode.opencsv.CSVReader
-import com.gargoylesoftware.htmlunit.BrowserVersion
+import agregator.util.Logger
+import com.gargoylesoftware.htmlunit.WebClient
+import static agregator.ui.Util.*
 
 public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
-  private Iterator<ImmoResult> resultsIterator = null
+  private static final Logger logger = Logger.getLogger(LeboncoinCartridge.class)
 
-  private static String URL_CARTRIDGE = "http://www.leboncoin.fr" 
+  private static final String ROOT_SITE = 'http://www.leboncoin.fr'
 
-  def LeboncoinCartridge(Agregator agregator){
-    super("leboncoin", agregator)
+  def LeboncoinCartridge(agregator) {
+    super("www.leboncoin.fr", agregator);
+  }
+
+  private def VENTE_PRICE_TABLE = {
+    def res = new HashMap()
+    for (int i=0;i<15;i++) {
+      int amount = i * 25000
+      res[amount] = i
+    }
+    res[400000] = 15
+    res[450000] = 16
+    res[500000] = 17
+    res[600000] = 18
+    res[700000] = 19
+    res[1000000] = 20
+    res[1500000] = 21
+    return res  
+  }()
+    
+  private def LOYER_PRICE_TABLE = {
+    def res = new HashMap()
+    for (int i=0;i<11;i++) {
+      Integer amount = i * 100
+      res.put(amount, amount)
+    }
+    res[1200] = 1200
+    res[1600] = 1600
+    res[2000] = 2000
+    return res  
+  }()
+
+  private def SURFACE_TABLE = {
+    def res = new HashMap()
+    res[0] = 0
+    for (int i=2;i<9;i++) {
+      Integer amount = i * 10
+      res.put(amount, i)
+    }
+    res[100] = 8
+    res[120] = 9
+    res[150] = 10
+    res[300] = 11
+    res[500] = 12
+    return res
+  }()
+
+  private def NB_ROOMS_TABLE = {
+    def res = new HashMap()
+    for (int i=1;i<9;i++) {
+      res.put(i, i)
+    }
+    return res
+  }()
+
+  private def findValueInSelect(value, map, maxKey, maxVal) {
+    def p = value
+    while (p<=maxKey && map[p]==null) {
+      p++
+    }
+    def r = map[p]
+    return r==null ? maxVal : r
   }
 
   protected void doAgregate() {
-    //To change body of implemented methods use File | Settings | File Templates.
-  }
 
-  /**
-   * Return the ares'a code (as used in 'leboncoin.fr' in function of the post code
-   * Use here to get the rigth research page
-   */
-  def getArea(String postCode){
-    // Get the dept code from the post code
-    def depNb = postCode.substring(0, 2)
-    try {
-      // Create the CSVReader which contains the Areas name en code values
-      FileReader fileReader = new FileReader("src/main/resources/FR_areas.csv");
-      char separator = ';'
-      CSVReader reader = new CSVReader(fileReader, separator);
-      String [] nextLine;
-      while ((nextLine = reader.readNext()) != null) {
-        if (nextLine[0].equals(depNb))
-          return nextLine[2]
+    logger.debug("Building URL")
+    def url = new StringBuilder()
+    url << ROOT_SITE
+    if (criteria.demand==Demand.RENT) {
+      url << "/locations/offres/provence_alpes_cote_d_azur/occasions/?f=a&th=1"
+    } else {
+      url << "/ventes_immobilieres/offres/provence_alpes_cote_d_azur/occasions/?f=a&th=1"
+    }
+    if (criteria.priceMin) {
+      def v = findValueInSelect(
+              criteria.priceMin,
+              criteria.demand==Demand.RENT ? LOYER_PRICE_TABLE : VENTE_PRICE_TABLE,
+              criteria.demand==Demand.RENT ? 2000 : 1500000,
+              criteria.demand==Demand.RENT ? 2000 : 21
+      )
+      if (criteria.demand==Demand.RENT) {
+        url << "&mrs=$v"
+      } else {
+        url << "&ps=$v"
       }
-    }catch(IOException e){
-      e.printStackTrace();
     }
-  }
-
-  private void init(){
-    def results = new ArrayList<ImmoResult>()
-
-    // Get the area. In case of no informations on the localisation -> Use 'Paris'.
-    def areaCode
-    if (criteria.postCode)
-      areaCode = getArea(criteria.postCode)
-    else
-      areaCode = getArea('75')
-
-    // Get the page in function of the area's code
-    WebClient webClient = new WebClient(BrowserVersion.FIREFOX_2)
-    def page = webClient.getPage(URL_CARTRIDGE+'/li?ca='+areaCode+'_s')
-
-    // Get the query form
-    def form = page.getFormByName('f')
-
-    // The price fields change in function of the demand tye choose
-    // Sell : Price max/min
-    // Rent : Loyer max/min
-    def selectDemandType = form.getSelectByName('c')
-    def priceMinFieldName
-    def priceMaxFieldName
-
-    if (criteria.demand == Demand.RENT){
-      selectDemandType.setSelectedAttribute('10', true)
-      priceMinFieldName = 'mrs'
-      priceMaxFieldName = 'mre'
-    }else{
-      selectDemandType.setSelectedAttribute('9', true)
-      priceMinFieldName = 'ps'
-      priceMaxFieldName = 'pe'
+    if (criteria.priceMax) {
+      def v = findValueInSelect(
+              criteria.priceMax,
+              criteria.demand==Demand.RENT ? LOYER_PRICE_TABLE : VENTE_PRICE_TABLE,
+              criteria.demand==Demand.RENT ? 999999 : 1500000,
+              criteria.demand==Demand.RENT ? 999999 : 22
+      )
+      if (criteria.demand==Demand.RENT) {
+        url << "&mre=$v"
+      } else {
+        url << "&pe=$v"
+      }
+    }
+    if (criteria.surfaceMin) {
+      def v = findValueInSelect(
+              criteria.surfaceMin,
+              SURFACE_TABLE,
+              500,
+              12
+      )
+      url << "&sqs=$v"
+    }
+    if (criteria.surfaceMax) {
+      def v = findValueInSelect(
+              criteria.surfaceMax,
+              SURFACE_TABLE,
+              501,
+              13
+      )
+      url << "&sqe=$v"
+    }
+    if (criteria.nbRoomsMin) {
+      def v = findValueInSelect(
+              criteria.nbRoomsMin,
+              NB_ROOMS_TABLE,
+              8,
+              8
+      )
+      url << "&ros=$v"
+    }
+    if (criteria.nbRoomsMax) {
+      def v = findValueInSelect(
+              criteria.nbRoomsMax,
+              NB_ROOMS_TABLE,
+              9,
+              999999
+      )
+      url << "&roe=$v"
+    }
+    
+    if (criteria.type==Type.APPT) {
+      url << "&ret=2"
+    } else {
+      url << "&ret=1"
     }
 
-    // Set the price min field in the form
-    // If no min price value : field will be not setted
-    def selectPriceMin = form.getSelectByName(priceMinFieldName)
-    if (criteria.priceMin != null){
-      def priceMinValue = ''
-      for (option in selectPriceMin.options){
-        if (!option.valueAttribute.equals('')){
-          if (criteria.priceMin > Integer.valueOf(option.text.replaceAll(' ', '')) ){
-            priceMinValue = option.valueAttribute
+    if (criteria.postCode) {
+      url << "&zz=$criteria.postCode"
+    }
+
+    logger.debug("Sending request : " + url);
+
+    WebClient webClient = new WebClient()
+    webClient.setJavaScriptEnabled(false)
+    def p = webClient.getPage(url.toString())
+
+    def spanNbAnnonces = p.getByXPath("//li[@class='tab_all']/strong")[1]
+    Integer nbAnnonces = extractInteger(spanNbAnnonces.textContent)
+    Integer nbPages = 1
+    if (nbAnnonces>0) {
+      nbPages = nbAnnonces / 50 + 1
+    }
+    logger.debug("Nb pages : $nbPages")
+
+    int totalAdded = 0
+
+    for (int pageNum=1 ; pageNum<=nbPages && !isKilled(); pageNum++) {
+      logger.debug("Handling page $pageNum")
+      if (pageNum>1) {
+        sleepRandomTime()
+
+        // http://www.leboncoin.fr/locations/offres/provence_alpes_cote_d_azur/occasions/?f=a&th=1&mrs=200&mre=1600&sqs=2&zz=06000
+        // http://www.leboncoin.fr/locations/offres/provence_alpes_cote_d_azur/occasions/?o=2&mrs=200&mre=1600&sqs=2&zz=06000&th=1
+
+
+        String u = url.toString().replaceAll(/f=a&/, "o=$pageNum&")
+        logger.debug("Getting page $pageNum, url=$u")
+        p = webClient.getPage(u)
+      }
+      int nbAdded = 0
+      def listItems = p.getByXPath("//table[@id='hl']/tbody/tr")
+      listItems.each { item ->
+        try {
+          def aEl = item.getByXPath("td[2]/table/tbody/tr[2]/td[2]/a")[0]
+          // TODO date
+          // TODO desc
+          def u = null,
+            title = null,
+            imgUrl = null,
+            price = null,
+            description = null,
+            date = null
+          if (aEl==null) {
+            // no image, different markup
+            aEl = item.getByXPath("td[3]/a")[0]
+          } else {
+            def imgEl = item.getByXPath("td[2]/table/tbody/tr[2]/td[2]/a/img")[0]
+            imgUrl = imgEl.getAttribute('src')            
           }
+          u = aEl.getAttribute('href')
+          title = trim(aEl.textContent)
+          def priceEl = item.getByXPath("td[3]/text()[2]")[0]
+          price = extractInteger(priceEl.textContent)
+          fireResultEvent(new ImmoResult(this, title, u, description, price, date, imgUrl))
+          nbAdded++
+          totalAdded++
+          logger.debug("Added result title $title, url $u" + ", desc $description, date $date")
+        } catch(Throwable t) {
+          logger.error("Exception caught while processing item : $item", t)
         }
+
       }
-      selectPriceMin.setSelectedAttribute(priceMinValue, true)
-    }else{
-      selectPriceMin.setSelectedAttribute('', true)
+
+      logger.debug("added $nbAdded results for page $pageNum, total added $totalAdded")
     }
 
-    // Set the price max field in the form
-    // If no max price value : field will be not setted
-    def selectPriceMax = form.getSelectByName(priceMaxFieldName)
-    if (criteria.priceMax != null){
-      def priceMaxValue = ''
-      for (option in selectPriceMax.options){
-        if (!option.valueAttribute.equals('')){
-          // Be careful the max price bind a String. Catch this case
-          if (option.text.equals('Plus de 1 500 000')){
-            priceMaxValue = '16'
-          }else{
-            if (criteria.priceMax < Integer.valueOf(option.text.replaceAll(' ', '')) ){
-              priceMaxValue = option.valueAttribute
-              break
-            }
-          }
-        }
-      }
-      selectPriceMax.setSelectedAttribute(priceMaxValue, true)
-    }else{
-      selectPriceMax.setSelectedAttribute('', true)
-    }
-
-    // Set the surface min field in the form
-    // If no min surface value : field will be not setted
-    def selectSurfaceMin = form.getSelectByName('sqs')
-    if (criteria.surfaceMin != null){
-      def surfaceMinValue = ''
-      for (option in selectSurfaceMin.options){
-        if (!option.valueAttribute.equals('')){
-          if (criteria.surfaceMin > Integer.valueOf(option.text.replaceAll(' ', '')) ){
-            surfaceMinValue = option.valueAttribute
-          }
-        }
-      }
-      selectSurfaceMin.setSelectedAttribute(surfaceMinValue, true)
-    }else{
-      selectSurfaceMin.setSelectedAttribute('', true)
-    }
-
-    // Set the surface max field in the form
-    // If no max surface value : field will be not setted
-    def selectSurfaceMax = form.getSelectByName('sqe')
-    if (criteria.surfaceMax != null){
-      def surfaceMaxValue = ''
-      for (option in selectSurfaceMax.options){
-        if (!option.valueAttribute.equals('')){
-          // Be careful the max surface bind a String. Catch this case
-          if (option.text.equals('Plus de 500')){
-            surfaceMaxValue = '8'
-          }else{
-            if (criteria.surfaceMax < Integer.valueOf(option.text.replaceAll(' ', '')) ){
-              surfaceMaxValue = option.valueAttribute
-              break
-            }
-          }
-        }
-      }
-      selectSurfaceMax.setSelectedAttribute(surfaceMaxValue, true)
-    }else{
-      selectSurfaceMax.setSelectedAttribute('', true)
-    }
-
-    // Set the rooms min field in the form
-    // If no min rooms value : field will be not setted
-    def selectNbRoomsMin = form.getSelectByName('ros')
-    if (criteria.nbRoomsMin != null){
-      selectNbRoomsMin.setSelectedAttribute(criteria.nbRoomsMin.toString(), true)
-    }else{
-      selectNbRoomsMin.setSelectedAttribute('', true)
-    }
-
-    // Set the surface max field in the form
-    // If no max surface value : field will be not setted
-    def selectNbRoomsMax = form.getSelectByName('roe')
-    if (criteria.nbRoomsMax != null){
-      def nbRoomsMaxValue
-      // Be careful the max rooms not coresponding to the criteria max rooms but a strange value '999999'. Catch this case
-      if (criteria.nbRoomsMax == 9)
-        nbRoomsMaxValue = '999999'
-      else
-        nbRoomsMaxValue = criteria.nbRoomsMax.toString()
-
-      selectNbRoomsMax.setSelectedAttribute(nbRoomsMaxValue, true)
-    }else{
-      selectNbRoomsMax.setSelectedAttribute('', true)
-    }
-
-    // Print for tests
-    selectPriceMin.selectedOptions.each{println('price min = \''+it.text+'\'')}
-    selectPriceMax.selectedOptions.each{println('price max = \''+it.text+'\'')}
-    selectSurfaceMin.selectedOptions.each{println('surface min = \''+it.text+'\'')}
-    selectSurfaceMax.selectedOptions.each{println('surface max = \''+it.text+'\'')}
-    selectNbRoomsMin.selectedOptions.each{println('rooms min = \''+it.text+'\'')}
-    selectNbRoomsMax.selectedOptions.each{println('rooms max = \''+it.text+'\'')}
-
-    // submit form
-    page = form.submit()
-
-    // get Immo results (Generics are in da place)
-    def tableResult = page.getHtmlElementById('hl')
-    tableResult.rows.each{
-      def main = it.getCells().get(2)
-      def a = main.getHtmlElementsByTagName('a')[0]
-      def title = a.getTextContent()
-      // Add the cartridde url before the hit url
-      def url = URL_CARTRIDGE + a.getAttribute('href')
-      results << new ImmoResult(this, title, url, null)
-    }
-
-    resultsIterator = results.iterator()
+    logger.debug("total added : $totalAdded")
 
   }
 
-  protected synchronized boolean hasMoreResults() {
-    if (resultsIterator==null) {
-      init()
-    }
-    return resultsIterator.hasNext()
-  }
-
-  protected synchronized ImmoResult nextResult() {
-    if (resultsIterator==null) {
-      init()
-    }
-    return resultsIterator.next()
-  }
 }

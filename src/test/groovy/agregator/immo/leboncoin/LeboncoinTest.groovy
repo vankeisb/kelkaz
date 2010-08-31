@@ -3,7 +3,7 @@ package agregator.immo.leboncoin
 import agregator.immo.ImmoCriteria
 import agregator.immo.ImmoCriteria.Demand
 import agregator.immo.ImmoCriteria.Type
-import agregator.core.Cartridge
+import agregator.MyTestListener
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,7 +15,7 @@ import agregator.core.Cartridge
 
 public class LeboncoinTest extends GroovyTestCase{
 
-  public void testLeboncoin() {
+  public void testLeboncoinLoc() {
     ImmoCriteria crit = new ImmoCriteria()
     crit.demand = Demand.RENT
     crit.type = Type.APPT
@@ -23,12 +23,30 @@ public class LeboncoinTest extends GroovyTestCase{
     crit.nbRoomsMax = 12
     crit.surfaceMin = 30
     crit.surfaceMax = 150
-    crit.priceMin = 200000
-    crit.priceMax = 250000
-    crit.city = 'Nice'
+    crit.priceMin = 1220
+    crit.priceMax = 3333
+    crit.postCode = '06000'
     LeboncoinAgregator a = new LeboncoinAgregator()
-    def listener = new LeboncoinListener()
+    def listener = new MyTestListener()
     a.addListener(listener)
     a.agregate(crit);
   }
+
+  public void testLeboncoinAchat() {
+    ImmoCriteria crit = new ImmoCriteria()
+    crit.demand = Demand.SELL
+    crit.type = Type.APPT
+    crit.nbRoomsMin = 2
+    crit.nbRoomsMax = 5
+    crit.surfaceMin = 60
+    crit.surfaceMax = 80
+    crit.priceMin = 50000
+    crit.priceMax = 300000
+    crit.postCode = '06000'
+    LeboncoinAgregator a = new LeboncoinAgregator()
+    def listener = new MyTestListener()
+    a.addListener(listener)
+    a.agregate(crit);
+  }
+
 }

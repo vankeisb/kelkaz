@@ -8,13 +8,27 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.swing.SwingUtilities
 import javax.swing.BoxLayout
 import java.awt.Component
+import agregator.core.Agregator
+import agregator.core.Cartridge
+import javax.swing.BorderFactory
 
 public class CartridgeListPanel extends JPanel implements AgregatorListener {
 
   private def items = new ConcurrentHashMap()
+  private final Agregator agregator
 
-  public CartridgeListPanel() {
+  static ResourceBundle messages = ResourceBundle.getBundle('MessagesBundle');  
+
+  public CartridgeListPanel(Agregator agregator) {
+    this.agregator = agregator
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS))
+    this.add(PanelStacker.createSeparatorLabel(messages.getString("supported.sites")))
+    for (Cartridge c : agregator.cartridges) {
+      def cmp = new CartridgeListItem(c)
+      items.put(c, cmp)
+      this.add(cmp)
+    }
+    setBorder(BorderFactory.createEmptyBorder(4,4,4,4))
   }
 
   public void onEvent(AgregatorEvent event) {
@@ -23,12 +37,9 @@ public class CartridgeListPanel extends JPanel implements AgregatorListener {
       def cartridge = ce.source
       if (ce instanceof CartridgeEvent.StartedEvent) {
         // cartridge started, add cartridge to list
-        def cmp = new CartridgeListItem(cartridge)
-        items.put(cartridge, cmp)
-        cmp.loading()
-        SwingUtilities.invokeLater {
-          this.add(cmp)
-          revalidate()
+        def cmp = items.get(cartridge)
+        if (cmp) {
+          cmp.loading()
         }
       } else if (ce instanceof CartridgeEvent.ResultEvent) {
         // cartridge result, increment count for the cartridge

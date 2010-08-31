@@ -85,7 +85,7 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     def p = webClient.getPage(url.toString())
 
     def spanNbAnnonces = p.getByXPath('/html/body/div[4]/div/div[3]/div/div[2]/div/div/h1/div/span')[0]
-    Integer nbAnnonces = Util.extractInteger(spanNbAnnonces.textContent)
+    Integer nbAnnonces = agregator.ui.Util.extractInteger(spanNbAnnonces.textContent)
     Integer nbPages = 1
     if (nbAnnonces>0) {
       nbPages = nbAnnonces / 10 + 1
@@ -99,7 +99,7 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     for (int pageNum=1 ; pageNum<=nbPages && !isKilled(); pageNum++) {
       logger.debug("Handling page $pageNum")
       if (pageNum>1) {
-        Util.sleepRandomTime()
+        agregator.ui.Util.sleepRandomTime()
         String u = url.toString() + "&p=$pageNum"
         logger.debug("Getting page $pageNum, url=$u")
         p = webClient.getPage(u)
@@ -120,9 +120,9 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
             }
           }
           def div = item.getByXPath('div/div[1]/div[1]')[0]
-          def price = Util.extractInteger(div.getAttribute('title').trim())
+          def price = agregator.ui.Util.extractInteger(div.getAttribute('title').trim())
           div = item.getByXPath('div/div[3]/div[1]/div[2]/div[2]/div[2]/a')[0]
-          def date = Util.extractDate(div.textContent)
+          def date = agregator.ui.Util.extractDate(div.textContent)
           def img = item.getByXPath('div/div[3]/div[1]/div[1]/a/img')[0]
           def imgUrl = null
           if (img!=null) {

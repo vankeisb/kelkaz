@@ -30,6 +30,7 @@ public class CartridgeListItem extends JPanel {
     add(countLabel)
     label.text = "$c.name"
     label.icon = c.icon
+    stopped()
   }
 
   private void setIconFromStr(String s) {
