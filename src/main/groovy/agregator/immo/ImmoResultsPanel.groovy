@@ -27,6 +27,7 @@ import javax.swing.JButton
 import java.awt.event.ActionListener
 import java.util.concurrent.ConcurrentHashMap
 import agregator.core.Result
+import agregator.ui.Util
 
 
 class ImmoResultsPanel extends ResultsPanel {
@@ -38,8 +39,6 @@ class ImmoResultsPanel extends ResultsPanel {
   private JTextField searchField
   private int nbResults = 0
   private ConcurrentHashMap resultsAndPanels = new ConcurrentHashMap() // result/component map used to remove from list
-
-  private ResourceBundle messages = ResourceBundle.getBundle('MessagesBundle');  
 
   private static final DateFormat DATE_FORMAT = new SimpleDateFormat('dd/MM/yyyy')
 
@@ -195,7 +194,7 @@ class ImmoResultsPanel extends ResultsPanel {
           bottomPane.add(priceLabel)
           bottomPane.add(Box.createRigidArea(new Dimension(3, 0)));
           def euroSign = new JLabel(
-                  text: messages.getString("currency.euro"),
+                  text: Util.getMessage("currency.euro"),
                   horizontalAlignment: JLabel.LEFT)          
           bottomPane.add(euroSign)
           widget(widget: bottomPane, constraints: BorderLayout.SOUTH)
@@ -231,7 +230,7 @@ class ImmoResultsPanel extends ResultsPanel {
     }
     nbResults++
     def newPanel = createResultComponent(r)
-    def s = messages.getString('status.results.count')
+    def s = Util.getMessage('status.results.count')
     SwingUtilities.invokeLater {
       panel.add(newPanel)
       statusLabel.text = "$nbResults $s"

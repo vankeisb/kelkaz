@@ -17,12 +17,10 @@ public class CartridgeListPanel extends JPanel implements AgregatorListener {
   private def items = new ConcurrentHashMap()
   private final Agregator agregator
 
-  static ResourceBundle messages = ResourceBundle.getBundle('MessagesBundle');  
-
   public CartridgeListPanel(Agregator agregator) {
     this.agregator = agregator
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS))
-    this.add(PanelStacker.createSeparatorLabel(messages.getString("supported.sites")))
+    this.add(PanelStacker.createSeparatorLabel(Util.getMessage("supported.sites")))
     for (Cartridge c : agregator.cartridges) {
       def cmp = new CartridgeListItem(c)
       items.put(c, cmp)

@@ -26,7 +26,6 @@ import static agregator.ui.PanelStacker.*
 public class ImmoSearchPanel implements SearchPanel {
 
   // TODO : Add some validation rules - Ex : priceMin < priceMax ...
-  private ResourceBundle messages = ResourceBundle.getBundle('MessagesBundle');
 
   private def makeTitledBorder(String title, int fontSizeIncrement) {
     Border outerBorder = BorderFactory.createEmptyBorder(0, 0, 8, 0)

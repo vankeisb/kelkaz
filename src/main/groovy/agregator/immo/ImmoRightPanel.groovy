@@ -10,16 +10,12 @@ import agregator.core.Cartridge
 import agregator.core.Agregator
 import java.awt.Color
 import javax.swing.BorderFactory
+import agregator.ui.Util
 
 class ImmoRightPanel extends JPanel {
 
-  static ResourceBundle messages = ResourceBundle.getBundle('MessagesBundle');  
-
   static def createImmoRightPanel(Agregator agregator) {
-
-
-
-    def ep1 = new JEditorPane("text/plain", messages.getString("welcome.message"))
+    def ep1 = new JEditorPane("text/plain", Util.getMessage("welcome.message"))
 
     ep1.editable = false
 
@@ -34,9 +30,9 @@ class ImmoRightPanel extends JPanel {
     }
     cartridgeLinks << new JLabel('') // used by panel stacking
 
-    def title = createSeparatorLabel(messages.getString("welcome.title"))
+    def title = createSeparatorLabel(Util.getMessage("welcome.title"))
 
-    def label2 = createSeparatorLabel(messages.getString("supported.sites"))
+    def label2 = createSeparatorLabel(Util.getMessage("supported.sites"))
     label2.background = Color.white
     label2.opaque = true
 

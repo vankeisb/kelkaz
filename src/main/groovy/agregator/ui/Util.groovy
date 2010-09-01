@@ -8,6 +8,16 @@ class Util {
 
   private static final Logger logger = Logger.getLogger(Util.class)
 
+  private static final Properties MESSAGES = {
+    Properties props = new Properties()
+    props.load(Util.class.getResourceAsStream("/MessagesBundle.properties"))
+    return props
+  }()
+
+  static String getMessage(String key) {
+    return MESSAGES.getProperty(key)
+  }
+
   static String trim(String s) {
     int sLen = s.length()
     def chars = []

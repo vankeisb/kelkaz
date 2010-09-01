@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <jnlp
     spec="1.0+"
-    codebase="http://rvkb.dyndns.info/ladaube/webstart/"
+    codebase="http://trouvtoo.rvkb.com/"
     href="$outputFile">
   <information>
     <vendor>TrouvToo Inc</vendor>
     <title>TrouvToo Immobilier</title>
-    <homepage href="http://rvkb.dyndns.info/ladaube"/>
+    <homepage href="http://trouvtoo.rvkb.com"/>
     <description kind="one-line">Recherche immobilière multi-sites.</description>
     <description kind="short">blah blah blah blah</description>
     <description kind="tooltip">Tooltip Description</description>
@@ -29,7 +29,5 @@
      $dependencies
   </resources>
   <application-desc main-class="$mainClass">
-    <argument>1</argument>
-    <argument>2</argument>
   </application-desc>
 </jnlp>
