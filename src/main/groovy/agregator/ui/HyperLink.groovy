@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent
 import java.awt.Color
 import java.awt.Cursor
 import java.awt.font.TextAttribute
+import javax.swing.Icon
 
 class HyperLink extends JLabel implements MouseListener {
 
@@ -13,25 +14,14 @@ class HyperLink extends JLabel implements MouseListener {
 
   private static final Color LINK_COLOR = Color.BLUE
 
-  def HyperLink(s, icon, i, c) {
-    super(s, icon, i)
-    this.c = c
+  def HyperLink(String s, Icon icon, int horizontalAlignment, Closure onClick) {
+    super(s, icon, horizontalAlignment)
+    this.c = onClick
     init()
   }
 
-  def HyperLink(s, i, c) {
-    super(s, i)
-    this.c = c
-    init()
-  }
-
-  def HyperLink(s, c) {
+  def HyperLink(String s, Closure c) {
     super(s)
-    this.c = c
-    init()
-  }
-
-  def HyperLink(c) {
     this.c = c
     init()
   }

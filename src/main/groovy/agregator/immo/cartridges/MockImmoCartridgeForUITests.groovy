@@ -3,14 +3,15 @@ package agregator.immo.cartridges
 import agregator.core.Cartridge
 import agregator.immo.ImmoCriteria
 import agregator.immo.ImmoResult
+import agregator.core.Agregator
 
 class MockImmoCartridgeForUITests extends Cartridge<ImmoCriteria, ImmoResult> {
 
-  def MockImmoCartridgeForUITests(agregator) {
+  def MockImmoCartridgeForUITests(Agregator agregator) {
     super("MockImmoCartridgeForUITests", agregator);
   }
 
-  def MockImmoCartridgeForUITests(name, agregator) {
+  def MockImmoCartridgeForUITests(String name, Agregator agregator) {
     super(name, agregator);
   }
 

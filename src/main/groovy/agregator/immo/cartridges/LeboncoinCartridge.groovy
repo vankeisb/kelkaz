@@ -10,6 +10,7 @@ import agregator.immo.ImmoCriteria.Type
 import agregator.util.Logger
 import com.gargoylesoftware.htmlunit.WebClient
 import static agregator.ui.Util.*
+import agregator.core.Agregator
 
 public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
@@ -17,7 +18,7 @@ public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
   private static final String ROOT_SITE = 'http://www.leboncoin.fr'
 
-  def LeboncoinCartridge(agregator) {
+  public LeboncoinCartridge(Agregator agregator) {
     super("www.leboncoin.fr", agregator);
   }
 

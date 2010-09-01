@@ -26,9 +26,10 @@ import javax.swing.JTextField
 import javax.swing.JButton
 import java.awt.event.ActionListener
 import java.util.concurrent.ConcurrentHashMap
+import agregator.core.Result
 
 
-class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
+class ImmoResultsPanel extends ResultsPanel {
 
   private JComponent component
   private JPanel panel
@@ -224,7 +225,7 @@ class ImmoResultsPanel extends ResultsPanel<ImmoResult> {
     return cmp
   }
 
-  void addResult(ImmoResult r) {
+  void addResult(Result  r) {
     if (!headerPanel.visible) {
       headerPanel.visible = true
     }
