@@ -71,14 +71,16 @@ class Util {
   static Integer extractInteger(String priceStr) {
     if (priceStr==null) {
       return 0
+    } else {
+      priceStr = trim(priceStr)
     }
     StringBuilder filtered = new StringBuilder()
     for (int i=0 ; i<priceStr.length() ; i++) {
       Character c = priceStr.charAt(i)
-      if (c=='.' || c==',') {
-        break
-      } else if (c.isDigit()) {
+      if (c.isDigit()) {
         filtered << c
+      } else if (!c.isWhitespace()) {
+        break
       }
     }
     String s = filtered.toString()

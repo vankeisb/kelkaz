@@ -43,6 +43,7 @@ public class CartridgeListItem extends JPanel {
 
   void stopped() {
     setIconFromStr '/Ok-16x16.png'
+    countLabel.text = " ($resultCount)" 
   }
 
   void error() {
