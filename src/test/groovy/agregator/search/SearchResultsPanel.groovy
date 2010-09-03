@@ -12,7 +12,11 @@ public class SearchResultsPanel extends ResultsPanel {
   JTextArea textArea = new JTextArea()
   SearchResultListModel listModel = new SearchResultListModel()
 
-  public void addResult(Result result) {
+  def SearchResultsPanel(excludedResults) {
+    super(excludedResults);
+  }
+
+  public void doAddResult(Result result) {
     listModel.addElement(new SearchResultListItem(result:result, cartridge:result.cartridge)) 
     textArea.text = textArea.text + "$result.title\n$result.shortText\nurl : $result.url\nCatridge : $result.cartridge.name\n\n"
   }

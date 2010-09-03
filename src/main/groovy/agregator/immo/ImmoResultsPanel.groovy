@@ -28,6 +28,7 @@ import java.awt.event.ActionListener
 import java.util.concurrent.ConcurrentHashMap
 import agregator.core.Result
 import agregator.ui.Util
+import agregator.core.ExcludedResults
 
 
 class ImmoResultsPanel extends ResultsPanel {
@@ -44,7 +45,8 @@ class ImmoResultsPanel extends ResultsPanel {
 
   private static final ImageIcon NO_PHOTO = new ImageIcon(ImmoResultsPanel.class.getResource("/no-photo.gif"))
 
-  def ImmoResultsPanel() {
+  def ImmoResultsPanel(ExcludedResults er) {
+    super(er)
     panel = new JPanel()
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS))
     component = new JPanel(layout: new BL())
@@ -207,16 +209,17 @@ class ImmoResultsPanel extends ResultsPanel {
         }))
         label(' | ')
         widget(new HyperLink("exclure", {
-          // for now just remove from the view, later on
-          // we might need persistent storage for this
-            def cmp = resultsAndPanels[r]
-            if (cmp) {
-              resultsAndPanels.remove(r)
-              SwingUtilities.invokeLater {
-                panel.remove cmp
-                panel.revalidate()
-              }
+          fireResultExcluded r
+          def cmp = resultsAndPanels[r]
+          if (cmp) {
+            resultsAndPanels.remove(r)
+            SwingUtilities.invokeLater {
+              panel.remove cmp
+              panel.revalidate()
+              def s = Util.getMessage('status.results.count')
+              statusLabel.text = "$nbResults $s, $excludedResults.nbExcluded exclus"
             }
+          }
         }))
       }
     }
@@ -224,16 +227,17 @@ class ImmoResultsPanel extends ResultsPanel {
     return cmp
   }
 
-  void addResult(Result  r) {
+  void doAddResult(Result  r) {
     if (!headerPanel.visible) {
       headerPanel.visible = true
     }
     nbResults++
+    int nbExcluded = excludedResults.getNbExcluded()
     def newPanel = createResultComponent(r)
     def s = Util.getMessage('status.results.count')
     SwingUtilities.invokeLater {
       panel.add(newPanel)
-      statusLabel.text = "$nbResults $s"
+      statusLabel.text = "$nbResults $s, $nbExcluded exclus"
       panel.revalidate()
     }
   }
