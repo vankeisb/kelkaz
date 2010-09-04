@@ -130,7 +130,7 @@ public class SeLogerCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
           }
           def description = agregator.ui.Util.trim(desc.toString().replace('\n', '').replace('\t', ''))
 
-          def u = ROOT_SITE + item.getByXPath("div/div[1]/div[1]/span/a")[0].getAttribute('href')
+          def u = item.getByXPath("div/div[1]/div[1]/span/a")[0].getAttribute('href')
           int indexOfQuestionMark = u.indexOf('?')
           if (indexOfQuestionMark>0) {
             u = u.substring(0, indexOfQuestionMark)
