@@ -9,6 +9,7 @@ import agregator.immo.ImmoCriteria.Demand
 import agregator.immo.ImmoCriteria
 import agregator.immo.ImmoResult
 import agregator.util.Logger
+import static agregator.ui.Util.*
 
 public class SeLogerCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
@@ -97,7 +98,7 @@ public class SeLogerCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     def p = webClient.getPage(url.toString())
 
     def spanNbAnnonces = p.getByXPath("//span[@id='refine_h1']")[0]
-    Integer nbAnnonces = agregator.ui.Util.extractInteger(spanNbAnnonces.textContent)
+    Integer nbAnnonces = extractInteger(spanNbAnnonces.textContent)
     Integer nbPages = 1
     if (nbAnnonces>0) {
       nbPages = nbAnnonces / 7 + 1
@@ -109,7 +110,7 @@ public class SeLogerCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     for (int pageNum=1 ; pageNum<=nbPages && !isKilled(); pageNum++) {
       logger.debug("Handling page $pageNum")
       if (pageNum>1) {
-        agregator.ui.Util.sleepRandomTime()
+        sleepRandomTime()
         String u = url.toString() + "&BCLANNpg=$pageNum"
         logger.debug("Getting page $pageNum, url=$u")
         p = webClient.getPage(u)
@@ -119,8 +120,8 @@ public class SeLogerCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
       listItems.each { item ->
 
         try {
-          def title = agregator.ui.Util.trim(item.getByXPath("div/div[1]/div[1]/span/a")[0].textContent)
-          def price = agregator.ui.Util.extractInteger(item.getByXPath("div/div[1]/div[2]/span[@class='mea2']")[0].textContent)
+          def title = trim(item.getByXPath("div/div[1]/div[1]/span/a")[0].textContent)
+          def price = extractInteger(item.getByXPath("div/div[1]/div[2]/span[@class='mea2']")[0].textContent)
           def descHolderElem = item.getByXPath("div/div[2]/div[1]/div/div/div[2]")[0]
           StringBuilder desc = new StringBuilder()
           for (def node : descHolderElem.children) {
@@ -128,7 +129,7 @@ public class SeLogerCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
               desc << node.textContent
             }
           }
-          def description = agregator.ui.Util.trim(desc.toString().replace('\n', '').replace('\t', ''))
+          def description = trim(desc.toString().replace('\n', '').replace('\t', ''))
 
           def u = item.getByXPath("div/div[1]/div[1]/span/a")[0].getAttribute('href')
           int indexOfQuestionMark = u.indexOf('?')
@@ -143,7 +144,7 @@ public class SeLogerCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
           if (!dateEl) {
             dateEl = item.getByXPath("div/div[2]/div[1]/div/div/div[1]/div[3]")[0]
           }
-          def date = agregator.ui.Util.extractDate(dateEl.textContent)
+          def date = extractDate(dateEl.textContent)
 
 
           fireResultEvent(new ImmoResult(this, title, u, description, price, date, imgUrl))

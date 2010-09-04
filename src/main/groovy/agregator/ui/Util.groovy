@@ -74,13 +74,16 @@ class Util {
     } else {
       priceStr = trim(priceStr)
     }
+    boolean stop = false
     StringBuilder filtered = new StringBuilder()
-    for (int i=0 ; i<priceStr.length() ; i++) {
+    for (int i=0 ; i<priceStr.length() && !stop; i++) {
       Character c = priceStr.charAt(i)
       if (c.isDigit()) {
         filtered << c
-      } else if (!c.isWhitespace()) {
-        break
+      } else {
+        if (!c.isWhitespace() && !(int)c==160) {
+          stop = true          
+        }
       }
     }
     String s = filtered.toString()
