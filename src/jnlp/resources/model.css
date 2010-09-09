@@ -1,0 +1,92 @@
+#header {
+    background-image:url("images/backHeader.png");
+    background-repeat:repeat-x;
+/*border-bottom:solid 10px #d2691e;*/
+}
+#header h1 {
+    text-align: center;
+}
+#navigation ul {
+    margin: 0;
+    list-style: none;
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+#navigation li {
+    display: inline;
+    padding-left: 50px;
+    padding-right: 50px;
+}
+#navigation a {
+    padding: 6px;
+    line-height: 1.5;
+    font-size: .9em;
+    text-decoration: none;
+}
+#content{
+    text-align: center;
+    padding-bottom: 50px;
+}
+#content p{
+}
+#content a{
+}
+
+#marketing ul {
+    list-style: none;
+    text-align: center;
+}
+#marketing li {
+    padding-left: 50px;
+    padding-right: 80px;
+    margin-right: 50px;
+    background-image:url("images/note.png");
+    background-repeat:no-repeat;
+    display:inline-block;
+    width: 250px;
+    height: 400px;
+    text-align: left;
+}
+
+#marketing li.h2{
+    font-weight:bold;
+
+}
+
+#easy{
+    height: 34px;
+    padding-left: 40px;
+    background-image:url("images/easy.png");
+    background-repeat: no-repeat;
+}
+
+#efficace{
+    height: 34px;
+    padding-left: 40px;
+    background-image:url("images/efficace.png");
+    background-repeat: no-repeat;
+}
+
+#pratique{
+    height: 34px;
+    padding-left: 40px;
+    background-image:url("images/pratique.png");
+    background-repeat: no-repeat;
+}
+
+
+
+#footer {
+    padding: 15px 20px;
+    font-size: .85em;
+}
+#footer p {
+    margin: .5em 0;
+}
+#copyright {
+    text-align: right;
+    font-size: 1em;
+}
+
+

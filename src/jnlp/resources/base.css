@@ -1,0 +1,34 @@
+html {
+    font-size: 100%;
+}
+
+body {
+	margin: 0;
+	padding: 10px 20px;
+	font-family: Verdana, "Bitstream Vera Sans", "Lucida Grande", sans-serif;
+	font-size: .8em;
+	line-height: 1.25;
+	color: black;
+	background: white;
+}
+
+
+ul {
+	list-style: square;
+}
+li {
+	margin: 0;
+	padding: 0;
+}
+a {
+	color: mediumblue;
+	text-decoration: underline;
+}
+a:hover, a:focus {
+	color: crimson;
+}
+a img {
+	border: none; /* -> 10 */
+}
+
+
