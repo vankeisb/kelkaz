@@ -51,8 +51,11 @@ class ImmoResultsPanel extends ResultsPanel {
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS))
     component = new JPanel(layout: new BL())
     def scrollPane = new JScrollPane(panel)
+    scrollPane.verticalScrollBar.unitIncrement = 30
+    scrollPane.verticalScrollBar.blockIncrement = 50
     scrollPane.horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
     scrollPane.border = BorderFactory.createEmptyBorder()
+
     component.add(scrollPane, BL.CENTER)
     statusLabel = new JLabel()
     statusLabel.horizontalAlignment = JLabel.RIGHT
