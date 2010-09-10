@@ -11,6 +11,7 @@ import agregator.util.Logger
 import com.gargoylesoftware.htmlunit.WebClient
 import static agregator.ui.Util.*
 import agregator.core.Agregator
+import java.text.SimpleDateFormat
 
 public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
@@ -72,6 +73,15 @@ public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     }
     return res
   }()
+
+  private def MONTH_MAPPING_TABLE = {
+    def res = new HashMap<String, String>()
+    res.put('août', '08')
+    res.put('sept', '09')
+
+    return res
+  }()
+
 
   private def findValueInSelect(value, map, maxKey, maxVal) {
     def p = value
@@ -173,6 +183,7 @@ public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
     def spanNbAnnonces = p.getByXPath("//li[@class='tab_all']/strong")[1]
     if (spanNbAnnonces==null) {
+      // TODO: If there is no results, //li[@class='tab_all']/strong doesn't exist
       throw new IllegalStateException("Could not find //li[@class='tab_all']/strong in page $p")
     }
     Integer nbAnnonces = extractInteger(spanNbAnnonces.textContent)
@@ -202,7 +213,7 @@ public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
       listItems.each { item ->
         try {
           def aEl = item.getByXPath("td[2]/table/tbody/tr[2]/td[2]/a")[0]
-          // TODO date
+
           // TODO desc
           def u = null,
             title = null,
@@ -214,11 +225,15 @@ public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
             // no image, different markup
             aEl = item.getByXPath("td[3]/a")[0]
             title = trim(aEl.textContent)
+
           } else {
             def imgEl = item.getByXPath("td[2]/table/tbody/tr[2]/td[2]/a/img")[0]
             imgUrl = imgEl.getAttribute('src')            
             title = trim(aEl.getByXPath("img")[0].getAttribute('alt'))
           }
+          
+          def dateEl = item.getByXPath("td[1]")[0]
+          date = extractDateLBC(trim(dateEl.textContent))
           u = aEl.getAttribute('href')
           def priceEl = item.getByXPath("td[3]/text()[2]")[0]
           price = extractInteger(priceEl.textContent)
@@ -237,6 +252,30 @@ public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
     logger.debug("total added : $totalAdded")
 
+  }
+
+  private Date extractDateLBC(String sDate){
+    def calendar= new GregorianCalendar();
+    calendar.setTime(new Date());
+
+    if (sDate.contains('Aujourd\'hui')){
+      return calendar.time
+
+    }else if (sDate.contains('Hier')){
+      calendar.add(Calendar.DATE,-1)
+      return calendar.time
+
+    } else{
+      sDate = sDate.substring(0, sDate.length()-5)
+      def dateAtt = sDate.split(" ")
+      SimpleDateFormat format = new SimpleDateFormat('dd/MM/yyyy')
+      SimpleDateFormat yearFormat = new SimpleDateFormat('yyyy')
+      if(dateAtt[0].length()<2){
+        dateAtt[0] = '0'+dateAtt[0]
+      }
+      sDate = dateAtt[0]+"/"+MONTH_MAPPING_TABLE.getAt(dateAtt[1])+"/"+yearFormat.format(new Date())
+      return format.parse(sDate)
+    }
   }
 
 }
