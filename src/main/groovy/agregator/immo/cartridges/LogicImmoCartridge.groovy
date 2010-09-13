@@ -110,6 +110,12 @@ public class LogicImmoCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     def url = buildUrl(1, postCode)
     logger.debug("Sending request : " + url);
 
+    webClient.addRequestHeader("User-Agent","Mozilla/5.0 (X11; U; Linux i686; fr; rv:1.9.2.9) Gecko/20100825 Ubuntu/10.04 (lucid) Firefox/3.6.9")
+    webClient.addRequestHeader("Accept","text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8")
+    webClient.addRequestHeader("Accept-Charset","ISO-8859-1,utf-8;q=0.7,*;q=0.7")
+    webClient.addRequestHeader("Accept-Encoding","gzip,deflate")
+    webClient.addRequestHeader("Accept-Language","fr,fr-fr;q=0.8,en-us;q=0.5,en;q=0.3")
+
     def p = webClient.getPage(url)
 
     def spanNbAnnonces = p.getByXPath("/html/body/div[2]/div/div[2]/div/strong")[0]
