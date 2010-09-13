@@ -11,12 +11,13 @@ import agregator.core.Agregator
 import java.awt.Color
 import javax.swing.BorderFactory
 import agregator.ui.Util
+import javax.swing.JTextArea
 
 class ImmoRightPanel extends JPanel {
 
   static def createImmoRightPanel(Agregator agregator) {
-    def ep1 = new JEditorPane("text/plain", Util.getMessage("welcome.message"))
-
+    def ep1 = new JEditorPane("text/html", Util.getMessage("welcome.message"))
+    
     ep1.editable = false
 
     def cartridgeLinks = []
