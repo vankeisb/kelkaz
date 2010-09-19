@@ -28,10 +28,10 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
 
   private Agregator agregator = null
 
-  private static final java.awt.Image ICON = new ImageIcon(AgregatorFrame.class.getResource("/icon.png")).getImage()
+  private static final java.awt.Image ICON = new ImageIcon(AgregatorFrame.class.getResource("/icon.gif")).getImage()
 
   public AgregatorFrame(Agregator agregator, SearchPanel searchPanel, ResultsPanel resultsPanel) throws HeadlessException {
-    super("TrouvToo immobilier - recherche multi-sites")
+    super("Kelkaz - recherche multi-sites")
     setIconImage ICON
     this.cartridgeListPanel = new CartridgeListPanel(agregator)
     this.agregator = agregator

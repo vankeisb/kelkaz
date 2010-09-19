@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <jnlp
     spec="1.0+"
-    codebase="http://trouvtoo.rvkb.com/"
+    codebase="http://kelkaz.rvkb.com/"
     href="$outputFile">
   <information>
-    <vendor>TrouvToo Inc</vendor>
-    <title>TrouvToo Immobilier</title>
-    <homepage href="http://trouvtoo.rvkb.com"/>
+    <vendor>Kelkaz</vendor>
+    <title>Kelkaz - Recherche multi-sites</title>
+    <homepage href="http://www.kelkaz.fr"/>
     <description kind="one-line">Recherche immobilière multi-sites.</description>
-    <description kind="short">blah blah blah blah</description>
-    <description kind="tooltip">Tooltip Description</description>
+    <description kind="short">Kelkaz</description>
+    <description kind="tooltip">Recherche multi-sites</description>
     <icon
       width="35"
       height="26"
