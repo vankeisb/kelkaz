@@ -39,16 +39,12 @@ class ImmoRightPanel extends JPanel {
 
     def cartridgesPanel = addBorder(stackPanels(cartridgeLinks, BorderLayout.NORTH, Color.white), BorderFactory.createEmptyBorder(4,4,4,4))
 
-    def p = addBorder(stackPanels([
+    return addBorder(stackPanels([
             title,
             ep1,
             label2,
             cartridgesPanel
-    ], BorderLayout.NORTH, Color.white), BorderFactory.createEmptyBorder(0, 10, 10, 10))
-
-    p.background = Color.white
-
-    return p
+    ], BorderLayout.NORTH, Color.white), BorderFactory.createEmptyBorder(10, 10, 10, 10))
 
   }
 }

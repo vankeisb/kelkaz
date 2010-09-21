@@ -67,22 +67,22 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
       }
 
       // content
-      splitPane(
-              constraints: BL.CENTER,
-              leftComponent: stackPanels([
+      def centerPanel = panel(constraints: BL.CENTER, layout: new BL())
+      centerPanel.add(stackPanels([stackPanels([
                       searchPanel.getComponent(),
                       addBorder(stackPanels([btnAgregate, new JLabel()], BL.EAST), BorderFactory.createEmptyBorder(4,4,10,4)),
                       new JSeparator(),
                       cartridgeListPanel
-                    ], BL.NORTH),
-              rightComponent: rightPanel
+                    ], BL.NORTH), rightPanel], BL.WEST), BL.CENTER
       )
+
 
       // feed right panel with welcome text
       rightPanel.removeAll()
 
       // home page
       rightPanel.add(ImmoRightPanel.createImmoRightPanel(agregator), BL.CENTER)
+      rightPanel.setBorder(BorderFactory.createEmptyBorder(2,0,0,0))
     })
   }
 
