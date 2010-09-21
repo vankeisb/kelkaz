@@ -107,7 +107,7 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
       int nbAdded = 0
       def listItems = p.getByXPath("//div[@class='au_boxListe_C']")
       listItems.each { item ->
-        def lnk = item.getByXPath("div/div[3]/div[1]/div[2]/div[1]/div[1]/a")[0]
+        def lnk = item.getByXPath("div/div[3]/div[1]/div[2]/div[1]/div[2]/a")[0]
         if (lnk) {
           def title = lnk.textContent.trim()
           def u = ROOT_SITE + lnk.getAttribute('href')
