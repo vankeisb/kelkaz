@@ -36,9 +36,9 @@ public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     res[700000] = 19
     res[1000000] = 20
     res[1500000] = 21
-    return res  
+    return res
   }()
-    
+
   private def LOYER_PRICE_TABLE = {
     def res = new HashMap()
     for (int i=0;i<11;i++) {
@@ -48,7 +48,7 @@ public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     res[1200] = 1200
     res[1600] = 1600
     res[2000] = 2000
-    return res  
+    return res
   }()
 
   private def SURFACE_TABLE = {
@@ -164,7 +164,7 @@ public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
       )
       url << "&roe=$v"
     }
-    
+
     if (criteria.type==Type.APPT) {
       url << "&ret=2"
     } else {
@@ -183,75 +183,74 @@ public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
     def spanNbAnnonces = p.getByXPath("//li[@class='tab_all']/strong")[1]
     if (spanNbAnnonces==null) {
-      // TODO: If there is no results, //li[@class='tab_all']/strong doesn't exist
-      throw new IllegalStateException("Could not find //li[@class='tab_all']/strong in page $p")
-    }
-    Integer nbAnnonces = extractInteger(spanNbAnnonces.textContent)
-    Integer nbPages = 1
-    if (nbAnnonces>0) {
-      nbPages = nbAnnonces / 50 + 1
-    }
-    logger.debug("Nb pages : $nbPages")
-
-    int totalAdded = 0
-
-    for (int pageNum=1 ; pageNum<=nbPages && !isKilled(); pageNum++) {
-      logger.debug("Handling page $pageNum")
-      if (pageNum>1) {
-        sleepRandomTime()
-
-        // http://www.leboncoin.fr/locations/offres/provence_alpes_cote_d_azur/occasions/?f=a&th=1&mrs=200&mre=1600&sqs=2&zz=06000
-        // http://www.leboncoin.fr/locations/offres/provence_alpes_cote_d_azur/occasions/?o=2&mrs=200&mre=1600&sqs=2&zz=06000&th=1
-
-
-        String u = url.toString().replaceAll(/f=a&/, "o=$pageNum&")
-        logger.debug("Getting page $pageNum, url=$u")
-        p = webClient.getPage(u)
+      // No result found...
+    }else{
+      Integer nbAnnonces = extractInteger(spanNbAnnonces.textContent)
+      Integer nbPages = 1
+      if (nbAnnonces>0) {
+        nbPages = nbAnnonces / 50 + 1
       }
-      int nbAdded = 0
-      def listItems = p.getByXPath("//table[@id='hl']/tbody/tr")
-      listItems.each { item ->
-        try {
-          def aEl = item.getByXPath("td[2]/table/tbody/tr[2]/td[2]/a")[0]
+      logger.debug("Nb pages : $nbPages")
 
-          def u = null,
+      int totalAdded = 0
+
+      for (int pageNum=1 ; pageNum<=nbPages && !isKilled(); pageNum++) {
+        logger.debug("Handling page $pageNum")
+        if (pageNum>1) {
+          sleepRandomTime()
+
+          // http://www.leboncoin.fr/locations/offres/provence_alpes_cote_d_azur/occasions/?f=a&th=1&mrs=200&mre=1600&sqs=2&zz=06000
+          // http://www.leboncoin.fr/locations/offres/provence_alpes_cote_d_azur/occasions/?o=2&mrs=200&mre=1600&sqs=2&zz=06000&th=1
+
+
+          String u = url.toString().replaceAll(/f=a&/, "o=$pageNum&")
+          logger.debug("Getting page $pageNum, url=$u")
+          p = webClient.getPage(u)
+        }
+        int nbAdded = 0
+        def listItems = p.getByXPath("//table[@id='hl']/tbody/tr")
+        listItems.each { item ->
+          try {
+            def aEl = item.getByXPath("td[2]/table/tbody/tr[2]/td[2]/a")[0]
+
+            def u = null,
             title = null,
             imgUrl = null,
             price = null,
             description = null,
             date = null
-          if (aEl==null) {
-            // no image, different markup
-            aEl = item.getByXPath("td[3]/a")[0]
-            title = trim(aEl.textContent)
+            if (aEl==null) {
+              // no image, different markup
+              aEl = item.getByXPath("td[3]/a")[0]
+              title = trim(aEl.textContent)
 
-          } else {
-            def imgEl = item.getByXPath("td[2]/table/tbody/tr[2]/td[2]/a/img")[0]
-            imgUrl = imgEl.getAttribute('src')            
-            title = trim(aEl.getByXPath("img")[0].getAttribute('alt'))
+            } else {
+              def imgEl = item.getByXPath("td[2]/table/tbody/tr[2]/td[2]/a/img")[0]
+              imgUrl = imgEl.getAttribute('src')
+              title = trim(aEl.getByXPath("img")[0].getAttribute('alt'))
+            }
+
+            def dateEl = item.getByXPath("td[1]")[0]
+            date = extractDateLBC(trim(dateEl.textContent))
+            u = aEl.getAttribute('href')
+            description = extractDescription(u)
+            def priceEl = item.getByXPath("td[3]/text()[2]")[0]
+            price = extractInteger(priceEl.textContent)
+            fireResultEvent(new ImmoResult(this, title, u, description, price, date, imgUrl))
+            nbAdded++
+            totalAdded++
+            logger.debug("Added result title $title, url $u" + ", desc $description, date $date")
+          } catch(Throwable t) {
+            logger.error("Exception caught while processing item : $item", t)
           }
-          
-          def dateEl = item.getByXPath("td[1]")[0]
-          date = extractDateLBC(trim(dateEl.textContent))
-          u = aEl.getAttribute('href')
-          description = extractDescription(u)          
-          def priceEl = item.getByXPath("td[3]/text()[2]")[0]
-          price = extractInteger(priceEl.textContent)
-          fireResultEvent(new ImmoResult(this, title, u, description, price, date, imgUrl))
-          nbAdded++
-          totalAdded++
-          logger.debug("Added result title $title, url $u" + ", desc $description, date $date")
-        } catch(Throwable t) {
-          logger.error("Exception caught while processing item : $item", t)
+
         }
 
+        logger.debug("added $nbAdded results for page $pageNum, total added $totalAdded")
       }
 
-      logger.debug("added $nbAdded results for page $pageNum, total added $totalAdded")
+      logger.debug("total added : $totalAdded")
     }
-
-    logger.debug("total added : $totalAdded")
-
   }
 
   private Date extractDateLBC(String sDate){
