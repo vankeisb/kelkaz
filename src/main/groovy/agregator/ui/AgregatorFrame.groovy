@@ -60,11 +60,15 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
 
     setContentPane(swing.panel(layout: new BL()) {
       // banner
-      panel(constraints: BL.NORTH, layout: new BL(),background: Color.white) {
-        label(constraints: BL.CENTER,
-                icon: new ImageIcon(getClass().getResource('/banner.jpg')),
-                background: Color.white)
-      }
+      def banner = new HyperLink(
+              "",
+              new ImageIcon(getClass().getResource('/banner.jpg')),
+              JLabel.LEFT,
+              {
+                java.awt.Desktop.getDesktop().browse( new URL( "http://kelkaz.fr" ).toURI() )
+              })
+      def northPanel = panel(constraints: BL.NORTH, layout: new BL(),background: Color.white)
+      northPanel.add(banner, BL.CENTER)
 
       // content
       def centerPanel = panel(constraints: BL.CENTER, layout: new BL())
