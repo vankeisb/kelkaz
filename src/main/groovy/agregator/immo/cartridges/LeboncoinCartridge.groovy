@@ -214,7 +214,6 @@ public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
         try {
           def aEl = item.getByXPath("td[2]/table/tbody/tr[2]/td[2]/a")[0]
 
-          // TODO desc
           def u = null,
             title = null,
             imgUrl = null,
@@ -235,6 +234,7 @@ public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
           def dateEl = item.getByXPath("td[1]")[0]
           date = extractDateLBC(trim(dateEl.textContent))
           u = aEl.getAttribute('href')
+          description = extractDescription(u)          
           def priceEl = item.getByXPath("td[3]/text()[2]")[0]
           price = extractInteger(priceEl.textContent)
           fireResultEvent(new ImmoResult(this, title, u, description, price, date, imgUrl))
@@ -278,4 +278,12 @@ public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     }
   }
 
+  private String extractDescription(String url){
+    WebClient webClient = new WebClient()
+    webClient.setJavaScriptEnabled(false)
+    def p = webClient.getPage(url)
+
+    def dElm = p.getByXPath("//span[@class='lbcAd_text']")[0]
+    return trim(dElm.textContent)
+  }
 }
