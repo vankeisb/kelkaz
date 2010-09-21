@@ -4,6 +4,8 @@ import agregator.MyTestListener
 import agregator.immo.ImmoCriteria
 import agregator.immo.ImmoCriteria.Demand
 import agregator.immo.ImmoCriteria.Type
+import agregator.immo.ImmoTestBase
+import agregator.core.Agregator
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,7 +15,12 @@ import agregator.immo.ImmoCriteria.Type
  * To change this template use File | Settings | File Templates.
  */
 
-public class LogicImmoTest extends GroovyTestCase{
+public class LogicImmoTest extends ImmoTestBase {
+
+  protected Agregator getAgregator() {
+    return new LogicImmoAgregator()
+  }
+
 
   public void testLoc() {
     ImmoCriteria crit = new ImmoCriteria()
@@ -49,5 +56,16 @@ public class LogicImmoTest extends GroovyTestCase{
     int nbResults = listener.getResults().size()
     assert nbResults == 68
   }
+
+  public void testBug10() {
+    doSearchAndAssertResultsMatchPrice(new ImmoCriteria([
+      demand: Demand.SELL,
+      type: Type.APPT,
+      priceMin: 100000,
+      priceMax: 110000,
+      postCode: '06000'
+    ]))
+  }
+  
 
 }

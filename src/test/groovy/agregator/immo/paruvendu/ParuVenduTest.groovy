@@ -5,11 +5,17 @@ import agregator.immo.ImmoCriteria.Demand
 import agregator.immo.ImmoCriteria.Type
 import com.gargoylesoftware.htmlunit.WebClient
 import com.gargoylesoftware.htmlunit.html.HtmlPage
-import com.gargoylesoftware.htmlunit.BrowserVersion
-import agregator.immo.ImmoResult
-import agregator.MyTestListener
 
-public class ParuVenduTest extends GroovyTestCase {
+import agregator.immo.ImmoResult
+
+import agregator.immo.ImmoTestBase
+import agregator.core.Agregator
+
+public class ParuVenduTest extends ImmoTestBase {
+
+  protected Agregator getAgregator() {
+    return new ParuVenduAgregator()
+  }
 
   private String removeSpaces(String s) {
     int i=0;
@@ -21,29 +27,6 @@ public class ParuVenduTest extends GroovyTestCase {
       }
     }
     return res.toString()
-  }
-
-  private void doTest(ImmoCriteria crit, int expectedResultCount) {
-    ParuVenduAgregator a = new ParuVenduAgregator()
-    def listener = new MyTestListener()
-    a.addListener(listener)
-    a.agregate(crit)
-
-    def results = listener.results
-    def nbResults = results.size()
-    assert nbResults == expectedResultCount
-
-    assertFirstResultInPage results[0]
-
-    // check that all photos are different
-    def urls = []
-    results.each { r->
-      if (r.photoUrl) {
-        assert !urls.contains(r.photoUrl)
-        urls << r.photoUrl        
-      }
-    }
-
   }
 
   private void assertFirstResultInPage(ImmoResult result) {
@@ -59,7 +42,7 @@ public class ParuVenduTest extends GroovyTestCase {
   }
 
   public void testPagination() {
-    doTest(new ImmoCriteria([
+    searchAndAssertResultCountAndPhotos(new ImmoCriteria([
       demand: Demand.RENT,
       type: Type.APPT,
       nbRoomsMin: 2,
@@ -68,7 +51,7 @@ public class ParuVenduTest extends GroovyTestCase {
   }
 
   public void testLocAppt() {
-    doTest(new ImmoCriteria([
+    searchAndAssertResultCountAndPhotos(new ImmoCriteria([
       demand: Demand.RENT,
       type: Type.APPT,
       nbRoomsMin: 3,
@@ -82,7 +65,7 @@ public class ParuVenduTest extends GroovyTestCase {
   }
 
   public void testLocMaison() {
-    doTest(new ImmoCriteria([
+    searchAndAssertResultCountAndPhotos(new ImmoCriteria([
       demand: Demand.RENT,
       type: Type.MAISON,
       nbRoomsMin: 3,
@@ -96,7 +79,7 @@ public class ParuVenduTest extends GroovyTestCase {
   }
 
   public void testBug18() {
-    doTest(new ImmoCriteria([
+    searchAndAssertResultCountAndPhotos(new ImmoCriteria([
       demand: Demand.SELL,
       type: Type.APPT,
       nbRoomsMin: 3,

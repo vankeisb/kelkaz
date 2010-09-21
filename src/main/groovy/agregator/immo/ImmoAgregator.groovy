@@ -22,10 +22,6 @@ public class ImmoAgregator extends Agregator {
 //    cartridges << new MockImmoCartridgeForUITests("www.foobar.com", this)
 //    cartridges << new MockImmoCartridgeForUITests("www.yeah.fr", this)
 //    cartridges << new MockImmoCartridgeForUITests("www.shootme.com", this)
-//    cartridges << new LeboncoinCartridge(this)
-//    cartridges << new OrpiCartridge(this)
-//    cartridges << new PAPCartridge(this)
-
   }
 
 

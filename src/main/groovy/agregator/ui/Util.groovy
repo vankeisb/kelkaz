@@ -74,18 +74,36 @@ class Util {
     } else {
       priceStr = trim(priceStr)
     }
-    boolean stop = false
+    // remove fist chars until we find a digit
     StringBuilder filtered = new StringBuilder()
-    for (int i=0 ; i<priceStr.length() && !stop; i++) {
+    int priceLen = priceStr.length()
+    boolean started = false
+    for (int i=0 ; i<priceLen; i++) {
+      Character c = priceStr.charAt(i)
+      if (c.isDigit()) {
+        started = true
+      }
+      if (started) {
+        filtered << c
+      }
+    }
+    priceStr = filtered.toString()
+
+    // now keep digits only until we find a non digit char, skipping spaces
+    filtered = new StringBuilder()
+    priceLen = priceStr.length()
+    for (int i=0 ; i<priceLen; i++) {
       Character c = priceStr.charAt(i)
       if (c.isDigit()) {
         filtered << c
       } else {
-        if (!c.isWhitespace() && !(int)c==160) {
-          stop = true          
+        if ((!c.isWhitespace()) && ((int)c!=160)) {
+          break
         }
       }
     }
+
+    // parse int
     String s = filtered.toString()
     if (s.length()>0) {
       try {
