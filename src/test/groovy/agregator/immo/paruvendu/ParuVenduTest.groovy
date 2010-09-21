@@ -95,4 +95,17 @@ public class ParuVenduTest extends GroovyTestCase {
     ]), 3)
   }
 
+  public void testBug18() {
+    doTest(new ImmoCriteria([
+      demand: Demand.SELL,
+      type: Type.APPT,
+      nbRoomsMin: 3,
+      surfaceMin: 80,
+      surfaceMax: 150,
+      priceMax: 300000,
+      postCode: '06000'
+    ]), 24)
+  }
+
+  
 }
