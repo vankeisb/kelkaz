@@ -97,7 +97,7 @@ public class FnaimCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     for (int pageNum=1 ; pageNum<=nbPages && !isKilled(); pageNum++) {
       logger.debug("Handling page $pageNum")
       if (pageNum>1) {
-        agregator.ui.Util.sleepRandomTime()
+        sleepRandomTime()
         String u = url.toString() + "&page=$pageNum"
         logger.debug("Getting page $pageNum, url=$u")
         p = webClient.getPage(u)

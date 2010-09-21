@@ -115,19 +115,4 @@ class Util {
       return 0
     }
   }
-
-  static void sleepRandomTime() {
-    Random r = Random.newInstance()
-    int delay = r.nextInt(10000)
-    if (delay<5000) {
-      delay = 10000 - delay
-    }
-    try {
-      logger.debug("Sleeping for $delay ms")
-      Thread.sleep(delay)
-    } catch(Exception e) {
-      // do nothing
-    }
-  }
-
 }

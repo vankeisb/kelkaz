@@ -3,11 +3,11 @@ package agregator.core;
 import agregator.util.Logger;
 
 import javax.swing.*;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 /**
  * Base class for cartridges, grabbing results from one site, based on passed
@@ -145,4 +145,32 @@ public abstract class Cartridge<C extends Criteria, R extends Result> {
     protected final boolean isKilled() {
         return killed;
     }
+
+
+    private static final int SLEEP_DELAY = 500;
+
+    /**
+     * Utility method that can be called by cartridges in order to
+     * simulate "real" navigation.
+     * sleeps the current thread for a random period between
+     * 5 and 10 secs, but returns fast if the cartridge is killed.
+     */
+    protected void sleepRandomTime() {
+      Random r = new Random();
+      int delay = r.nextInt(10000);
+      if (delay<5000) {
+        delay = 10000 - delay;
+      }
+      try {
+          int nbSleeps = delay / SLEEP_DELAY;
+          int totalSleep = nbSleeps * SLEEP_DELAY;
+          logger.debug("Sleeping for " + totalSleep + " ms");
+          for (int i=0 ; i<nbSleeps && !killed; i++) {
+              Thread.sleep(SLEEP_DELAY);
+          }
+      } catch(Exception e) {
+        // do nothing
+      }
+    }
+
 }
