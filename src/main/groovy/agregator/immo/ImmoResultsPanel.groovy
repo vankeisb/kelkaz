@@ -1,34 +1,19 @@
 package agregator.immo
 
-import agregator.ui.ResultsPanel
-import javax.swing.JComponent
-import java.awt.Color
-import groovy.swing.SwingBuilder
-import javax.swing.BorderFactory
-import javax.swing.ImageIcon
-import java.awt.Image
 import java.awt.BorderLayout as BL
-import javax.swing.JPanel
-import javax.swing.BoxLayout
-import javax.swing.Box
-import javax.swing.JLabel
-import java.awt.Dimension
-import java.text.SimpleDateFormat
-import java.text.DateFormat
-import javax.swing.JScrollPane
-import javax.swing.SwingUtilities
-import java.awt.BorderLayout
-import javax.swing.JFrame
-import javax.swing.ScrollPaneConstants
-import java.awt.Font
-import agregator.ui.HyperLink
-import javax.swing.JTextField
-import javax.swing.JButton
-import java.awt.event.ActionListener
-import java.util.concurrent.ConcurrentHashMap
-import agregator.core.Result
-import agregator.ui.Util
 
+import agregator.core.Exclusions
+import agregator.core.Result
+import agregator.ui.HyperLink
+import agregator.ui.ResultsPanel
+import agregator.ui.Util
+import groovy.swing.SwingBuilder
+import java.awt.event.ActionListener
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.concurrent.ConcurrentHashMap
+import javax.swing.*
+import java.awt.BorderLayout
 
 class ImmoResultsPanel extends ResultsPanel {
 
@@ -39,14 +24,12 @@ class ImmoResultsPanel extends ResultsPanel {
   private JTextField searchField
   private JButton btnClear
   private JButton btnFilter
-  private int nbResults = 0
+  private JCheckBox cbIncludeExclusions
   private ConcurrentHashMap resultsAndPanels = new ConcurrentHashMap() // result/component map used to remove from list
 
-  private static final DateFormat DATE_FORMAT = new SimpleDateFormat('dd/MM/yyyy')
+  boolean showExclusions = false
 
-  private static final ImageIcon NO_PHOTO = new ImageIcon(ImmoResultsPanel.class.getResource("/no-photo.gif"))
-
-  def ImmoResultsPanel(ImmoExclusions er) {
+  public ImmoResultsPanel(Exclusions er) {
     super(er)
     panel = new JPanel()
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS))
@@ -72,32 +55,61 @@ class ImmoResultsPanel extends ResultsPanel {
     btnClear.addActionListener({ clear() } as ActionListener)
     btnClear.enabled = false
 
+    cbIncludeExclusions = new JCheckBox('Afficher les resultats exclus')
+    cbIncludeExclusions.addActionListener( { toggleExclusions() } as ActionListener )
+
     // header panel
     headerPanel = new SwingBuilder().panel(
             visible: false,
             border: BorderFactory.createEmptyBorder(5,5,5,5)) {
-      boxLayout(axis: BoxLayout.X_AXIS)
-      label('Trier par ')
-      widget(new HyperLink("prix", {
-        sortPrice()
-      }))
-      label(' | ')
-      widget(new HyperLink("date", {
-        sortDate()
-      }))
-      label(' | ')
-      widget(new HyperLink("fournisseur", {
-        sortCartridge()
-      }))
-      label('         ')
-      widget(Box.createHorizontalGlue())
-      widget(searchField)
-      label(' ')
-      widget(btnFilter)
-      label(' ')
-      widget(btnClear)
+      boxLayout(axis: BoxLayout.Y_AXIS)
+      panel() {
+        boxLayout(axis: BoxLayout.X_AXIS)
+        label('Trier par ')
+        widget(new HyperLink("prix", {
+          sortPrice()
+        }))
+        label(' | ')
+        widget(new HyperLink("date", {
+          sortDate()
+        }))
+        label(' | ')
+        widget(new HyperLink("fournisseur", {
+          sortCartridge()
+        }))
+        widget(Box.createHorizontalGlue())
+        widget(cbIncludeExclusions)
+      }
+      panel() {
+        boxLayout(axis: BoxLayout.X_AXIS)
+        widget(searchField)
+        label(' ')
+        widget(btnFilter)
+        label(' ')
+        widget(btnClear)
+      }
+
     }
     component.add(headerPanel, BL.NORTH)
+  }
+
+  private void toggleExclusions() {
+    showExclusions = cbIncludeExclusions.isSelected()
+    SwingUtilities.invokeLater {
+      resultsAndPanels.each { r,p ->
+        p.updateExclusionStatus()
+      }
+      updateStatus()
+    }
+  }
+
+  void searchStarted() {
+    if (!headerPanel.visible) {
+      SwingUtilities.invokeLater {
+        headerPanel.visible = true
+        updateStatus()        
+      }
+    }
   }
 
   private boolean matches(ImmoResult r, String crit) {
@@ -115,8 +127,8 @@ class ImmoResultsPanel extends ResultsPanel {
 
   private def filter() {
     String filterText = searchField.text
-    resultsAndPanels.each { ImmoResult k, JComponent v ->
-       v.visible = matches(k, filterText)
+    resultsAndPanels.each { ImmoResult k, ImmoResultPanel p ->
+       p.component.visible = matches(k, filterText)
     }
   }
 
@@ -125,9 +137,9 @@ class ImmoResultsPanel extends ResultsPanel {
       panel.removeAll()
       def results = resultsAndPanels.keySet().sort({})
       results.sort(comparator).each { r ->
-        def cmp = resultsAndPanels.get(r)
-        if (cmp) {
-          panel.add(cmp)
+        def p = resultsAndPanels.get(r)
+        if (p) {
+          panel.add(p.component)
           panel.revalidate()
         }
       }
@@ -159,111 +171,49 @@ class ImmoResultsPanel extends ResultsPanel {
   }
 
   private def createResultComponent(ImmoResult r) {
-    def bgColor = Color.WHITE
-    def cmp = new SwingBuilder().panel(
-            layout: new BL(),
-            border: BorderFactory.createEmptyBorder(2,2,2,2),
-            maximumSize: new Dimension(2000, 120),
-            minimumSize: new Dimension(100, 120)) {
-      panel(constraints: BorderLayout.CENTER, layout: new BL(), background: bgColor) {
-        def photoLabel = label(constraints: BorderLayout.WEST, border: BorderFactory.createEmptyBorder(10,10,10,10))
-        ImageIcon icon = null
-        try {
-          if (r.photoUrl!=null) {
-            icon = new ImageIcon(new URL(r.photoUrl))
-            Image img = icon.getImage()
-            Image newImg = img.getScaledInstance(120, 80,  Image.SCALE_SMOOTH)
-            icon = new ImageIcon(newImg)
-          } else {
-            icon = NO_PHOTO         
-          }
-          photoLabel.setIcon(icon)
-        } catch(Exception e) {
-          photoLabel.setIcon(NO_PHOTO)
-        }
-        panel(constraints: BorderLayout.CENTER, layout: new BL(), background: bgColor) {
-          def titleLabel = label(text: r.title, constraints: BorderLayout.NORTH)
-          def font = titleLabel.font
-          titleLabel.font = new Font(font.name, font.style | Font.BOLD, font.size)
-          editorPane(
-                    background: bgColor,
-                    constraints: BorderLayout.CENTER,
-                    text: r.description,
-                    editable: false,
-                    border: BorderFactory.createEmptyBorder(),
-                    minimumSize: new Dimension(100, 30),
-                    maximumSize: new Dimension(200, 30),
-          )
-          def bottomPane = new JPanel(background: bgColor)
-          bottomPane.setLayout(new BoxLayout(bottomPane, BoxLayout.LINE_AXIS))
-          if (r.date!=null) {
-            def dateLabel = new JLabel(r.date==null ? "" : DATE_FORMAT.format(r.date))
-            bottomPane.add(dateLabel)
-            bottomPane.add(Box.createRigidArea(new Dimension(5,0)));
-            bottomPane.add(new JLabel("-"))
-          }
-          bottomPane.add(Box.createRigidArea(new Dimension(5,0)));
-          def priceLabel = new JLabel(r.price==null ? "" : Integer.toString(r.price))
-          bottomPane.add(priceLabel)
-          bottomPane.add(Box.createRigidArea(new Dimension(3, 0)));
-          def euroSign = new JLabel(
-                  text: Util.getMessage("currency.euro"),
-                  horizontalAlignment: JLabel.LEFT)          
-          bottomPane.add(euroSign)
-          widget(widget: bottomPane, constraints: BorderLayout.SOUTH)
-        }
-      }
-      panel(constraints: BL.SOUTH, background: bgColor, border: BorderFactory.createEmptyBorder(2,5,2,2)) {
-        boxLayout(axis:BoxLayout.X_AXIS)
-        widget(new HyperLink("ouvrir", r.cartridge.icon, JLabel.LEFT, {
-          fireResultSelected r
-        }))
-        label(' | ')
-        widget(new HyperLink("exclure", {
-          fireResultExcluded r
-          def cmp = resultsAndPanels[r]
-          if (cmp) {
-            resultsAndPanels.remove(r)
-            SwingUtilities.invokeLater {
-              panel.remove cmp
-              panel.revalidate()
-              def s = Util.getMessage('status.results.count')
-              statusLabel.text = "$nbResults $s, ${exclusions.getExclusions().size()} exclus"
-            }
-          }
-        }))
-      }
-    }
-    resultsAndPanels[r] = cmp
-    return cmp
+    ImmoResultPanel irp = new ImmoResultPanel(this, r)
+    resultsAndPanels[r] = irp
+    return irp
   }
 
-  void doAddResult(Result  r) {
-    if (!headerPanel.visible) {
-      SwingUtilities.invokeLater {
-        headerPanel.visible = true
-      }
-    }
-    nbResults++
-    int nbExcluded = exclusions.getExclusions().size()
-    def newPanel = createResultComponent(r)
-    def s = Util.getMessage('status.results.count')
+  void addResult(Result  r) {
+    ImmoResultPanel newPanel = createResultComponent(r)
+    def cmp = createResultComponent(r).getComponent()
     SwingUtilities.invokeLater {
+      newPanel.updateExclusionStatus()
       btnClear.enabled = true
       btnFilter.enabled = true
-      panel.add(newPanel)
-      statusLabel.text = "$nbResults $s, $nbExcluded exclus"
+      updateStatus()
+      panel.add(cmp)
       panel.revalidate()
     }
   }
 
+  private void updateStatus() {
+    int nbRes = 0
+    int nbExc = 0
+    resultsAndPanels.each { r,p ->
+      nbRes++
+      if (exclusions.isExcluded(r)) {
+        nbExc++
+      }
+    }
+    def s = Util.getMessage('status.results.count')
+    if (cbIncludeExclusions.isSelected()) {
+      statusLabel.text = "$nbRes $s"
+    } else {
+      nbRes = Math.max(0, nbRes - nbExc)
+      statusLabel.text = "$nbRes $s, ${nbExc} exclus"
+    }
+  }
+
   void clear() {
-    nbResults = 0
     resultsAndPanels.clear()
     SwingUtilities.invokeLater {
       panel.removeAll()
       statusLabel.text = null
       headerPanel.visible = false
+      updateStatus()      
     }
   }
 
@@ -274,7 +224,7 @@ class ImmoResultsPanel extends ResultsPanel {
   public static void main(String[] args) {
     JFrame f = new JFrame()
     f.setLayout new BL()
-    ImmoResultsPanel i = new ImmoResultsPanel()
+    ImmoResultsPanel i = new ImmoResultsPanel(new Exclusions())
     i.addResult(new ImmoResult(
                     null,
                     "Location blah blah blah blah blah",

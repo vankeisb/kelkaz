@@ -14,17 +14,16 @@ public abstract class ResultsPanel<R extends Result> {
     private final List<ResultSelectionListener<R>> listeners =
             Collections.synchronizedList(new ArrayList<ResultSelectionListener<R>>());
 
-    private final Exclusions<R> excludedResults;
-    private List<R> resultsDisplayed = Collections.synchronizedList(new ArrayList<R>());
+    private final Exclusions excludedResults;
 
-    protected ResultsPanel(Exclusions<R> excludedResults) {
+    public ResultsPanel(Exclusions excludedResults) {
       if (excludedResults==null) {
         throw new IllegalArgumentException("excludedResults cannot be null");
       }
       this.excludedResults = excludedResults;
     }
 
-    public Exclusions<R> getExclusions() {
+    public Exclusions getExclusions() {
       return excludedResults;
     }
 
@@ -36,22 +35,14 @@ public abstract class ResultsPanel<R extends Result> {
 
     public abstract void clear();
 
-    public final void addResult(R r) {
-      if (!excludedResults.isExcluded(r) && !resultsDisplayed.contains(r)) {
-        doAddResult(r);
-        resultsDisplayed.add(r);
-      }
-    }
+    public abstract void searchStarted();
 
-    protected abstract void doAddResult(R r);
+    public abstract void addResult(R r);
 
-    protected void fireResultSelected(R r) {
+    public void fireResultSelected(R r) {
         for (ResultSelectionListener<R> l : listeners) {
             l.resultSelected(r);
         }
     }
 
-    protected void fireResultExcluded(R r) {
-      excludedResults.addExclusion(r);
-    }
 }

@@ -1,52 +1,50 @@
 package agregator.immo
 
-import agregator.core.Cartridge
 import agregator.core.MockCartridge
+import agregator.core.Exclusions
 
-class ImmoExclusionsTest extends GroovyTestCase {
+class ExclusionsTest extends GroovyTestCase {
 
   String tmpDir = System.getProperty('java.io.tmpdir') + File.separator + 'testExclusions'
   MockCartridge mc = new MockCartridge(null)
-  List<Cartridge<?, ?>> cartridges = [mc]
-
 
   void testIt() {
     // remove previous exclusions if any
     rmdir(new File(tmpDir))
 
     // create and assert empty
-    ImmoExclusions ie = new ImmoExclusions(tmpDir, cartridges)
-    assert ie.exclusions.size() == 0
+    Exclusions e = new Exclusions(tmpDir)
+    assert e.nbExclusions == 0
 
     // add exclusions
     def fakeResults = []
     for (int i=0 ; i<10 ; i++) {
       def r = new ImmoResult(mc, "title me $i", "http://foobar.com/$i", "description me < <foo> $i", 101, new Date(), "http://other/$i")
-      ie.addExclusion(r)
+      e.addExclusion(r)
       fakeResults << r
     }
 
     // assert exclusions
-    assert ie.exclusions.size() == 10
+    assert e.nbExclusions == 10
     fakeResults.each { r ->
-      assert ie.isExcluded(r)
+      assert e.isExcluded(r)
     }
 
     // assert not excluded
     def notExcluded = new ImmoResult(mc, "title me", "http://foobarsqdqdqsddqs", "description me", 101, new Date(), "http://other/")
-    assert !ie.isExcluded(notExcluded)
+    assert !e.isExcluded(notExcluded)
 
     // assert remove exclusion
     def removedFromExclusions = fakeResults[0]
-    ie.removeExclusion removedFromExclusions
-    assert !ie.isExcluded(removedFromExclusions)
-    assert 9 == ie.exclusions.size()
+    e.removeExclusion removedFromExclusions
+    assert !e.isExcluded(removedFromExclusions)
+    assert 9 == e.nbExclusions
 
     // assert exclusions are re-loaded from the file
-    ie = new ImmoExclusions(tmpDir, cartridges)
-    assert 9 == ie.exclusions.size()
-    assert !ie.isExcluded(removedFromExclusions)
-    assert ie.isExcluded(fakeResults[1])
+    e = new Exclusions(tmpDir)
+    assert 9 == e.nbExclusions
+    assert !e.isExcluded(removedFromExclusions)
+    assert e.isExcluded(fakeResults[1])
 
   }
 

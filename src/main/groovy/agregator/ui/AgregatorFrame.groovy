@@ -121,6 +121,7 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
       resultsPanel.addResult(event.cartridgeEvent.result)
     } else if (event instanceof AgregatorEvent.StartedEvent) {
       SwingUtilities.invokeLater {
+        resultsPanel.searchStarted()
         btnAgregate.text = "Arreter"
         btnAgregate.enabled = true
       }

@@ -5,6 +5,7 @@ import agregator.ui.AgregatorFrame
 import javax.swing.SwingUtilities
 import javax.swing.JFrame
 import javax.swing.UIManager
+import agregator.core.Exclusions
 
 /**
  * Created by IntelliJ IDEA.
@@ -43,7 +44,7 @@ public class LaunchImmo {
       def f = new AgregatorFrame(
               ia,
               new ImmoSearchPanel(),
-              new ImmoResultsPanel(new ImmoExclusions(ia.cartridges)))
+              new ImmoResultsPanel(new Exclusions()))
       f.setSize(1000, 800);
       f.setVisible(true);
     }
