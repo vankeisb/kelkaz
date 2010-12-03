@@ -37,6 +37,8 @@ class ImmoResultsPanel extends ResultsPanel {
   private JLabel statusLabel
   private JPanel headerPanel
   private JTextField searchField
+  private JButton btnClear
+  private JButton btnFilter
   private int nbResults = 0
   private ConcurrentHashMap resultsAndPanels = new ConcurrentHashMap() // result/component map used to remove from list
 
@@ -62,8 +64,13 @@ class ImmoResultsPanel extends ResultsPanel {
 
     searchField = new JTextField(text:'')
     searchField.addActionListener({ filter() } as ActionListener)
-    JButton btnFilter = new JButton(text:'Filtrer')
+    btnFilter = new JButton(text:'Filtrer')
     btnFilter.addActionListener({ filter() } as ActionListener)
+    btnFilter.enabled = false
+    
+    btnClear = new JButton(text:'Effacer les resultats')
+    btnClear.addActionListener({ clear() } as ActionListener)
+    btnClear.enabled = false
 
     // header panel
     headerPanel = new SwingBuilder().panel(
@@ -87,6 +94,8 @@ class ImmoResultsPanel extends ResultsPanel {
       widget(searchField)
       label(' ')
       widget(btnFilter)
+      label(' ')
+      widget(btnClear)
     }
     component.add(headerPanel, BL.NORTH)
   }
@@ -231,13 +240,17 @@ class ImmoResultsPanel extends ResultsPanel {
 
   void doAddResult(Result  r) {
     if (!headerPanel.visible) {
-      headerPanel.visible = true
+      SwingUtilities.invokeLater {
+        headerPanel.visible = true
+      }
     }
     nbResults++
     int nbExcluded = exclusions.getExclusions().size()
     def newPanel = createResultComponent(r)
     def s = Util.getMessage('status.results.count')
     SwingUtilities.invokeLater {
+      btnClear.enabled = true
+      btnFilter.enabled = true
       panel.add(newPanel)
       statusLabel.text = "$nbResults $s, $nbExcluded exclus"
       panel.revalidate()
