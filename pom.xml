@@ -34,7 +34,7 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20090211</version>
-        </dependency>        
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -83,6 +83,15 @@
                         <classpath/>
                         <argument>agregator.immo.LaunchImmo</argument>
                     </arguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/agregators/**/*.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>
@@ -148,7 +157,7 @@
                             </sign>
                             <verbose>true</verbose>
                         </configuration>
-                    </plugin>                                
+                    </plugin>
                 </plugins>
             </build>
         </profile>

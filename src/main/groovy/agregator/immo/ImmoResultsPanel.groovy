@@ -28,7 +28,6 @@ import java.awt.event.ActionListener
 import java.util.concurrent.ConcurrentHashMap
 import agregator.core.Result
 import agregator.ui.Util
-import agregator.core.ExcludedResults
 
 
 class ImmoResultsPanel extends ResultsPanel {
@@ -45,7 +44,7 @@ class ImmoResultsPanel extends ResultsPanel {
 
   private static final ImageIcon NO_PHOTO = new ImageIcon(ImmoResultsPanel.class.getResource("/no-photo.gif"))
 
-  def ImmoResultsPanel(ExcludedResults er) {
+  def ImmoResultsPanel(ImmoExclusions er) {
     super(er)
     panel = new JPanel()
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS))
@@ -87,7 +86,7 @@ class ImmoResultsPanel extends ResultsPanel {
       widget(Box.createHorizontalGlue())
       widget(searchField)
       label(' ')
-      widget(btnFilter)       
+      widget(btnFilter)
     }
     component.add(headerPanel, BL.NORTH)
   }
@@ -220,7 +219,7 @@ class ImmoResultsPanel extends ResultsPanel {
               panel.remove cmp
               panel.revalidate()
               def s = Util.getMessage('status.results.count')
-              statusLabel.text = "$nbResults $s, $excludedResults.nbExcluded exclus"
+              statusLabel.text = "$nbResults $s, ${exclusions.getExclusions().size()} exclus"
             }
           }
         }))
@@ -235,7 +234,7 @@ class ImmoResultsPanel extends ResultsPanel {
       headerPanel.visible = true
     }
     nbResults++
-    int nbExcluded = excludedResults.getNbExcluded()
+    int nbExcluded = exclusions.getExclusions().size()
     def newPanel = createResultComponent(r)
     def s = Util.getMessage('status.results.count')
     SwingUtilities.invokeLater {

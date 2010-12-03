@@ -1,4 +1,4 @@
-package agregator.immo.seloger
+package agregator.immo.agregators.seloger
 
 import agregator.core.Agregator
 import agregator.immo.cartridges.SeLogerCartridge

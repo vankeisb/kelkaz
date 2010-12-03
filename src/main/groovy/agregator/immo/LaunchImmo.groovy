@@ -5,7 +5,6 @@ import agregator.ui.AgregatorFrame
 import javax.swing.SwingUtilities
 import javax.swing.JFrame
 import javax.swing.UIManager
-import agregator.core.ExcludedResults
 
 /**
  * Created by IntelliJ IDEA.
@@ -40,10 +39,11 @@ public class LaunchImmo {
           System.out.println("Look and Feel failed to initialize");
         }
       }
+      def ia = new ImmoAgregatorFactory().create()
       def f = new AgregatorFrame(
-              new ImmoAgregatorFactory().create(),
+              ia,
               new ImmoSearchPanel(),
-              new ImmoResultsPanel(new ExcludedResults()))
+              new ImmoResultsPanel(new ImmoExclusions(ia.cartridges)))
       f.setSize(1000, 800);
       f.setVisible(true);
     }

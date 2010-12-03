@@ -6,13 +6,14 @@ import javax.swing.JComponent
 import groovy.swing.SwingBuilder
 import javax.swing.ListSelectionModel
 import agregator.core.Result
+import agregator.core.Exclusions
 
 public class SearchResultsPanel extends ResultsPanel {
 
   JTextArea textArea = new JTextArea()
   SearchResultListModel listModel = new SearchResultListModel()
 
-  def SearchResultsPanel(excludedResults) {
+  SearchResultsPanel(Exclusions excludedResults) {
     super(excludedResults);
   }
 

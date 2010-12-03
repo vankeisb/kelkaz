@@ -1,4 +1,4 @@
-package agregator.immo.paruvendu
+package agregator.immo.agregators.paruvendu
 
 import agregator.core.Agregator
 import agregator.immo.cartridges.ParuVenduCartridge

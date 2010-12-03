@@ -1,14 +1,15 @@
-package agregator.immo.seloger
+package agregator.immo.agregators.fnaim
 
 import agregator.MyTestListener
 import agregator.immo.ImmoCriteria
 import agregator.immo.ImmoCriteria.Demand
 import agregator.immo.ImmoCriteria.Type
+import agregator.immo.agregators.seloger.SeLogerAgregator
 
-public class SeLogerTest extends GroovyTestCase {
+public class FnaimTest extends GroovyTestCase {
 
   private void doTest(ImmoCriteria crit, int expectedResultCount) {
-    SeLogerAgregator a = new SeLogerAgregator()
+    FnaimAgregator a = new FnaimAgregator()
     def listener = new MyTestListener()
     a.addListener(listener)
     a.agregate(crit)

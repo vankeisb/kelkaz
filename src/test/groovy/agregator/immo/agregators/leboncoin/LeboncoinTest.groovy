@@ -1,4 +1,4 @@
-package agregator.immo.leboncoin
+package agregator.immo.agregators.leboncoin
 
 import agregator.immo.ImmoCriteria
 import agregator.immo.ImmoCriteria.Demand

@@ -1,4 +1,4 @@
-package agregator.immo.fnaim
+package agregator.immo.agregators.fnaim
 
 import agregator.core.Agregator
 import agregator.immo.cartridges.FnaimCartridge

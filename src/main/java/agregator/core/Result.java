@@ -5,6 +5,9 @@ public abstract class Result {
     private Cartridge<?,?> cartridge;
 
     public Result(Cartridge<?,?> cartridge) {
+        if (cartridge==null) {
+            throw new IllegalArgumentException("Cartridge cannot be null");
+        }
         this.cartridge = cartridge;
     }
 

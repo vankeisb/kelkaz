@@ -1,4 +1,4 @@
-package agregator.immo.orpi
+package agregator.immo.agregators.orpi
 
 import agregator.core.Agregator
 import agregator.immo.cartridges.OrpiCartridge

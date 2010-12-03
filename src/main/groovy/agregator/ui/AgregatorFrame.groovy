@@ -47,6 +47,7 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
 
   private JButton btnAgregate
   private JPanel rightPanel = new JPanel(layout: new BL())
+  private boolean hasSearchedOnceAlready = false
 
   private void createUI() {
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
@@ -97,8 +98,11 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
       // start agregator in new thread
       SwingUtilities.invokeLater {
         cartridgeListPanel.clear()
-        rightPanel.removeAll()
-        rightPanel.add(resultsPanel.component, BL.CENTER)
+        if (!hasSearchedOnceAlready) {
+          rightPanel.removeAll()
+          rightPanel.add(resultsPanel.component, BL.CENTER)
+          hasSearchedOnceAlready = true
+        }
         rightPanel.revalidate()
       }
       Thread.start {
@@ -114,13 +118,12 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
   public void onEvent(AgregatorEvent event) {
     if (event instanceof AgregatorEvent.AgregatorCartridgeEvent &&
         event.cartridgeEvent instanceof CartridgeEvent.ResultEvent) {
-      resultsPanel.addResult(event.cartridgeEvent.getResult())
+      resultsPanel.addResult(event.cartridgeEvent.result)
     } else if (event instanceof AgregatorEvent.StartedEvent) {
       SwingUtilities.invokeLater {
         btnAgregate.text = "Arreter"
         btnAgregate.enabled = true
       }
-      resultsPanel.clear()
     } else if (event instanceof AgregatorEvent.EndedEvent) {
       SwingUtilities.invokeLater {
         btnAgregate.text = "Rechercher"

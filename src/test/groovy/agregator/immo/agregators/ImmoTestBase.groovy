@@ -1,10 +1,11 @@
-package agregator.immo
+package agregator.immo.agregators
 
 import agregator.core.Agregator
 import agregator.MyTestListener
 import agregator.core.AgregatorListener
 import agregator.core.AgregatorEvent.AgregatorCartridgeEvent
 import agregator.core.CartridgeEvent.ResultEvent
+import agregator.immo.ImmoCriteria
 
 abstract class ImmoTestBase extends GroovyTestCase {
 

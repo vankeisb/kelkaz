@@ -1,4 +1,4 @@
-package agregator.immo.paruvendu
+package agregator.immo.agregators.paruvendu
 
 import agregator.immo.ImmoCriteria
 import agregator.immo.ImmoCriteria.Demand
@@ -8,7 +8,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage
 
 import agregator.immo.ImmoResult
 
-import agregator.immo.ImmoTestBase
+import agregator.immo.agregators.ImmoTestBase
 import agregator.core.Agregator
 
 public class ParuVenduTest extends ImmoTestBase {

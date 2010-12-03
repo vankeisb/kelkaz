@@ -1,4 +1,4 @@
-package agregator.immo.orpi
+package agregator.immo.agregators.orpi
 
 import agregator.immo.ImmoCriteria
 import agregator.immo.ImmoCriteria.Demand

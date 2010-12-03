@@ -26,5 +26,9 @@ public class Logger {
         t.printStackTrace();
     }
 
+    public void warn(Object message) {
+        System.out.println(System.currentTimeMillis() + " [WARNING] [" + clazz.getName() + "] " + message);
+    }
+
 
 }

@@ -1,10 +1,10 @@
-package agregator.immo.logicimmo
+package agregator.immo.agregators.logicimmo
 
 import agregator.MyTestListener
 import agregator.immo.ImmoCriteria
 import agregator.immo.ImmoCriteria.Demand
 import agregator.immo.ImmoCriteria.Type
-import agregator.immo.ImmoTestBase
+import agregator.immo.agregators.ImmoTestBase
 import agregator.core.Agregator
 
 /**

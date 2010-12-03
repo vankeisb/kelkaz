@@ -1,4 +1,4 @@
-package agregator.immo.logicimmo
+package agregator.immo.agregators.logicimmo
 
 import agregator.core.Agregator
 import agregator.immo.cartridges.LogicImmoCartridge

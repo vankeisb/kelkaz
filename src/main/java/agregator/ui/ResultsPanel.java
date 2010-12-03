@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
-import agregator.core.ExcludedResults;
+import agregator.core.Exclusions;
 import agregator.core.Result;
 
 public abstract class ResultsPanel<R extends Result> {
@@ -14,16 +14,17 @@ public abstract class ResultsPanel<R extends Result> {
     private final List<ResultSelectionListener<R>> listeners =
             Collections.synchronizedList(new ArrayList<ResultSelectionListener<R>>());
 
-    private final ExcludedResults excludedResults;
+    private final Exclusions<R> excludedResults;
+    private List<R> resultsDisplayed = Collections.synchronizedList(new ArrayList<R>());
 
-    protected ResultsPanel(ExcludedResults excludedResults) {
+    protected ResultsPanel(Exclusions<R> excludedResults) {
       if (excludedResults==null) {
         throw new IllegalArgumentException("excludedResults cannot be null");
       }
       this.excludedResults = excludedResults;
     }
 
-    public ExcludedResults getExcludedResults() {
+    public Exclusions<R> getExclusions() {
       return excludedResults;
     }
 
@@ -36,8 +37,9 @@ public abstract class ResultsPanel<R extends Result> {
     public abstract void clear();
 
     public final void addResult(R r) {
-      if (!excludedResults.isExcluded(r)) {
+      if (!excludedResults.isExcluded(r) && !resultsDisplayed.contains(r)) {
         doAddResult(r);
+        resultsDisplayed.add(r);
       }
     }
 
