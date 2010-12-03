@@ -17,7 +17,7 @@ public class SearchResultsPanel extends ResultsPanel {
     super(excludedResults);
   }
 
-  public void doAddResult(Result result) {
+  public void addResult(Result result) {
     listModel.addElement(new SearchResultListItem(result:result, cartridge:result.cartridge)) 
     textArea.text = textArea.text + "$result.title\n$result.shortText\nurl : $result.url\nCatridge : $result.cartridge.name\n\n"
   }
@@ -44,6 +44,5 @@ public class SearchResultsPanel extends ResultsPanel {
       )
     }
   }
-
-
+  
 }

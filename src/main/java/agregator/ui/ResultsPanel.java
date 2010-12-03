@@ -35,7 +35,7 @@ public abstract class ResultsPanel<R extends Result> {
 
     public abstract void clear();
 
-    public abstract void searchStarted();
+    public void searchStarted() { }
 
     public abstract void addResult(R r);
 
