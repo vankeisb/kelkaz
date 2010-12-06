@@ -13,7 +13,7 @@ import com.gargoylesoftware.htmlunit.WebClient
 
 public class OrpiCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
-  private static final Logger logger = agregator.util.Logger.getLogger(OrpiCartridge.class)
+  private static final Logger logger = Logger.getLogger(OrpiCartridge.class)
 
   private Iterator<ImmoResult> resultsIterator = null
 
