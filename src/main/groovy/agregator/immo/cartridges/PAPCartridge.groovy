@@ -6,136 +6,108 @@ import agregator.core.Cartridge
 import agregator.core.Agregator
 import com.gargoylesoftware.htmlunit.WebClient
 import agregator.immo.ImmoCriteria.Demand
-import com.gargoylesoftware.htmlunit.BrowserVersion
 import agregator.immo.ImmoCriteria.Type
+import agregator.util.Logger
 
 /**
  * Created by IntelliJ IDEA.
  * User: alex
  * Date: 11 oct. 2009
  * Time: 18:28:42
- * To change this template use File | Settings | File Templates.
  */
 
 public class PAPCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
+  private static final Logger logger = Logger.getLogger(PAPCartridge.class)
+
   private Iterator<ImmoResult> resultsIterator = null
 
-  private static String URL_CARTRIDGE = "http://www.pap.fr"
-
-  protected void doAgregate() {
-    //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-
+  private static String URL_CARTRIDGE_RENT = "http://www.pap.fr/annonce/locations"
+  private static String URL_CARTRIDGE_SELL = "http://www.pap.fr/annonce/vente-immobiliere"
 
   def PAPCartridge(Agregator agregator){
-    super("pap", agregator)
+    super("www.pap.fr", agregator)
   }
 
-  private void init(){
+  protected void doAgregate() {
     def results = new ArrayList<ImmoResult>()
 
-    def url = URL_CARTRIDGE
-
-    url += '/immobilier/?mode=recherche&userid=&alerteid=&envoiid='
-
+    def url
     if (criteria.demand == Demand.RENT){
-      url += '&produit=location'
-    } else{
-      url += '&produit=vente'
+      url = URL_CARTRIDGE_RENT
+    }else{
+      url = URL_CARTRIDGE_SELL
     }
 
-    // Add PAP specific stuff
-    url += '&rubrique=&section=offre&lieu=france' 
-
-    // Add type
-    if (criteria.type == Type.APPT){
-      for (int i=criteria.nbRoomsMin ; i <= criteria.nbRoomsMax ; i++){
-        if (i == 5){
-          url += '&typebien[]=appartement-5-pieces'
-          break
-        }
-        url += '&typebien[]=appartement-' + i + '-pieces'
-      }
-    }
-    
-    if (criteria.type == Type.MAISON){
-      url += '&typebien[]=maison'
-    }
-    if (criteria.type == Type.GARAGE){
-      url += '&typebien[]=garage-parking'
-    }
-
-    // Localisation
-    if (criteria.city)
-      url += '&champs_libres[1]=' + criteria.city
-    else
-      url += '&champs_libres[1]='
-
-    // Add PAP specific stuff
-    url += '&champs_libres[2]=&champs_libres[3]=&champs_libres[4]=&metro='
-
-    // price min
-    if (criteria.priceMin)
-      url += '&prix_min=' + criteria.priceMin
-    else
-      url += '&price_min='
-
-    // price max
-    if (criteria.priceMin)
-      url += '&prix_max=' + criteria.priceMax
-    else
-      url += '&price_max='
-
-    // surface min
-    if (criteria.surfaceMin)
-      url += '&surface_min=' + criteria.surfaceMin
-    else
-      url +=  '&surface_min='
-
-    // surface max
-    if (criteria.surfaceMax)
-      url += '&surface_max=' + criteria.surfaceMax
-    else
-    url += '&surface_max='
-
-    // Add PAP specific stuff
-    url += '&action=recherche&x=86&y=5'
-
-    println 'URL = ' + url
-
-    // Get the page
-    WebClient webClient = new WebClient(BrowserVersion.FIREFOX_2)
+    // Get the page to scrap
+    WebClient webClient = new WebClient()
+    webClient.setJavaScriptEnabled(false)
     def page = webClient.getPage(url)
 
-    // Scrap results
-    def divResults = page.getByXPath("//div[@class='annonce_resume']")
+    logger.debug "page loaded : " + page
+
+    // Get the search form
+    def form = page.getElementById('form_recherche_accueil')
+
+    // Set type
+    if (criteria.getType() == Type.APPT){
+      def typeRadio = form.getElementById('typesbien_appartement')
+      typeRadio.click()
+    }
+    if (criteria.getType() == Type.MAISON){
+      def typeRadio = form.getElementById('typesbien_maison')
+      typeRadio.click()
+    }
+
+    // set room number
+    def roomMinField = form.getElementById('nb_pieces_min')
+    roomMinField.setValueAttribute(criteria.nbRoomsMin.toString())
+
+    def roomMaxField = form.getElementById('nb_pieces_max')
+    roomMaxField.setValueAttribute(criteria.nbRoomsMax.toString())
+
+    // Set location
+    def locationField = form.getElementById('geoobjet_autocomplete')
+    locationField.setValueAttribute(criteria.postCode)
+
+    def locationButton = form.getElementById('geoobjet_ajouter')
+    locationButton.click()
+
+
+    // Set min/max price
+    def minPriceField = form.getElementById('prix_min')
+    minPriceField.setValueAttribute(criteria.priceMin.toString())
+
+    def maxPriceField = form.getElementById('prix_max')
+    maxPriceField.setValueAttribute(criteria.priceMax.toString())
+
+    // Set min/max surface
+    def minSurfaceField = form.getElementById('surface_min')
+    minSurfaceField.setValueAttribute(criteria.surfaceMin.toString())
+
+    def maxSurfaceField = form.getElementById('surface_max')
+    maxSurfaceField.setValueAttribute(criteria.surfaceMax.toString())
+
+    // Submit form
+    page = form.submit()
+    logger.debug "form submitted, new page = " + page
+
+    // Get the results
+    def divResults = page.getByXPath("//div[@class='annonce annonce-resume']")
+    def i = 0
     divResults.each{
-      def h2 =  it.getHtmlElementsByTagName('h2')[0]
-      def a = h2.getHtmlElementsByTagName('a')[0]
-      def link = URL_CARTRIDGE + a.getAttribute('href')
-      def title = it.getHtmlElementsByTagName('p')[1].textContent
+      println 'it = ' + it
 
-      results << new ImmoResult(this, title, link, null)
+      // Get title
+      def aTitle = it.getHtmlElementsByTagName('a')[0]
+      def title = aTitle.textContent
+
+      // Get description
+      def resultDescription = it.getByXPath("//p[@class='annonce-resume-texte']")
+      def description = resultDescription.textContent
+
+
+      fireResultEvent(new ImmoResult(this, title, url, "description", 210000, null, null))
     }
-
-    resultsIterator = results.iterator()
-
-  }
-
-
-  protected synchronized boolean hasMoreResults() {
-    if (resultsIterator==null) {
-      init()
-    }
-    return resultsIterator.hasNext()
-  }
-
-  protected synchronized ImmoResult nextResult() {
-    if (resultsIterator==null) {
-      init()
-    }
-    return resultsIterator.next()
   }
 }

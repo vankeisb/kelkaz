@@ -1,15 +1,7 @@
 package agregator.immo
 
 import agregator.core.Agregator
-import agregator.core.Cartridge
-import agregator.immo.cartridges.ParuVenduCartridge
-import agregator.immo.cartridges.LeboncoinCartridge
-import agregator.immo.cartridges.SeLogerCartridge
-import agregator.immo.cartridges.OrpiCartridge
-import agregator.immo.cartridges.PAPCartridge
-import agregator.immo.cartridges.MockImmoCartridgeForUITests
-import agregator.immo.cartridges.FnaimCartridge
-import agregator.immo.cartridges.LogicImmoCartridge
+import agregator.immo.cartridges.*
 
 public class ImmoAgregator extends Agregator {
 
@@ -21,7 +13,7 @@ public class ImmoAgregator extends Agregator {
     cartridges << new LogicImmoCartridge(this)
 
     cartridges << new OrpiCartridge(this)
-//  cartridges << new PAPCartridge(this)
+//    cartridges << new PAPCartridge(this)
 
 //    cartridges << new MockImmoCartridgeForUITests("www.foobar.com", this)
 //    cartridges << new MockImmoCartridgeForUITests("www.yeah.fr", this)
