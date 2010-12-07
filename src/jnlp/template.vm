@@ -16,7 +16,7 @@
       href="images/headphones.gif"/>
     <icon
       kind="splash"
-      href="images/banner.jpg"/>
+      href="images/splash.jpg"/>
   </information>
   <security>
      <all-permissions/>
