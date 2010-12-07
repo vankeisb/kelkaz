@@ -215,6 +215,7 @@ class ImmoResultsPanel extends ResultsPanel {
   void clear() {
     resultsAndPanels.clear()
     SwingUtilities.invokeLater {
+      searchField.text = ''
       panel.removeAll()
       statusLabel.text = null
       headerPanel.visible = false
