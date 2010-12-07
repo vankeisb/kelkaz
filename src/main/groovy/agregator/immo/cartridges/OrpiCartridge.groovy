@@ -15,8 +15,6 @@ public class OrpiCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
   private static final Logger logger = Logger.getLogger(OrpiCartridge.class)
 
-  private Iterator<ImmoResult> resultsIterator = null
-
   private static String URL_CARTRIDGE = "http://www.orpi.com"
 
   def OrpiCartridge(Agregator agregator){
@@ -120,21 +118,5 @@ public class OrpiCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
       
       i++
     }
-    resultsIterator = results.iterator()
   }
-
-  protected synchronized boolean hasMoreResults() {
-    if (resultsIterator==null) {
-      init()
-    }
-    return resultsIterator.hasNext()
-  }
-
-  protected synchronized ImmoResult nextResult() {
-    if (resultsIterator==null) {
-      init()
-    }
-    return resultsIterator.next()
-  }
-
 }
