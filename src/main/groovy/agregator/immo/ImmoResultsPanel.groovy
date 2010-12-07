@@ -128,7 +128,12 @@ class ImmoResultsPanel extends ResultsPanel {
   private def filter() {
     String filterText = searchField.text
     resultsAndPanels.each { ImmoResult k, ImmoResultPanel p ->
-       p.component.visible = matches(k, filterText)
+      boolean matches = matches(k, filterText)
+      if (matches) {
+        p.component.visible = cbIncludeExclusions.selected || !exclusions.isExcluded(k)
+      } else {
+        p.component.visible = false
+      }
     }
   }
 
