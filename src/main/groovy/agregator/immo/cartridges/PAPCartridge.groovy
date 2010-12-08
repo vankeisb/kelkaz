@@ -147,7 +147,7 @@ public class PAPCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
       def aNextPage = page.getByXPath("//div[@class='pagination']/a")
       hasNextPage = false
       for (def a : aNextPage){
-        if (a.textContent.contains('Page suivante')){
+        if (a.textContent.contains('Page suivante') && !isKilled()){
           hasNextPage = true
           sleepRandomTime()
         }

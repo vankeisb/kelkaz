@@ -93,64 +93,81 @@ public class OrpiCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
     // Submit the form
     page = form.submit()
+    def hasNext = true
 
-    // Get the results
-    def divResults = page.getByXPath("//dl[@class='annonceResult']")
-    def i = 0
-    divResults.each{
-      println 'it = ' + it
-      def resultTitle = it.getByXPath("//dt[@class='annonceResultTitle']")[i]
-      def aTitle = resultTitle.getHtmlElementsByTagName('a')[0]
-      def url = aTitle.getAttribute('href')
+    while (hasNext){
+      // Get the results
+      def divResults = page.getByXPath("//dl[@class='annonceResult']")
+      def i = 0
+      divResults.each{
+        println 'it = ' + it
+        def resultTitle = it.getByXPath("//dt[@class='annonceResultTitle']")[i]
+        def aTitle = resultTitle.getHtmlElementsByTagName('a')[0]
+        def url = aTitle.getAttribute('href')
 
-      // Sometimes the URL doesn't start with http://... add it
-      if (!url.startsWith("http://"))
-        url = URL_CARTRIDGE +'/'+ url
+        // Sometimes the URL doesn't start with http://... add it
+        if (!url.startsWith("http://"))
+          url = URL_CARTRIDGE +'/'+ url
 
-      // Create the title from the url link
-      def title = url.substring(36, url.length()-16)
-      title = title.replaceAll('-', ' ')
+        // Create the title from the url link
+        def title = url.substring(36, url.length()-16)
+        title = title.replaceAll('-', ' ')
 
-      // Get the description
-      def resultDescription = it.getByXPath("//dd[@class='annonceResultDesc']")[i]
-      def aDescription = resultDescription.getHtmlElementsByTagName('a')[0]
-      def description = aDescription.textContent
+        // Get the description
+        def resultDescription = it.getByXPath("//dd[@class='annonceResultDesc']")[i]
+        def aDescription = resultDescription.getHtmlElementsByTagName('a')[0]
+        def description = aDescription.textContent
 
-      // Get the surface in description
-      def surface = getSurfaceFromDescription(description)
+        // Get the surface in description
+        def surface = getSurfaceFromDescription(description)
 
-      // get image
-      def resultImage = it.getByXPath("//dt[@class='annonceResultImg']")[i]
-      def aImage = resultImage.getHtmlElementsByTagName('a')[0]
-      def imgImage = aImage.getHtmlElementsByTagName('img')[0]
-      def urlImage = imgImage.getAttribute('src')
+        // get image
+        def resultImage = it.getByXPath("//dt[@class='annonceResultImg']")[i]
+        def aImage = resultImage.getHtmlElementsByTagName('a')[0]
+        def imgImage = aImage.getHtmlElementsByTagName('img')[0]
+        def urlImage = imgImage.getAttribute('src')
 
-      // get price
-      def resultPrice = it.getByXPath("//dd[@class='annonceResultPrice']")[i]
-      def aPrice = resultPrice.getHtmlElementsByTagName('a')[0]
-      def emPrice = aPrice.getHtmlElementsByTagName('em')[0]
-      def price = extractInteger(emPrice.textContent)
+        // get price
+        def resultPrice = it.getByXPath("//dd[@class='annonceResultPrice']")[i]
+        def aPrice = resultPrice.getHtmlElementsByTagName('a')[0]
+        def emPrice = aPrice.getHtmlElementsByTagName('em')[0]
+        def price = extractInteger(emPrice.textContent)
 
-      if (criteria.surfaceMin != null){
-        if (criteria.surfaceMax != null){
-          if (criteria.surfaceMin <= surface && criteria.surfaceMax >= surface){
-            fireResultEvent(new ImmoResult(this, title, url, description, price, null, urlImage))
+        if (criteria.surfaceMin != null){
+          if (criteria.surfaceMax != null){
+            if (criteria.surfaceMin <= surface && criteria.surfaceMax >= surface){
+              fireResultEvent(new ImmoResult(this, title, url, description, price, null, urlImage))
+            }
+          } else{
+            if (criteria.surfaceMin <= surface){
+              fireResultEvent(new ImmoResult(this, title, url, description, price, null, urlImage))
+            }
           }
         } else{
-          if (criteria.surfaceMin <= surface){
+          if (criteria.surfaceMax != null){
+            if (criteria.surfaceMax >= surface){
+              fireResultEvent(new ImmoResult(this, title, url, description, price, null, urlImage))
+            }
+          }else{
             fireResultEvent(new ImmoResult(this, title, url, description, price, null, urlImage))
           }
         }
-      } else{
-        if (criteria.surfaceMax != null){
-          if (criteria.surfaceMax >= surface){
-            fireResultEvent(new ImmoResult(this, title, url, description, price, null, urlImage))
-          }
-        }else{
-          fireResultEvent(new ImmoResult(this, title, url, description, price, null, urlImage))
+        i++
+      }
+
+      def listLiPageNext = page.getByXPath("//ul[@class='pageInation']/li")
+      hasNext = false
+      int linkNumber =  listLiPageNext.size -1
+      if (linkNumber > 0){
+        def liPageNext = listLiPageNext[linkNumber]
+        def aPageNext = liPageNext.getHtmlElementsByTagName('a')[0]
+
+        if (aPageNext.getAttribute('title') == 'Suivant' && !isKilled()){
+          hasNext = true
+          sleepRandomTime()
+          page = aPageNext.click()
         }
       }
-      i++
     }
   }
 
