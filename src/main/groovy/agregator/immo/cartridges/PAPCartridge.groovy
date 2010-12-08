@@ -89,51 +89,69 @@ public class PAPCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
       url += '-entre-' + criteria.surfaceMin + '-et-' + criteria.surfaceMax + '-m2'
     }
 
+    // Display 40 results per page
+    url += '-40-annonces-par-page'
+
     logger.debug("Sending request : " + url);
-    def page = webClient.getPage(url.toString())
-    logger.debug "form submitted, new page = " + page
 
-    // Get the results
-    def divResults = page.getByXPath("//div[@class='annonce annonce-resume']")
-    def i = 0
-    logger.debug divResults
-    divResults.each{
+    def hasNextPage = true
+    def pageNum = 0
+    while(hasNextPage){
+      pageNum++
+      def page = webClient.getPage(url.toString() +'-'+pageNum)
+
+      // Get the results
+      def divResults = page.getByXPath("//div[@class='annonce annonce-resume']")
+      def i = 0
+      logger.debug divResults
+      divResults.each{
 
 
-      // Get title and price
-      def aTitle = it.getHtmlElementsByTagName('a')[0]
-      def title = formatTitle(aTitle.textContent)
-      def price = extractPriceFromTitle(aTitle.textContent)
+        // Get title and price
+        def aTitle = it.getHtmlElementsByTagName('a')[0]
+        def title = formatTitle(aTitle.textContent)
+        def price = extractPriceFromTitle(aTitle.textContent)
 
-      // Get description
-      def resultDescription = it.getByXPath("div/table/tbody/tr/td[@class='annonce-resume-description']/p[@class='annonce-resume-texte']")[0]
-      def description = formatDescription(resultDescription.textContent)
+        // Get description
+        def resultDescription = it.getByXPath("div/table/tbody/tr/td[@class='annonce-resume-description']/p[@class='annonce-resume-texte']")[0]
+        def description = formatDescription(resultDescription.textContent)
 
-      // Get Date
-      def resultDate = it.getByXPath("div/table/tbody/tr/td[@class='annonce-resume-description']/p[@class='date-publication']")[0]
-      def date = formatDate(resultDate.textContent)
+        // Get Date
+        def resultDate = it.getByXPath("div/table/tbody/tr/td[@class='annonce-resume-description']/p[@class='date-publication']")[0]
+        def date = formatDate(resultDate.textContent)
 
-      // Get image and Url
-      def tdPhoto = it.getByXPath("div/table/tbody/tr/td[@class='annonce-resume-photo']")[0]
-      def urlDetail
-      def imgUrl
-      if (tdPhoto != null){
-        def aPhoto = tdPhoto.getHtmlElementsByTagName('a')[0]
-        urlDetail = URL_ROOT + "/" + aPhoto.getAttribute('href')
-        def imgPhoto = aPhoto.getHtmlElementsByTagName('img')[0]
-        imgUrl = imgPhoto.getAttribute('src')
-      }else{
-        imgUrl = null
-        urlDetail = null
-        def liUrlDetail = it.getByXPath("div[@class='fonctionnalites']/table/tbody/tr")[0]
-        def aUrlDetail = liUrlDetail.getHtmlElementsByTagName('a')[0]
-        urlDetail = URL_ROOT + "/" + aUrlDetail.getAttribute('href')
+        // Get image and Url
+        def tdPhoto = it.getByXPath("div/table/tbody/tr/td[@class='annonce-resume-photo']")[0]
+        def urlDetail
+        def imgUrl
+        if (tdPhoto != null){
+          def aPhoto = tdPhoto.getHtmlElementsByTagName('a')[0]
+          urlDetail = URL_ROOT + "/" + aPhoto.getAttribute('href')
+          def imgPhoto = aPhoto.getHtmlElementsByTagName('img')[0]
+          imgUrl = imgPhoto.getAttribute('src')
+        }else{
+          imgUrl = null
+          urlDetail = null
+          def liUrlDetail = it.getByXPath("div[@class='fonctionnalites']/table/tbody/tr")[0]
+          def aUrlDetail = liUrlDetail.getHtmlElementsByTagName('a')[0]
+          urlDetail = URL_ROOT + "/" + aUrlDetail.getAttribute('href')
+        }
+
+
+        fireResultEvent(new ImmoResult(this, title, urlDetail, description, price, date, imgUrl))
+
+        i++
+
       }
 
-
-      fireResultEvent(new ImmoResult(this, title, urlDetail, description, price, date, imgUrl))
-
-      i++
+      def aNextPage = page.getByXPath("//div[@class='pagination']/a")
+      hasNextPage = false
+      for (def a : aNextPage){
+        if (a.textContent.contains('Page suivante')){
+          hasNextPage = true
+          sleepRandomTime()
+        }
+      }
     }
   }
 
