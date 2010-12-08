@@ -96,6 +96,7 @@ class ImmoResultsPanel extends ResultsPanel {
   private void toggleExclusions() {
     showExclusions = cbIncludeExclusions.isSelected()
     SwingUtilities.invokeLater {
+      searchField.text = ''
       resultsAndPanels.each { r,p ->
         p.updateExclusionStatus()
       }
@@ -112,27 +113,49 @@ class ImmoResultsPanel extends ResultsPanel {
     }
   }
 
-  private boolean matches(ImmoResult r, String crit) {
-    if (!crit) {
-      return true
+  private boolean stringMatch(String text, List<String> keywords) {
+    List<String> tokenizedText = tokenize(text)
+    int nbFound = 0
+    for (String k : keywords) {
+      if (tokenizedText.contains(k)) {
+        nbFound++
+      }
     }
-    if (r.title && r.title.toLowerCase().indexOf(crit.toLowerCase())>0) {
-      return true
+    return nbFound == keywords.size()
+  }
+
+  private List<String> tokenize(String s) {
+    if (s) {
+      // cleanup the string a bit
+      s = s.toLowerCase().
+              replaceAll(/,/, " ").
+              replaceAll(/\./, " ").
+              replaceAll(/\//, " ").
+              replaceAll(/'/, " ").
+              replaceAll(/:/, " ").
+              replaceAll(/-/, " ").
+              replaceAll(/\(/, " ").
+              replaceAll(/\)/, " ")
+      // tokenize
+      return Arrays.asList(s.split(" "))
     }
-    if (r.description && r.description.toLowerCase().indexOf(crit.toLowerCase())>0) {
-      return true
-    }
-    return false
+    return Collections.emptyList()
   }
 
   private def filter() {
-    String filterText = searchField.text
+    // tokenize the search text to keywords
+    List<String> keywords = tokenize(searchField.text)
     resultsAndPanels.each { ImmoResult k, ImmoResultPanel p ->
-      boolean matches = matches(k, filterText)
+      String fullText = k.title + " " + k.description
+      boolean matches = stringMatch(fullText, keywords)
       if (matches) {
-        p.component.visible = cbIncludeExclusions.selected || !exclusions.isExcluded(k)
+        SwingUtilities.invokeLater {
+          p.component.visible = cbIncludeExclusions.selected || !exclusions.isExcluded(k)
+        }
       } else {
-        p.component.visible = false
+        SwingUtilities.invokeLater {
+          p.component.visible = false
+        }
       }
     }
   }
