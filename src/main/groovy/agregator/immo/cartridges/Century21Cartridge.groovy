@@ -41,7 +41,6 @@ class Century21Cartridge extends Cartridge<ImmoCriteria, ImmoResult> {
       url = URL_SELL
     }
 
-    // http://www.century21.fr/annonces/achat-maison-appartement/cp-06600/s-20-300/st-0-/b-100000-700000/page-1/
     // Set type
     if (criteria.type == Type.MAISON){
       url += '-maison'
@@ -54,16 +53,36 @@ class Century21Cartridge extends Cartridge<ImmoCriteria, ImmoResult> {
     url += getSeparator()+'cp-' + criteria.postCode
 
     // Set surface
-    url += getSeparator()+'s-'+ criteria.surfaceMin+'-'+criteria.surfaceMax
+    if(criteria.surfaceMin != null){
+      url += getSeparator()+'s-'+ criteria.surfaceMin+'-'
+    }else{
+      url += getSeparator()+'s-0-'
+    }
+    if (criteria.surfaceMax != null){
+      url += criteria.surfaceMax
+    }
 
     // Add this tricks for 'surface terrain'
     url += getSeparator()+'st-0-'
 
     // Set price
-    url += getSeparator()+'b-' + criteria.priceMin + '-' + criteria.priceMax
+    if (criteria.priceMin != null){
+      url += getSeparator()+'b-' + criteria.priceMin + '-' 
+    }else{
+      url += getSeparator()+'b-0-'
+    }
+    if (criteria.priceMax != null){
+      url +=criteria.priceMax
+    }
 
     // Set room number
-    url += getSeparator()+'p-' + criteria.nbRoomsMin + '-' + criteria.nbRoomsMax
+    if (criteria.nbRoomsMin != null && criteria.nbRoomsMax != null){
+      url += getSeparator()+'p-' + criteria.nbRoomsMin + '-' + criteria.nbRoomsMax 
+    }else if (criteria.nbRoomsMin != null){
+      url += getSeparator()+'p-'+criteria.nbRoomsMin
+    }else if (criteria.nbRoomsMax != null){
+      url += getSeparator()+'p-'+criteria.nbRoomsMax
+    }
 
     // trick display pge 1
     url += getSeparator()+'page-1'
@@ -86,9 +105,6 @@ class Century21Cartridge extends Cartridge<ImmoCriteria, ImmoResult> {
 
       // Get photo
       def imgPhoto = it.getByXPath("div[@class='infosPrincip']/div[@class='image']/span/img")[0] // /a")[0]
-      println "#########################################"
-      println "imgPhoto" + imgPhoto
-      println "#########################################"
       def imgUrl = imgPhoto.getAttribute('src')
 
       // Get description
