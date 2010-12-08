@@ -13,7 +13,7 @@ public class ImmoAgregator extends Agregator {
     cartridges << new LogicImmoCartridge(this)
 
     cartridges << new OrpiCartridge(this)
-//    cartridges << new PAPCartridge(this)
+    cartridges << new PAPCartridge(this)
 //    cartridges << new Century21Cartridge(this)
 
 //    cartridges << new MockImmoCartridgeForUITests("www.foobar.com", this)

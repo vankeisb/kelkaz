@@ -50,8 +50,6 @@ public class PAPCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
       url = URL_CARTRIDGE_SELL
     }
 
-    // Construct the url : url-appartement-antibes-06600-g8853-du-3-pieces-au-5-pieces-entre-500-et-1000-euros-entre-50-et-100-m2
-
     // Set Type
     url += '-'+PAPTYPE_FROMKKTYPE.get(criteria.type)
 
@@ -65,13 +63,31 @@ public class PAPCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     url += '-' + getLocaliteFromPostCode(postCodeResult)
 
     // Set room number
-    url += '-du-' + criteria.nbRoomsMin + '-pieces-au-' + criteria.nbRoomsMax + '-pieces'
+    if (criteria.nbRoomsMin != null && criteria.nbRoomsMax == null){
+      url += '-a-partir-du-' + criteria.nbRoomsMin + '-pieces'
+    } else if(criteria.nbRoomsMin == null && criteria.nbRoomsMax != null){
+      url += '-jusqu-au-' + criteria.nbRoomsMax + '-pieces'
+    }else if (criteria.nbRoomsMin != null && criteria.nbRoomsMax != null){
+      url += '-du-' + criteria.nbRoomsMin + '-pieces-au-' + criteria.nbRoomsMax + '-pieces'
+    }
 
     // Set price
-    url += '-entre-' + criteria.priceMin + '-et-' + criteria.priceMax + '-euros'
+    if (criteria.priceMin != null && criteria.priceMax== null){
+      url += '-a-partir-de-' + criteria.priceMin+ '-euros'
+    } else if(criteria.priceMin == null && criteria.priceMax!= null){
+      url += '-jusqu-a-' + criteria.priceMax+ '-euros'
+    }else if (criteria.nbRoomsMin != null && criteria.nbRoomsMax != null){
+      url += '-entre-' + criteria.priceMin + '-et-' + criteria.priceMax + '-euros'
+    }
 
     // Set surface
-    url += '-entre-' + criteria.surfaceMin + '-et-' + criteria.surfaceMax + '-m2'
+    if (criteria.surfaceMin != null && criteria.surfaceMax == null){
+      url += '-a-partir-de-' + criteria.surfaceMin+ '-m2'
+    } else if(criteria.surfaceMin == null && criteria.surfaceMax!= null){
+      url += '-jusqu-a-' + criteria.surfaceMax+ '-m2'
+    }else if (criteria.surfaceMin != null && criteria.surfaceMax != null){
+      url += '-entre-' + criteria.surfaceMin + '-et-' + criteria.surfaceMax + '-m2'
+    }
 
     logger.debug("Sending request : " + url);
     def page = webClient.getPage(url.toString())
@@ -150,6 +166,7 @@ public class PAPCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
   private Date formatDate(String date){
     def ret = date.replaceAll('Annonce mise à jour le  ', '')
+    ret = ret.replaceAll('Annonce nouvelle du  ', '')
     SimpleDateFormat format = new SimpleDateFormat("dd MMMM yyyy");
     return format.parse(ret)
   }
