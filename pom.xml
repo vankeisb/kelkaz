@@ -29,6 +29,12 @@
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
             <version>1.6.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.ant</groupId>
+                    <artifactId>ant</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
