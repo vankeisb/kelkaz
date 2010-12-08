@@ -67,7 +67,7 @@ class Century21Cartridge extends Cartridge<ImmoCriteria, ImmoResult> {
 
     // Set price
     if (criteria.priceMin != null){
-      url += getSeparator()+'b-' + criteria.priceMin + '-' 
+      url += getSeparator()+'b-' + criteria.priceMin + '-'
     }else{
       url += getSeparator()+'b-0-'
     }
@@ -77,60 +77,75 @@ class Century21Cartridge extends Cartridge<ImmoCriteria, ImmoResult> {
 
     // Set room number
     if (criteria.nbRoomsMin != null && criteria.nbRoomsMax != null){
-      url += getSeparator()+'p-' + criteria.nbRoomsMin + '-' + criteria.nbRoomsMax 
+      url += getSeparator()+'p-' + criteria.nbRoomsMin + '-' + criteria.nbRoomsMax
     }else if (criteria.nbRoomsMin != null){
       url += getSeparator()+'p-'+criteria.nbRoomsMin
     }else if (criteria.nbRoomsMax != null){
       url += getSeparator()+'p-'+criteria.nbRoomsMax
     }
 
-    // trick display pge 1
-    url += getSeparator()+'page-1'
+    url += getSeparator()+'page-'
 
     logger.debug "sending request to url = " + url
 
     // Get page and results
     webClient.setJavaScriptEnabled(false)
-    def page = webClient.getPage(url.toString())
-    def divResults = page.getByXPath("//div[@class='blocAnnonce']")
-    logger.debug divResults
-    divResults.each{
-      // Get title
-      def aTitle = it.getHtmlElementsByTagName('a')[0]
-      def title = aTitle.getAttribute('title')
+    def page = webClient.getPage(url.toString()+'1')
 
-      // Get price
-      def spanPrice = it.getHtmlElementsByTagName('span')[0]
-      def price = extractInteger(spanPrice.textContent)
-
-      // Get photo
-      def imgPhoto = it.getByXPath("div[@class='infosPrincip']/div[@class='image']/span/img")[0] // /a")[0]
-      def imgUrl = imgPhoto.getAttribute('src')
-
-      // Get description
-      def pDescription = it.getByXPath("div[@class='descPrincip']/p")[0]
-      def description = trim(pDescription.textContent)
-
-      fireResultEvent(new ImmoResult(this, title, null, description, price, new Date(), imgUrl))
-
-
+    def ulNbPage = page.getByXPath("//div[@class='enteteBloc']/div[@class='blocPage']/ul/li")
+    if (ulNbPage == null){
+      logger.debug('No results')
+      return
     }
 
+    def nbPages = ulNbPage.size -1
 
+    for (int pageNum=1 ; pageNum<=nbPages && !isKilled() ; pageNum++ ){
 
-
-
-
-
-    }
-
-    private String getSeparator(){
-      if (criteria.demand == Demand.RENT){
-        return RENT_SEPARATOR
-      }else{
-        return SELL_SEPARATOR
+      if (pageNum>1) {
+        sleepRandomTime()
+        page = webClient.getPage(url+pageNum)
       }
 
+      def divResults = page.getByXPath("//div[@class='blocAnnonce']")
+      logger.debug divResults
+      divResults.each{
+        // Get title
+        def aTitle = it.getHtmlElementsByTagName('a')[0]
+        def title = aTitle.getAttribute('title')
+
+        // Get price
+        def spanPrice = it.getHtmlElementsByTagName('span')[0]
+        def price = extractInteger(spanPrice.textContent)
+
+        // Get photo
+        def imgPhoto = it.getByXPath("div[@class='infosPrincip']/div[@class='image']/span/img")[0] // /a")[0]
+        def imgUrl = imgPhoto.getAttribute('src')
+
+        // Get description
+        def pDescription = it.getByXPath("div[@class='descPrincip']/p")[0]
+        def description = trim(pDescription.textContent)
+
+        fireResultEvent(new ImmoResult(this, title, null, description, price, new Date(), imgUrl))
+
+      }
+    }
+
+
+
+
+
+
+
+  }
+
+  private String getSeparator(){
+    if (criteria.demand == Demand.RENT){
+      return RENT_SEPARATOR
+    }else{
+      return SELL_SEPARATOR
     }
 
   }
+
+}
