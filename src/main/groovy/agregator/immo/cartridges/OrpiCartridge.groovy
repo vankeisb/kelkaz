@@ -7,7 +7,7 @@ import agregator.immo.ImmoCriteria.Demand
 import agregator.immo.ImmoCriteria.Type
 import agregator.immo.ImmoResult
 import agregator.util.Logger
-import static agregator.ui.Util.* 
+import static agregator.ui.Util.*
 import com.gargoylesoftware.htmlunit.WebClient
 
 
@@ -37,7 +37,7 @@ public class OrpiCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     // Choose sell or rent
     def radio
     if (criteria.demand == Demand.RENT) {
-      radio = form.getElementById('achRadioButtonLouer'); 
+      radio = form.getElementById('achRadioButtonLouer');
     }else{
       radio = form.getElementById('achRadioButtonAcheter')
     }
@@ -45,14 +45,24 @@ public class OrpiCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
 
     // set room number
     def nbRoomLimit = 4
-    if (criteria.nbRoomsMax > nbRoomLimit){
-      def nbRoomsRadio = form.getElementById('ach_cb_recNbPieces5')
-      nbRoomsRadio.click()
+    if (criteria.nbRoomsMin == null){
+      criteria.nbRoomsMin = 1
     }
 
-    for (int i = criteria.nbRoomsMin ; i<=nbRoomLimit ; i++){
-      def nbRoomsRadio = form.getElementById('ach_cb_recNbPieces'+i)
+    if (criteria.nbRoomsMin > nbRoomLimit){
+      def nbRoomsRadio = form.getElementById('ach_cb_recNbPieces5')
       nbRoomsRadio.click()
+    }else{
+      if (criteria.nbRoomsMax > nbRoomLimit || criteria.nbRoomsMax == null ){
+        criteria.nbRoomsMax = 4
+        def nbRoomsRadio = form.getElementById('ach_cb_recNbPieces5')
+        nbRoomsRadio.click()
+      }
+
+      for (int i = criteria.nbRoomsMin ; i<=criteria.nbRoomsMax ; i++){
+        def nbRoomsRadio = form.getElementById('ach_cb_recNbPieces'+i)
+        nbRoomsRadio.click()
+      }
     }
 
     // Set type
@@ -66,12 +76,16 @@ public class OrpiCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     }
 
     // Set the price min
-    def priceMinField = form.getInputByName('recPrixMin')
-    priceMinField.setValueAttribute(criteria.priceMin.toString())
+    if (criteria.priceMin != null){
+      def priceMinField = form.getInputByName('recPrixMin')
+      priceMinField.setValueAttribute(criteria.priceMin.toString())
+    }
 
     // Set the price max
-    def priceMaxField = form.getInputByName('recPrixMax')
-    priceMaxField.setValueAttribute(criteria.priceMax.toString())
+    if (criteria.priceMax != null){
+      def priceMaxField = form.getInputByName('recPrixMax')
+      priceMaxField.setValueAttribute(criteria.priceMax.toString())
+    }
 
     // Set the localisation field
     def localisationField = form.getInputByName('recVille')
@@ -94,13 +108,16 @@ public class OrpiCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
         url = URL_CARTRIDGE +'/'+ url
 
       // Create the title from the url link
-      def title = url.substring(34, url.length()-16)
+      def title = url.substring(36, url.length()-16)
       title = title.replaceAll('-', ' ')
 
       // Get the description
       def resultDescription = it.getByXPath("//dd[@class='annonceResultDesc']")[i]
       def aDescription = resultDescription.getHtmlElementsByTagName('a')[0]
       def description = aDescription.textContent
+
+      // Get the surface in description
+      def surface = getSurfaceFromDescription(description)
 
       // get image
       def resultImage = it.getByXPath("//dt[@class='annonceResultImg']")[i]
@@ -114,9 +131,32 @@ public class OrpiCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
       def emPrice = aPrice.getHtmlElementsByTagName('em')[0]
       def price = extractInteger(emPrice.textContent)
 
-      fireResultEvent(new ImmoResult(this, title, url, description, price, null, urlImage))
-      
+      if (criteria.surfaceMin != null){
+        if (criteria.surfaceMax != null){
+          if (criteria.surfaceMin <= surface && criteria.surfaceMax >= surface){
+            fireResultEvent(new ImmoResult(this, title, url, description, price, null, urlImage))
+          }
+        } else{
+          if (criteria.surfaceMin <= surface){
+            fireResultEvent(new ImmoResult(this, title, url, description, price, null, urlImage))
+          }
+        }
+      } else{
+        if (criteria.surfaceMax != null){
+          if (criteria.surfaceMax >= surface){
+            fireResultEvent(new ImmoResult(this, title, url, description, price, null, urlImage))
+          }
+        }else{
+          fireResultEvent(new ImmoResult(this, title, url, description, price, null, urlImage))
+        }
+      }
       i++
     }
+  }
+
+
+  private int getSurfaceFromDescription(String description){
+    def items = description.split(',')
+    return extractInteger(items[2].replaceAll('m²', ''))
   }
 }
