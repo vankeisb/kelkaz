@@ -136,8 +136,14 @@ class ImmoResultsPanel extends ResultsPanel {
               replaceAll(/-/, " ").
               replaceAll(/\(/, " ").
               replaceAll(/\)/, " ")
-      // tokenize
-      return Arrays.asList(s.split(" "))
+      // tokenize and trim
+      def result = []
+      s.split(" ").each { String str ->
+        if (str!=null && !str.equals(' ') && !str.equals('')) {
+          result << str
+        }
+      }
+      return result
     }
     return Collections.emptyList()
   }
