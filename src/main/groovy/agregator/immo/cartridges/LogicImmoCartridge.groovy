@@ -30,7 +30,7 @@ public class LogicImmoCartridge extends Cartridge {
 
   private String computePostCode(Criteria criteria) {
     int cpLen = criteria.postCode.toString().length()
-    def postCodeUrl = ROOT_SITE + '/ajax/t9/fr/' + cpLen + '/0/' + criteria.postCode + '.txt'
+    def postCodeUrl = ROOT_SITE + '/ajax/t9/fr/' + cpLen + '/' + criteria.postCode.charAt(0) + '/' + criteria.postCode + '.txt'
     logger.debug("Sending post code request : " + postCodeUrl)
     def p = webClient.getPage(postCodeUrl)
     def jsonResult = p.webResponse.contentAsString
