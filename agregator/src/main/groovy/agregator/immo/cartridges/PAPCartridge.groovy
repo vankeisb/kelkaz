@@ -42,6 +42,7 @@ public class PAPCartridge extends Cartridge {
   }
 
   protected void doAgregate(Criteria criteria) {
+    logger.debug "Launch PAP cartridge with criteria" + criteria
     def results = new ArrayList<ImmoResult>()
 
     def url
@@ -104,7 +105,6 @@ public class PAPCartridge extends Cartridge {
       // Get the results
       def divResults = page.getByXPath("//div[@class='annonce annonce-resume']")
       def i = 0
-      logger.debug divResults
       divResults.each{
 
 
