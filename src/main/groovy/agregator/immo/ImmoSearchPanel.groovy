@@ -22,6 +22,7 @@ import java.awt.Font
 import javax.swing.JRadioButton
 import javax.swing.JTextField
 import static agregator.ui.PanelStacker.*
+import javax.swing.JCheckBox
 
 public class ImmoSearchPanel implements SearchPanel {
 
@@ -37,8 +38,9 @@ public class ImmoSearchPanel implements SearchPanel {
 
   JRadioButton radioLoc = new JRadioButton(text: 'Location', selected: true)
   JRadioButton radioVente = new JRadioButton(text: 'Vente')
-  JRadioButton radioAppt = new JRadioButton(text: 'Appartement', selected: true)
-  JRadioButton radioMaison = new JRadioButton(text: 'Maison')
+
+  JCheckBox cbAppt = new JCheckBox(text: 'Appartement', selected: true)
+  JCheckBox cbMaison = new JCheckBox(text: 'Maison', selected: true)
 
   JTextField tfNbPiecesMin = createTextField()
   JTextField tfNbPiecesMax = createTextField()
@@ -51,12 +53,11 @@ public class ImmoSearchPanel implements SearchPanel {
   def buildPanel(){
 
     groupButtons([radioLoc, radioVente])
-    groupButtons([radioAppt, radioMaison])
 
     def p = stackPanels([
             createSeparatorLabel('Type'),
             addBorder(stackPanels([radioLoc, radioVente], BorderLayout.WEST), BorderFactory.createEmptyBorder(0, 10, 0, 0)),
-            addBorder(stackPanels([radioAppt, radioMaison], BorderLayout.WEST), BorderFactory.createEmptyBorder(0, 10, 0, 0)),
+            addBorder(stackPanels([cbAppt, cbMaison], BorderLayout.WEST), BorderFactory.createEmptyBorder(0, 10, 0, 0)),
 
             createSeparator(),
 
@@ -115,44 +116,59 @@ public class ImmoSearchPanel implements SearchPanel {
     return buildPanel()
   }
 
-  private List<Integer> intsFromTextField(JTextField tf) {
+  private def stringsFromTextField(JTextField tf) {
     if (tf.text==null) {
-        return null
-      }
-      def res = []
-      String txt = tf.text.replaceAll(/,/," ").replaceAll(/;/,' ')
-      def parts = txt.split(' ')
-      parts.each { part ->
-        try {
-          res << Integer.parseInt(tf.text)
-        } catch(NumberFormatException e) {
-          // ignore it
-        }
-      }
-      return res
+      return null
+    }
+    String txt = tf.text.replaceAll(/,/," ").replaceAll(/;/,' ')
+    return txt.split(' ')
   }
 
   private Integer intFromTextField(JTextField tf) {
-    def ints = intsFromTextField(tf)
-    if (ints) {
-      return ints[0]
+    if (tf.text==null) {
+      return null
     }
-    return null
+    try {
+      return Integer.parseInt(tf.text)
+    } catch(NumberFormatException e) {
+      return null
+    }
   }
 
   public List<Criteria> getCriterias() {
-    ImmoCriteria c = new ImmoCriteria()
-    c.demand = radioLoc.selected ? Demand.RENT : Demand.SELL
-    c.type = radioAppt.selected ? Type.APPT : Type.MAISON
-    c.nbRoomsMin = intFromTextField(tfNbPiecesMin)
-    c.nbRoomsMax = intFromTextField(tfNbPiecesMax)
-    c.surfaceMin = intFromTextField(tfSurfaceMin)
-    c.surfaceMax = intFromTextField(tfSurfaceMax)
-    c.priceMin = intFromTextField(tfPriceMin)
-    c.priceMax = intFromTextField(tfPriceMax)
-    c.postCode = tfCodePostal.text
+    Demand demand = radioLoc.selected ? Demand.RENT : Demand.SELL
+    def types = []
+    if (cbAppt.selected) {
+      types << Type.APPT
+    }
+    if (cbMaison.selected) {
+      types << Type.MAISON
+    }
+    def nbRoomsMin = intFromTextField(tfNbPiecesMin)
+    def nbRoomsMax = intFromTextField(tfNbPiecesMax)
+    def surfaceMin = intFromTextField(tfSurfaceMin)
+    def surfaceMax = intFromTextField(tfSurfaceMax)
+    def priceMin = intFromTextField(tfPriceMin)
+    def priceMax = intFromTextField(tfPriceMax)
 
-    return [c]
+    def postCodes = stringsFromTextField(tfCodePostal)
+
+    def criterias = []
+    types.each { type ->
+      postCodes.each { postCode ->
+        criterias << new ImmoCriteria(
+                demand: demand,
+                type: type,
+                nbRoomsMin: nbRoomsMin,
+                nbRoomsMax: nbRoomsMax,
+                surfaceMin: surfaceMin,
+                surfaceMax: surfaceMax,
+                priceMin: priceMin,
+                priceMax: priceMax,
+                postCode: postCode)
+      }
+    }
+    return criterias
   }
 
   static void main(String[] args) {

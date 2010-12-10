@@ -74,7 +74,7 @@ class ImmoResultsPanel extends ResultsPanel {
           sortDate()
         }))
         label(' | ')
-        widget(new HyperLink("fournisseur", {
+        widget(new HyperLink("site", {
           sortCartridge()
         }))
         widget(Box.createHorizontalGlue())
