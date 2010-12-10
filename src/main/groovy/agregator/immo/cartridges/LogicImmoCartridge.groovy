@@ -153,8 +153,16 @@ public class LogicImmoCartridge extends Cartridge {
           def price = extractInteger(item.getByXPath("div[2]/div[1]/span[1]")[0].textContent)
           def description = trim(item.getByXPath("div[2]/div[3]/span")[0].textContent)
           def u = item.getByXPath("div[2]/div[3]/a")[0].getAttribute('href')
-          def imgUrl = null // TODO
+
+          // send another request for grabbing date and image url
+          def resultPage = webClient.getPage(u)
+
+          sleepRandomTime()
+
+          def imgUrl = resultPage.getByXPath("//*[@id='default_ad_img']")[0].getAttribute('src')
+//          def dateBlock = resultPage.getByXPath("/html/body/div[3]/div/div[2]/div/div[2]/p[2]")[0]
           def date = null // TODO
+
 
           fireResultEvent(new ImmoResult(this, title, u, description, price, date, imgUrl))
           nbAdded++
