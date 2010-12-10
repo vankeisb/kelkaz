@@ -146,7 +146,7 @@ public class LogicImmoCartridge extends Cartridge {
         p = webClient.getPage(u)
       }
       int nbAdded = 0
-      def listItems = p.getByXPath("""//div[@class='ad-content']""")
+      def listItems = p.getByXPath("//div[@class='ad-content']")
       listItems.each { item ->
         try {
           def title = trim(item.getByXPath("div[2]/div[3]/a/strong")[0].textContent)
@@ -160,8 +160,9 @@ public class LogicImmoCartridge extends Cartridge {
           sleepRandomTime()
 
           def imgUrl = resultPage.getByXPath("//*[@id='default_ad_img']")[0].getAttribute('src')
-//          def dateBlock = resultPage.getByXPath("/html/body/div[3]/div/div[2]/div/div[2]/p[2]")[0]
-          def date = null // TODO
+          def dateStr = resultPage.getByXPath("//*[@id='desc-right']/p[2]")[0].textContent
+          dateStr = dateStr.substring(15, 25)
+          def date = extractDate(dateStr)
 
 
           fireResultEvent(new ImmoResult(this, title, u, description, price, date, imgUrl))
