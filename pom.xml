@@ -8,5 +8,9 @@
     <name>agregator-parent</name>
 	<modules>
 		<module>agregator</module>
+        <!--
+        <module>fatjar</module>
+        <module>web</module>
+        -->
 	</modules>
 </project>
