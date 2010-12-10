@@ -119,7 +119,7 @@ public class LogicImmoCartridge extends Cartridge {
 
     def p = webClient.getPage(url)
 
-    def spanNbAnnonces = p.getByXPath("/html/body/div[2]/div/div[2]/div/strong")[0]
+    def spanNbAnnonces = p.getByXPath("/html/body/div[3]/div/div[3]/div")[0]
     if (!spanNbAnnonces) {
       spanNbAnnonces = p.getByXPath("/html/body/div[@id='li-content-global']/div[@id='li-content-left']/div[@id='pagination_v6']/div[1]/strong[1]")[0]
     }

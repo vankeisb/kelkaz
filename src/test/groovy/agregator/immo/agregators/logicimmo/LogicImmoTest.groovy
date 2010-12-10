@@ -51,7 +51,7 @@ public class LogicImmoTest extends ImmoTestBase {
     LogicImmoAgregator a = new LogicImmoAgregator()
     def listener = new MyTestListener()
     a.addListener(listener)
-    a.agregate(crit);
+    a.agregate([crit]);
 
     int nbResults = listener.getResults().size()
     assert nbResults == 68
