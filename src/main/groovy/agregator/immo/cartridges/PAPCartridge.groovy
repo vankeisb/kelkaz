@@ -157,8 +157,15 @@ public class PAPCartridge extends Cartridge {
   }
 
   private String getLocaliteFromPostCode(String postCode){
-    def items = postCode.split('\\|');
-    return 'g'+ trim(items[1])
+    //Grasse (06130)|8741
+    //Plascassier (06130)|55440
+    def cityCode = ''
+    def lines = postCode.split('\n')
+    for(String line : lines){
+    def items = line.split('\\|');
+      cityCode += 'g'+ trim(items[1])
+    }
+    return cityCode
   }
 
   private String formatTitle(String title){
@@ -203,4 +210,5 @@ public class PAPCartridge extends Cartridge {
     SimpleDateFormat format = new SimpleDateFormat("dd MMMM yyyy");
     return format.parse(ret)
   }
+
 }
