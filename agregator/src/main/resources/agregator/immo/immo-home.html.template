@@ -1,0 +1,20 @@
+<html>
+<body style="font-family: arial,sans-serif; margin-left: 8px; margin-right: 8px">
+<h1>Bienvenue dans TrouvToo Immobilier</h1>
+<p>
+    TrouvToo Immobilier est un agrégateur : il cherche pour vous dans plusieurs sites
+    d'annonces immobilières. Au lieu de répéter vos recherches dans
+    chaque site, saisissez vos critères et laisser TrouvToo chercher pour vous !
+</p>
+<p>
+    Remplissez le formulaire de recherche ci-contre et cliquez le bouton "Rechercher" pour accéder
+    aux résultats.
+</p>
+<h2>Sites supportés</h2>
+<ul>
+<% agregator.cartridges.each { c -> %>
+ <li><a href="http://${c.name}">${c.name}</li>
+<% } %>
+</ul>
+</body>
+</html>

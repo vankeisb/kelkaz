@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp
+    spec="1.0+"
+    codebase="http://kelkaz.rvkb.com/"
+    href="$outputFile">
+  <information>
+    <vendor>Kelkaz</vendor>
+    <title>Kelkaz - Recherche multi-sites</title>
+    <homepage href="http://www.kelkaz.fr"/>
+    <description kind="one-line">Recherche immobilière multi-sites.</description>
+    <description kind="short">Kelkaz</description>
+    <description kind="tooltip">Recherche multi-sites</description>
+    <icon
+      width="35"
+      height="26"
+      href="images/headphones.gif"/>
+    <icon
+      kind="splash"
+      href="images/splash.jpg"/>
+  </information>
+  <security>
+     <all-permissions/>
+  </security>
+  <resources>
+    <j2se version="1.6+"
+     initial-heap-size="32m"
+     max-heap-size="521m"
+     />
+     $dependencies
+  </resources>
+  <application-desc main-class="$mainClass">
+  </application-desc>
+</jnlp>

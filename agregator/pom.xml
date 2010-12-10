@@ -1,0 +1,171 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>agregator</groupId>
+    <version>1.0</version>
+    <artifactId>agregator</artifactId>
+    <packaging>jar</packaging>
+    <name>agregator</name>
+    <dependencies>
+        <!--
+        <dependency>
+            <groupId>com.seaglasslookandfeel</groupId>
+            <artifactId>seaglasslookandfeel</artifactId>
+            <version>0.1.7.3</version>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.htmlunit</groupId>
+            <artifactId>htmlunit</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>1.6.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.ant</groupId>
+                    <artifactId>ant</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20090211</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+            <!-- Use Groovy plugin for compilation of .groovy files -->
+            <plugin>
+                <groupId>org.codehaus.groovy.maven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generateStubs</goal>
+                            <goal>compile</goal>
+                            <goal>generateTestStubs</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- exec plugin to launch the UI for our tests -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>java</executable>
+                    <classpathScope>test</classpathScope>
+                    <arguments>
+                        <argument>-classpath</argument>
+                        <!-- automatically creates the classpath using all project dependencies,
+                  also adding the project build directory -->
+                        <classpath/>
+                        <argument>agregator.immo.LaunchImmo</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/agregators/**/*.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>webstart</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo.webstart</groupId>
+                        <artifactId>webstart-maven-plugin</artifactId>
+                        <version>1.0-beta-1</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jnlp-inline</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+
+                            <dependencies>
+                                <excludes>
+                                    <!--exclude>commons-lang:commons-lang</exclude-->
+                                </excludes>
+
+                            </dependencies>
+
+                            <resourcesDirectory>${project.basedir}/src/jnlp/resources</resourcesDirectory>
+
+                            <jnlp>
+                                <!-- we play with the resource path and template relative path to test MOJO-391 -->
+                                <inputTemplateResourcePath>${project.basedir}/src/</inputTemplateResourcePath>
+                                <inputTemplate>jnlp/template.vm</inputTemplate>
+                                <outputFile>kelkaz.jnlp</outputFile>
+                                <mainClass>agregator.immo.LaunchImmo</mainClass>
+                            </jnlp>
+
+                            <!-- SIGNING -->
+                            <!-- defining this will automatically sign the jar and its dependencies -->
+                            <sign>
+                                <keystore>/tmp/keystore</keystore>
+
+                                <keypass>m2m2m2</keypass>
+                                <storepass>m2m2m2</storepass>
+                                <!--sigfile>m2m2m2</sigfile-->
+                                <alias>alias</alias>
+                                <validity>180</validity>
+
+                                <dnameCn>www.kelkaz.fr</dnameCn>
+
+                                <dnameOu>None</dnameOu>
+                                <dnameO>Kelkaz</dnameO>
+                                <dnameL>Nice</dnameL>
+                                <dnameC>France</dnameC>
+                                <verify>true</verify>
+                                <keystoreConfig>
+                                    <delete>true</delete>
+                                    <gen>true</gen>
+                                </keystoreConfig>
+                            </sign>
+                            <verbose>true</verbose>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
