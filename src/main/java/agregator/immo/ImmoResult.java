@@ -25,6 +25,9 @@ public class ImmoResult extends Result {
       String photoUrl) {
         super(cartridge);
         this.title = title;
+        if (url==null) {
+            throw new IllegalArgumentException("Cannot pass a null url");
+        }
         this.url = url;
         this.description = description;
         this.price = price;
@@ -50,6 +53,7 @@ public class ImmoResult extends Result {
         sb.append("ImmoResult");
         sb.append("{title='").append(title).append('\'');
         sb.append(", url='").append(url).append('\'');
+        sb.append(", cartridge='").append(getCartridge().getName()).append('\'');
         sb.append('}');
         return sb.toString();
     }

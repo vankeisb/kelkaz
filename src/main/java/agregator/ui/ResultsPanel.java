@@ -37,6 +37,8 @@ public abstract class ResultsPanel<R extends Result> {
 
     public void searchStarted() { }
 
+    public void searchStopped() { }
+
     public abstract void addResult(R r);
 
     public void fireResultSelected(R r) {

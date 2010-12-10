@@ -127,7 +127,10 @@ class Century21Cartridge extends Cartridge {
         def pDescription = it.getByXPath("div[@class='descPrincip']/p")[0]
         def description = trim(pDescription.textContent)
 
-        fireResultEvent(new ImmoResult(this, title, null, description, price, new Date(), imgUrl))
+        // get url
+        def resultUrl = URL_ROOT + aTitle.getAttribute('href')
+
+        fireResultEvent(new ImmoResult(this, title, resultUrl, description, price, new Date(), imgUrl))
 
       }
     }

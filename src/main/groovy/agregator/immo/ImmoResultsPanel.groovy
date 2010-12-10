@@ -9,11 +9,8 @@ import agregator.ui.ResultsPanel
 import agregator.ui.Util
 import groovy.swing.SwingBuilder
 import java.awt.event.ActionListener
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 import java.util.concurrent.ConcurrentHashMap
 import javax.swing.*
-import java.awt.BorderLayout
 
 class ImmoResultsPanel extends ResultsPanel {
 
@@ -105,11 +102,18 @@ class ImmoResultsPanel extends ResultsPanel {
   }
 
   void searchStarted() {
-    if (!headerPanel.visible) {
-      SwingUtilities.invokeLater {
+    SwingUtilities.invokeLater {
+      btnClear.enabled = false
+      if (!headerPanel.visible) {
         headerPanel.visible = true
         updateStatus()        
       }
+    }
+  }
+
+  void searchStopped() {
+    SwingUtilities.invokeLater {
+      btnClear.enabled = true      
     }
   }
 
@@ -117,8 +121,11 @@ class ImmoResultsPanel extends ResultsPanel {
     List<String> tokenizedText = tokenize(text)
     int nbFound = 0
     for (String k : keywords) {
-      if (tokenizedText.contains(k)) {
-        nbFound++
+      for (String t : tokenizedText) {
+        if (t.equals(k)) {
+          nbFound = nbFound + 1;
+          break;
+        }
       }
     }
     return nbFound == keywords.size()
@@ -151,19 +158,27 @@ class ImmoResultsPanel extends ResultsPanel {
   private def filter() {
     // tokenize the search text to keywords
     List<String> keywords = tokenize(searchField.text)
-    resultsAndPanels.each { ImmoResult k, ImmoResultPanel p ->
+    def results = resultsAndPanels.keySet()
+    def panelsToAdd = []
+    results.each { k ->
+      ImmoResultPanel p = resultsAndPanels.get(k)
       String fullText = k.title + " " + k.description
       boolean matches = stringMatch(fullText, keywords)
       if (matches) {
-        SwingUtilities.invokeLater {
-          p.component.visible = cbIncludeExclusions.selected || !exclusions.isExcluded(k)
-        }
-      } else {
-        SwingUtilities.invokeLater {
-          p.component.visible = false
+        if (cbIncludeExclusions.selected || !exclusions.isExcluded(k)) {
+          panelsToAdd << p.component
         }
       }
     }
+    SwingUtilities.invokeLater {
+      panel.removeAll()
+      panel.revalidate()
+      panelsToAdd.each { p ->
+        panel.add(p)
+        panel.revalidate()
+      }
+    }
+
   }
 
   private def doSort(Closure comparator) {
@@ -206,7 +221,7 @@ class ImmoResultsPanel extends ResultsPanel {
 
   private def createResultComponent(ImmoResult r) {
     ImmoResultPanel irp = new ImmoResultPanel(this, r)
-    resultsAndPanels[r] = irp
+    resultsAndPanels.put(r, irp)
     return irp
   }
 
@@ -215,7 +230,6 @@ class ImmoResultsPanel extends ResultsPanel {
     def cmp = createResultComponent(r).getComponent()
     SwingUtilities.invokeLater {
       newPanel.updateExclusionStatus()
-      btnClear.enabled = true
       btnFilter.enabled = true
       updateStatus()
       panel.add(cmp)
@@ -248,7 +262,8 @@ class ImmoResultsPanel extends ResultsPanel {
       panel.removeAll()
       statusLabel.text = null
       headerPanel.visible = false
-      updateStatus()      
+      updateStatus()
+      panel.revalidate()
     }
   }
 

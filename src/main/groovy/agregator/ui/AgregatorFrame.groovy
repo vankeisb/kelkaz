@@ -129,6 +129,7 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
       SwingUtilities.invokeLater {
         btnAgregate.text = "Rechercher"
         btnAgregate.enabled = true
+        resultsPanel.searchStopped()
       }
     }
   }
