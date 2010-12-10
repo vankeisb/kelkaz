@@ -184,8 +184,22 @@ public class PAPCartridge extends Cartridge {
   }
 
   private Date formatDate(String date){
-    def ret = date.replaceAll('Annonce mise à jour le  ', '')
-    ret = ret.replaceAll('Annonce nouvelle du  ', '')
+    if (date==null) {
+      return null
+    }
+    // find index of first digit
+    int i = 0
+    int nbChars = date.length()
+    boolean found = false
+    while (i<nbChars && !found) {
+      Character c = date.charAt(i)
+      if (c.isDigit()) {
+        found = true
+      } else {
+        i++
+      }
+    }
+    def ret = date.substring(i, nbChars)
     SimpleDateFormat format = new SimpleDateFormat("dd MMMM yyyy");
     return format.parse(ret)
   }
