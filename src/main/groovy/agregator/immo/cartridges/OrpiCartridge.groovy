@@ -105,14 +105,15 @@ public class OrpiCartridge extends Cartridge {
         def resultTitle = it.getByXPath("//dt[@class='annonceResultTitle']")[i]
         def aTitle = resultTitle.getHtmlElementsByTagName('a')[0]
         def url = aTitle.getAttribute('href')
+        def title = aTitle.textContent
 
         // Sometimes the URL doesn't start with http://... add it
         if (!url.startsWith("http://"))
           url = URL_CARTRIDGE +'/'+ url
 
         // Create the title from the url link
-        def title = url.substring(36, url.length()-16)
-        title = title.replaceAll('-', ' ')
+//        def title = url.substring(36, url.length()-16)
+//        title = title.replaceAll('-', ' ')
 
         // Get the description
         def resultDescription = it.getByXPath("//dd[@class='annonceResultDesc']")[i]
