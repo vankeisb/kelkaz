@@ -72,8 +72,9 @@ public abstract class Agregator<C extends Criteria, R extends Result> {
         return this;
     }
 
-    public Agregator<C,R> agregate(C criteria) {
+    public Agregator<C,R> agregate(List<C> criterias) {
         checkAgregating();
+        List<C> crits = new ArrayList<C>(criterias);
         doneSignal = new CountDownLatch(this.cartridges.size());        
         agregating = true;
         try {
@@ -85,7 +86,7 @@ public abstract class Agregator<C extends Criteria, R extends Result> {
             // and wait for the result
             for (Cartridge<C,R> c : this.cartridges) {
                 logger.debug("Starting cartridge " + c.getName() + " in new thread");
-                Worker<C,R> w = new Worker<C,R>(c, criteria);
+                Worker<C,R> w = new Worker<C,R>(c, crits);
                 new Thread(w).start();
             }
 
@@ -115,18 +116,18 @@ public abstract class Agregator<C extends Criteria, R extends Result> {
     class Worker<C extends Criteria,R extends Result> implements Runnable {
 
         private final Cartridge<C,R> cartridge;
-        private final C criteria;
+        private final List<C> criterias;
 
-        Worker(Cartridge<C,R> cartridge, C criteria) {
+        Worker(Cartridge<C,R> cartridge, List<C> criterias) {
             this.cartridge = cartridge;
-            this.criteria = criteria;
+            this.criterias = criterias;
             logger.debug("Worker thread created");
         }
 
         public void run() {
             try {
                 logger.debug("Worker thread " + this + " started");
-                cartridge.agregate(criteria);
+                cartridge.agregate(criterias);
             } finally {
                 logger.debug("Worker thread " + this + " over");
                 doneSignal.countDown();

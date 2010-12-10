@@ -4,6 +4,7 @@ import com.gargoylesoftware.htmlunit.WebClient
 import agregator.core.Cartridge
 import agregator.search.SearchEngineResult
 import agregator.core.Agregator
+import agregator.core.Criteria
 
 class GoogleCartridge extends Cartridge {
 
@@ -14,7 +15,7 @@ class GoogleCartridge extends Cartridge {
     super("Google", a);
   }
 
-  protected void doAgregate() {
+  protected void doAgregate(Criteria criteria) {
     webClient = new WebClient()
     def page = webClient.getPage('http://www.google.com')
     def form = page.getFormByName('f')

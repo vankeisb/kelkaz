@@ -12,8 +12,9 @@ import com.gargoylesoftware.htmlunit.WebClient
 import org.json.JSONArray
 import org.json.JSONObject
 import agregator.ui.EmptyRefreshHandler
+import agregator.core.Criteria
 
-public class LogicImmoCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
+public class LogicImmoCartridge extends Cartridge {
 
   private static final Logger logger = Logger.getLogger(LogicImmoCartridge.class)
 
@@ -27,7 +28,7 @@ public class LogicImmoCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     webClient.setRefreshHandler(new EmptyRefreshHandler())
   }
 
-  private String computePostCode() {
+  private String computePostCode(Criteria criteria) {
     int cpLen = criteria.postCode.toString().length()
     def postCodeUrl = ROOT_SITE + '/ajax/t9/fr/' + cpLen + '/0/' + criteria.postCode + '.txt'
     logger.debug("Sending post code request : " + postCodeUrl)
@@ -60,7 +61,7 @@ public class LogicImmoCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     return sb.toString()
   }
 
-  private String buildUrl(int pageNum, String postCode) {
+  private String buildUrl(Criteria criteria, int pageNum, String postCode) {
     logger.debug("Building URL")
     
     def url = new StringBuilder()
@@ -93,7 +94,7 @@ public class LogicImmoCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     return url.toString()
   }
 
-  protected void doAgregate() {
+  protected void doAgregate(Criteria criteria) {
 
     // achat appt
     // http://www.logic-immo.com/vente-immobilier-nice-06000-22514_2-8000000000-1-a-222222-333333-a-22-0-0c-3-0-0.htm
@@ -105,9 +106,9 @@ public class LogicImmoCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     // http://www.logic-immo.com/location-immobilier-nice-06000-22514_2-8000000000-1-a-1111-2222-a-22-0-0c-3-0-0.htm
     // http://www.logic-immo.com/location-immobilier-nice-06000-22514_2-8000000000-1-a-1111-2222-a-22-0-08-3-0-0.htm
 
-    def postCode = computePostCode()
+    def postCode = computePostCode(criteria)
 
-    def url = buildUrl(1, postCode)
+    def url = buildUrl(criteria, 1, postCode)
     logger.debug("Sending request : " + url);
 
     webClient.addRequestHeader("User-Agent","Mozilla/5.0 (X11; U; Linux i686; fr; rv:1.9.2.9) Gecko/20100825 Ubuntu/10.04 (lucid) Firefox/3.6.9")
@@ -140,7 +141,7 @@ public class LogicImmoCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
       logger.debug("Handling page $pageNum")
       if (pageNum>1) {
         sleepRandomTime()
-        String u = buildUrl(pageNum, postCode)
+        String u = buildUrl(criteria, pageNum, postCode)
         logger.debug("Getting page $pageNum, url=$u")
         p = webClient.getPage(u)
       }

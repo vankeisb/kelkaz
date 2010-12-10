@@ -7,7 +7,7 @@ public class MockCartridgeWithSleep extends MockCartridge {
     }
 
   @Override
-  protected void doAgregate() {
+  protected void doAgregate(MockCriteria c) {
       for (MockResult r : results) {
           try {
               Thread.sleep(1000);

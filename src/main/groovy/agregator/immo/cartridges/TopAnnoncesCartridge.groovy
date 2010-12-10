@@ -11,6 +11,7 @@ import agregator.core.Agregator
 
 import static agregator.ui.Util.*
 import java.text.SimpleDateFormat
+import agregator.core.Criteria
 
 /**
  * Created by IntelliJ IDEA.
@@ -19,7 +20,7 @@ import java.text.SimpleDateFormat
  * Time: 09:43:31
  * To change this template use File | Settings | File Templates.
  */
-class TopAnnoncesCartridge extends Cartridge<ImmoCriteria, ImmoResult> {
+class TopAnnoncesCartridge extends Cartridge {
 
   private static final Logger logger = Logger.getLogger(TopAnnoncesCartridge.class)
 
@@ -33,7 +34,7 @@ class TopAnnoncesCartridge extends Cartridge<ImmoCriteria, ImmoResult> {
     super("www.topannonces.fr", agregator)
   }
 
-  protected void doAgregate() {
+  protected void doAgregate(Criteria criteria) {
     webClient.setJavaScriptEnabled(false)
 
     /** Get results by form **/

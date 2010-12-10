@@ -3,6 +3,7 @@ package agregator.core;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
@@ -27,7 +28,7 @@ public class MockTest extends TestCase {
         MyCartridgeListener l = new MyCartridgeListener();
         MockCartridge c = new MockCartridge(new MockAgregator());
         c.addListener(l);
-        c.agregate(new MockCriteria());
+        c.agregate(Arrays.asList(new MockCriteria()));
         assertEquals(6, l.getEvents().size());
     }
 
@@ -49,14 +50,14 @@ public class MockTest extends TestCase {
     public void testMockAgregator() {
         MockAgregator a = new MockAgregator();
         MyAgregatorListener l = new MyAgregatorListener();
-        a.addListener(l).agregate(new MockCriteria());
+        a.addListener(l).agregate(Arrays.asList(new MockCriteria()));
         assertEquals(8, l.getEvents().size());
     }
 
     public void testMockWithError() {
         Agregator<MockCriteria,MockResult> a = new MockAgregatorWithError();
         MyAgregatorListener l = new MyAgregatorListener();
-        a.addListener(l).agregate(new MockCriteria());
+        a.addListener(l).agregate(Arrays.asList(new MockCriteria()));
         // expected evts : agr start/stop (2) + mock evts (4) + start/stop failing cartridge (2) + result evts (5) + error event (1)
         assertEquals(14, l.getEvents().size());
     }
@@ -77,7 +78,7 @@ public class MockTest extends TestCase {
             new Thread(new Runnable() {
                 public void run() {
                     try {
-                        c.agregate(crit);
+                        c.agregate(Arrays.asList(crit));
                     } catch(Throwable t) {
                         v.add(t);
                     } finally {
@@ -100,7 +101,7 @@ public class MockTest extends TestCase {
         final MockCriteria crit = new MockCriteria();
         new Thread(new Runnable() {
             public void run() {
-                c.agregate(crit);
+                c.agregate(Arrays.asList(crit));
             }
         }).start();
         // wait for our thread to start...
@@ -131,7 +132,7 @@ public class MockTest extends TestCase {
             new Thread(new Runnable() {
                 public void run() {
                     try {
-                        c.agregate(crit);
+                        c.agregate(Arrays.asList(crit));
                     } catch(Throwable t) {
                         v.add(t);
                     } finally {
@@ -154,7 +155,7 @@ public class MockTest extends TestCase {
         final MockCriteria crit = new MockCriteria();
         new Thread(new Runnable() {
             public void run() {
-                c.agregate(crit);
+                c.agregate(Arrays.asList(crit));
             }
         }).start();
         // wait for our thread to start...
@@ -182,7 +183,7 @@ public class MockTest extends TestCase {
         c.addListener(l);
         new Thread(new Runnable() {
             public void run() {
-                c.agregate(crit);
+                c.agregate(Arrays.asList(crit));
             }
         }).start();
         // wait for our thread to start...

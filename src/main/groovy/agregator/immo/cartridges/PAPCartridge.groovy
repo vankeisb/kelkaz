@@ -10,6 +10,7 @@ import agregator.immo.ImmoCriteria.Type
 import agregator.util.Logger
 import static agregator.ui.Util.*
 import java.text.SimpleDateFormat
+import agregator.core.Criteria
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,7 +19,7 @@ import java.text.SimpleDateFormat
  * Time: 18:28:42
  */
 
-public class PAPCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
+public class PAPCartridge extends Cartridge {
 
   private static final Logger logger = Logger.getLogger(PAPCartridge.class)
 
@@ -40,7 +41,7 @@ public class PAPCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     super("www.pap.fr", agregator)
   }
 
-  protected void doAgregate() {
+  protected void doAgregate(Criteria criteria) {
     def results = new ArrayList<ImmoResult>()
 
     def url

@@ -107,7 +107,7 @@ public class AgregatorFrame extends JFrame implements AgregatorListener, ResultS
       }
       Thread.start {
         try {
-            agregator.agregate(searchPanel.criteria);
+            agregator.agregate(searchPanel.criterias)
         } catch(Exception e) {
           throw e
         }

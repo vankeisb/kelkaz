@@ -17,7 +17,7 @@ public class MockCartridge extends Cartridge<MockCriteria,MockResult> {
     }
 
     @Override
-    protected void doAgregate() {
+    protected void doAgregate(MockCriteria c) {
       for (MockResult r : results) {
         fireResultEvent(r);
       }

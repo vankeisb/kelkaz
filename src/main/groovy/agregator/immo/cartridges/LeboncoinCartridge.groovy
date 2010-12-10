@@ -12,8 +12,9 @@ import com.gargoylesoftware.htmlunit.WebClient
 import static agregator.ui.Util.*
 import agregator.core.Agregator
 import java.text.SimpleDateFormat
+import agregator.core.Criteria
 
-public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
+public class LeboncoinCartridge extends Cartridge {
 
   private static final Logger logger = Logger.getLogger(LeboncoinCartridge.class)
 
@@ -92,7 +93,7 @@ public class LeboncoinCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     return r==null ? maxVal : r
   }
 
-  protected void doAgregate() {
+  protected void doAgregate(Criteria criteria) {
 
     logger.debug("Building URL")
     def url = new StringBuilder()

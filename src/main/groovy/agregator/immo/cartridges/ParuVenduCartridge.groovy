@@ -9,8 +9,9 @@ import agregator.immo.ImmoCriteria.Demand
 import agregator.immo.ImmoCriteria
 import agregator.immo.ImmoResult
 import agregator.util.Logger
+import agregator.core.Criteria
 
-public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
+public class ParuVenduCartridge extends Cartridge {
 
   private static final Logger logger = Logger.getLogger(ParuVenduCartridge.class)
 
@@ -20,7 +21,7 @@ public class ParuVenduCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     super("www.paru-vendu.fr", agregator);
   }
 
-  protected void doAgregate() {
+  protected void doAgregate(Criteria criteria) {
     logger.debug("Building URL")
     def url = new StringBuilder()
     url << ROOT_SITE

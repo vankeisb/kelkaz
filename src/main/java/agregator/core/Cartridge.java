@@ -4,10 +4,7 @@ import agregator.util.Logger;
 
 import javax.swing.*;
 import java.net.URL;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Base class for cartridges, grabbing results from one site, based on passed
@@ -22,7 +19,6 @@ public abstract class Cartridge<C extends Criteria, R extends Result> {
     private static final Logger logger = Logger.getLogger(Cartridge.class);
 
     private final List<CartridgeListener> listeners = Collections.synchronizedList(new ArrayList<CartridgeListener>());
-    private C criteria;
     private final Agregator<C,R> agregator;
     private final String name;
     private volatile boolean agregating = false;
@@ -68,16 +64,16 @@ public abstract class Cartridge<C extends Criteria, R extends Result> {
     }
 
     /**
-     * Start agregation for passed criteria : obtains the data for this criteria
-     * and the target of this cartridge, and notofies registered observers on start/results/end.
-     * @param criteria the criteria
+     * Start agregation for passed criterias : obtains the data for all passed criterias
+     * and the target of this cartridge, and notifies registered observers on start/results/end.
+     * @param criterias the list of criterias
      */
-    public final void agregate(C criteria) {
+    public final void agregate(List<C> criterias) {
         logger.debug(name +  " start aggregating");
         checkAgregation();
         killed = false;
         agregating = true;
-        this.criteria = criteria;
+        List<C> crits = new ArrayList<C>(criterias);
         try {
             // invoke listeners start
             logger.debug(name +  " invoking listeners start");
@@ -85,8 +81,12 @@ public abstract class Cartridge<C extends Criteria, R extends Result> {
 
             // loop on agregation results while we found
             // some and invoke listeners
-            logger.debug("calling agregation routine");
-            doAgregate();
+            for (C crit : crits) {
+                logger.debug("calling agregation routine for criteria " + crit);
+                if (!isKilled()) {
+                    doAgregate(crit);
+                }
+            }
 
             // invoke listeners stop
             logger.debug(name + " invoking listeners end");
@@ -100,17 +100,10 @@ public abstract class Cartridge<C extends Criteria, R extends Result> {
     }
 
     /**
-     * To be implemented by concrete subclasses : performs agregation and fires
+     * To be implemented by concrete subclasses : performs agregation for passed criteria and fires
      * result events
      */
-    protected abstract void doAgregate();
-
-    /**
-     * @return the criteria as passed to the agregate() method
-     */
-    protected C getCriteria() {
-        return criteria;
-    }
+    protected abstract void doAgregate(C criteria);
 
     /**
      * @return the agregator passed at construction time

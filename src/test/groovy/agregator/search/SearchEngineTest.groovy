@@ -12,13 +12,13 @@ public class SearchEngineTest extends GroovyTestCase {
     def c = new GoogleCartridge()
     def l = new DummyCartridgeListener()
     c.addListener(l)
-    c.agregate(new SearchEngineCriteria(query: 'Groovy'))
+    c.agregate(Arrays.asList(new SearchEngineCriteria(query: 'Groovy')))
     assert l.events.size() == 12
   }
 
   void testGoogleCartridgeInAgregator() {
     def l = new DummyAgregatorListener()
-    new SearchEngineAgregator().addListener(l).agregate(new SearchEngineCriteria(query:'Groovy'))
+    new SearchEngineAgregator().addListener(l).agregate(Arrays.asList(new SearchEngineCriteria(query:'Groovy')))
     println l.events.size()
     assert l.events.size() == 14
   }

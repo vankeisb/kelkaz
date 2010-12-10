@@ -10,8 +10,9 @@ import agregator.immo.ImmoCriteria
 import agregator.immo.ImmoResult
 import agregator.util.Logger
 import static agregator.ui.Util.*
+import agregator.core.Criteria
 
-public class SeLogerCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
+public class SeLogerCartridge extends Cartridge {
 
   private static final Logger logger = Logger.getLogger(SeLogerCartridge.class)
 
@@ -21,7 +22,7 @@ public class SeLogerCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     super("www.seloger.com", agregator);
   }
 
-  protected void doAgregate() {
+  protected void doAgregate(Criteria criteria) {
 
     // http://www.seloger.com/recherche.htm?ci=60088&idtt=2&idtypebien=2&nb_pieces=3,4&org=advanced_search&pxmax=300000&pxmin=10000&surfacemax=111&surfacemin=33
 

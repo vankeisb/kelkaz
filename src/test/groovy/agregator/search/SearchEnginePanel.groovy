@@ -30,7 +30,7 @@ public class SearchEnginePanel implements SearchPanel {
       }
     }
 
-    public Criteria getCriteria() {
-        return new SearchEngineCriteria(query:tf.text)
+    public List<Criteria> getCriterias() {
+        return Arrays.asList(new SearchEngineCriteria(query:tf.text))
     }
 }

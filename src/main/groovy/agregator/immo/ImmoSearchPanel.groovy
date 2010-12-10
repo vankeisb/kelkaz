@@ -115,19 +115,32 @@ public class ImmoSearchPanel implements SearchPanel {
     return buildPanel()
   }
 
-  public Criteria getCriteria() {
+  private List<Integer> intsFromTextField(JTextField tf) {
+    if (tf.text==null) {
+        return null
+      }
+      def res = []
+      String txt = tf.text.replaceAll(/,/," ").replaceAll(/;/,' ')
+      def parts = txt.split(' ')
+      parts.each { part ->
+        try {
+          res << Integer.parseInt(tf.text)
+        } catch(NumberFormatException e) {
+          // ignore it
+        }
+      }
+      return res
+  }
 
-    def intFromTextField = { JTextField tf ->
-      if (tf.text==null) {
-        return null
-      }
-      try {
-        return Integer.parseInt(tf.text)
-      } catch(NumberFormatException e) {
-        return null
-      }
+  private Integer intFromTextField(JTextField tf) {
+    def ints = intsFromTextField(tf)
+    if (ints) {
+      return ints[0]
     }
+    return null
+  }
 
+  public List<Criteria> getCriterias() {
     ImmoCriteria c = new ImmoCriteria()
     c.demand = radioLoc.selected ? Demand.RENT : Demand.SELL
     c.type = radioAppt.selected ? Type.APPT : Type.MAISON
@@ -138,7 +151,8 @@ public class ImmoSearchPanel implements SearchPanel {
     c.priceMin = intFromTextField(tfPriceMin)
     c.priceMax = intFromTextField(tfPriceMax)
     c.postCode = tfCodePostal.text
-    return c
+
+    return [c]
   }
 
   static void main(String[] args) {

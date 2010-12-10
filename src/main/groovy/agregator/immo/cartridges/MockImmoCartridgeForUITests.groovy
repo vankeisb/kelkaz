@@ -4,8 +4,9 @@ import agregator.core.Cartridge
 import agregator.immo.ImmoCriteria
 import agregator.immo.ImmoResult
 import agregator.core.Agregator
+import agregator.core.Criteria
 
-class MockImmoCartridgeForUITests extends Cartridge<ImmoCriteria, ImmoResult> {
+class MockImmoCartridgeForUITests extends Cartridge {
 
   def MockImmoCartridgeForUITests(Agregator agregator) {
     super("MockImmoCartridgeForUITests", agregator);
@@ -15,7 +16,7 @@ class MockImmoCartridgeForUITests extends Cartridge<ImmoCriteria, ImmoResult> {
     super(name, agregator);
   }
 
-  protected void doAgregate() {
+  protected void doAgregate(Criteria criteria) {
     for (i in 1..50) {
       String title = "The title of result $i"
       String url = "http://dummy.org/$i"

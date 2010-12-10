@@ -9,6 +9,7 @@ import agregator.immo.ImmoResult
 import agregator.util.Logger
 import com.gargoylesoftware.htmlunit.WebClient
 import static agregator.ui.Util.*
+import agregator.core.Criteria
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,7 +17,7 @@ import static agregator.ui.Util.*
  * Date: Dec 7, 2010
  * Time: 10:30:37 PM
  */
-class Century21Cartridge extends Cartridge<ImmoCriteria, ImmoResult> {
+class Century21Cartridge extends Cartridge {
 
   private static final Logger logger = Logger.getLogger(Century21Cartridge.class)
 
@@ -33,7 +34,7 @@ class Century21Cartridge extends Cartridge<ImmoCriteria, ImmoResult> {
     super("www.century21.fr", agregator)
   }
 
-  protected void doAgregate() {
+  protected void doAgregate(Criteria criteria) {
     def url
     if (criteria.demand == Demand.RENT){
       url = URL_RENT
@@ -50,26 +51,26 @@ class Century21Cartridge extends Cartridge<ImmoCriteria, ImmoResult> {
     }
 
     // Set post code
-    url += getSeparator()+'cp-' + criteria.postCode
+    url += getSeparator(criteria)+'cp-' + criteria.postCode
 
     // Set surface
     if(criteria.surfaceMin != null){
-      url += getSeparator()+'s-'+ criteria.surfaceMin+'-'
+      url += getSeparator(criteria)+'s-'+ criteria.surfaceMin+'-'
     }else{
-      url += getSeparator()+'s-0-'
+      url += getSeparator(criteria)+'s-0-'
     }
     if (criteria.surfaceMax != null){
       url += criteria.surfaceMax
     }
 
     // Add this tricks for 'surface terrain'
-    url += getSeparator()+'st-0-'
+    url += getSeparator(criteria)+'st-0-'
 
     // Set price
     if (criteria.priceMin != null){
-      url += getSeparator()+'b-' + criteria.priceMin + '-'
+      url += getSeparator(criteria)+'b-' + criteria.priceMin + '-'
     }else{
-      url += getSeparator()+'b-0-'
+      url += getSeparator(criteria)+'b-0-'
     }
     if (criteria.priceMax != null){
       url +=criteria.priceMax
@@ -77,14 +78,14 @@ class Century21Cartridge extends Cartridge<ImmoCriteria, ImmoResult> {
 
     // Set room number
     if (criteria.nbRoomsMin != null && criteria.nbRoomsMax != null){
-      url += getSeparator()+'p-' + criteria.nbRoomsMin + '-' + criteria.nbRoomsMax
+      url += getSeparator(criteria)+'p-' + criteria.nbRoomsMin + '-' + criteria.nbRoomsMax
     }else if (criteria.nbRoomsMin != null){
-      url += getSeparator()+'p-'+criteria.nbRoomsMin
+      url += getSeparator(criteria)+'p-'+criteria.nbRoomsMin
     }else if (criteria.nbRoomsMax != null){
-      url += getSeparator()+'p-'+criteria.nbRoomsMax
+      url += getSeparator(criteria)+'p-'+criteria.nbRoomsMax
     }
 
-    url += getSeparator()+'page-'
+    url += getSeparator(criteria)+'page-'
 
     logger.debug "sending request to url = " + url
 
@@ -139,7 +140,7 @@ class Century21Cartridge extends Cartridge<ImmoCriteria, ImmoResult> {
 
   }
 
-  private String getSeparator(){
+  private String getSeparator(Criteria criteria){
     if (criteria.demand == Demand.RENT){
       return RENT_SEPARATOR
     }else{

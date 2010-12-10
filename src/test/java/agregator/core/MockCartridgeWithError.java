@@ -10,7 +10,7 @@ public class MockCartridgeWithError extends Cartridge<MockCriteria,MockResult> {
     }
 
     @Override
-    protected void doAgregate() {
+    protected void doAgregate(MockCriteria c) {
         for (int i=0 ; i<4 ; i++) {
             fireResultEvent(new MockResult(this, "result" + i, "url" + i, "text" + i));
         }

@@ -8,8 +8,9 @@ import agregator.immo.ImmoCriteria.Type
 import agregator.immo.ImmoResult
 import agregator.util.Logger
 import com.gargoylesoftware.htmlunit.WebClient
+import agregator.core.Criteria
 
-public class FnaimCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
+public class FnaimCartridge extends Cartridge {
 
   private static final Logger logger = Logger.getLogger(FnaimCartridge.class)
 
@@ -19,7 +20,7 @@ public class FnaimCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     super("www.fnaim.fr", agregator);
   }
 
-  protected void doAgregate() {
+  protected void doAgregate(Criteria criteria) {
 
     // http://www.fnaim.fr/?call=resultslittle_biens&category=location&type=maison&FNAIM_Little_Input_Ville=&FNAIM_Little_Input_CP=06000&prix_little_min=500&prix_little_max=2000&surface_little_min=50&surface_little_max=150&resultats.x=72&resultats.y=12
 

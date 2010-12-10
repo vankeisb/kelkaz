@@ -9,9 +9,10 @@ import agregator.immo.ImmoResult
 import agregator.util.Logger
 import static agregator.ui.Util.*
 import com.gargoylesoftware.htmlunit.WebClient
+import agregator.core.Criteria
 
 
-public class OrpiCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
+public class OrpiCartridge extends Cartridge {
 
   private static final Logger logger = Logger.getLogger(OrpiCartridge.class)
 
@@ -21,7 +22,7 @@ public class OrpiCartridge extends Cartridge<ImmoCriteria,ImmoResult> {
     super("www.orpi.com", agregator)
   }
 
-  protected void doAgregate() {
+  protected void doAgregate(Criteria criteria) {
     def results = new ArrayList<ImmoResult>()
 
     // Get the page to scrap
