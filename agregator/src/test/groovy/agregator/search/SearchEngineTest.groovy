@@ -6,7 +6,7 @@ import agregator.search.SearchEngineCriteria
 import agregator.search.DummyAgregatorListener
 import agregator.search.SearchEngineAgregator
 
-public class SearchEngineTest extends GroovyTestCase {
+public class SearchEngineTest { // extends GroovyTestCase {
 
   void testGoogleCartridge() {
     def c = new GoogleCartridge()

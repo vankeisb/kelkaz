@@ -123,11 +123,14 @@ public class FnaimCartridge extends Cartridge {
 
           def date = null //Util.extractDate(dateEl.textContent)
 
+          // fix because FNAIM seems to ignore our max price criteria (tried in their webapp)
+          if (price <= criteria.priceMax) {
+            fireResultEvent(new ImmoResult(this, title, u, description, price, date, imgUrl))
+            nbAdded++
+            totalAdded++
+            logger.debug("Added result title $title, url $u" + ", desc $description, date $date")
+          }
 
-          fireResultEvent(new ImmoResult(this, title, u, description, price, date, imgUrl))
-          nbAdded++
-          totalAdded++
-          logger.debug("Added result title $title, url $u" + ", desc $description, date $date")
         } catch(Throwable t) {
           logger.error("Exception caught while processing item : $item", t)
         }
