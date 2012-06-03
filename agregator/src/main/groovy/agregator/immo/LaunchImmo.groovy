@@ -22,7 +22,7 @@ public class LaunchImmo {
 //  private static final String LAF = "com.seaglasslookandfeel.SeaGlassLookAndFeel"
 
   public static void main(String[] args) {
-    System.setProperty("com.apple.mrj.application.apple.menu.about.name", "TrouvToo Immobilier");    
+    System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Kelkaz");
     SwingUtilities.invokeLater {
       JFrame.setDefaultLookAndFeelDecorated(true);
       // detect substance look and feel

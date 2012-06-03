@@ -82,10 +82,10 @@ public class ParuVenduCartridge extends Cartridge {
     logger.debug("Sending request : " + url);
 
     WebClient webClient = new WebClient()
-    webClient.setJavaScriptEnabled(false)
+    webClient.setJavaScriptEnabled(true)
     def p = webClient.getPage(url.toString())
 
-    def spanNbAnnonces = p.getByXPath('/html/body/div[4]/div/div[3]/div/div[2]/div/div/h1/div/span')[0]
+    def spanNbAnnonces = p.getByXPath('/html/body/div[8]/div[2]/div/div/div[2]/div/div[2]/div/strong')[0]
     Integer nbAnnonces = agregator.ui.Util.extractInteger(spanNbAnnonces.textContent)
     Integer nbPages = 1
     if (nbAnnonces>0) {
@@ -106,32 +106,33 @@ public class ParuVenduCartridge extends Cartridge {
         p = webClient.getPage(u)
       }
       int nbAdded = 0
-      def listItems = p.getByXPath("//div[@class='au_boxListe_C']")
+      def listItems = p.getByXPath("//div[@class='annonce']")
+      boolean firstLink = true
       listItems.each { item ->
-        def lnk = item.getByXPath("div/div[3]/div[1]/div[2]/div[1]/div[2]/a")[0]
+        def lnk = item.getByXPath("a")[0]
         if (lnk) {
           def title = lnk.textContent.trim()
           def u = ROOT_SITE + lnk.getAttribute('href')
-          lnk = item.getByXPath('div/div[3]/div[1]/div[2]/div[4]/div[1]/a')[0]
-          String description = lnk.textContent.trim()
-          if (description) {
-            int indexOfSuffix = description.indexOf("<<")
-            if (indexOfSuffix>0) {
-              description = description.substring(0, indexOfSuffix)
-            }
-          }
-          def div = item.getByXPath('div/div[1]/div[1]')[0]
-          def price = agregator.ui.Util.extractInteger(div.getAttribute('title').trim())
-          div = item.getByXPath('div/div[3]/div[1]/div[2]/div[2]/div[2]/a')[0]
-          def date = agregator.ui.Util.extractDate(div.textContent)
-          def img = item.getByXPath('div/div[3]/div[1]/div[1]/a/img')[0]
+          def descBlock = lnk.getByXPath("span[@class='desc']")[0]
+          String description = descBlock.textContent.trim()
+          def priceBlock = lnk.getByXPath("span[@class='price']")[0]
+          def price = agregator.ui.Util.extractInteger(priceBlock.textContent)
+            // TODO date
+//          def dateBlock =
+          def date = new Date() // agregator.ui.Util.extractDate(div.textContent)
+          def imgBlock = lnk.getByXPath("span[@class='img']/img")[0]
           def imgUrl = null
-          if (img!=null) {
-            imgUrl = img.getAttribute('src')
+          if (imgBlock!=null) {
+              if (firstLink) {
+                  imgUrl = imgBlock.getNextSibling().getAttribute("original")
+              } else {
+                  imgUrl = imgBlock.getAttribute("original")
+              }
           }
           fireResultEvent(new ImmoResult(this, title, u, description, price, date, imgUrl))
           nbAdded++
           totalAdded++
+          firstLink = false
           logger.debug("Added result title $title, url $u" + ", desc $description, date $date")
         }
       }

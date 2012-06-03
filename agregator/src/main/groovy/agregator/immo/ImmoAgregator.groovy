@@ -16,7 +16,7 @@ public class ImmoAgregator extends Agregator {
     cartridges << new PAPCartridge(this)
     cartridges << new Century21Cartridge(this)
 
-//      cartridges << new TopAnnoncesCartridge(this)
+      cartridges << new TopAnnoncesCartridge(this)
 
 //    cartridges << new MockImmoCartridgeForUITests("www.foobar.com", this)
 //    cartridges << new MockImmoCartridgeForUITests("www.yeah.fr", this)
